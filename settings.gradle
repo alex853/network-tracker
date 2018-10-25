@@ -1,0 +1,3 @@
+rootProject.name = 'network-tracker'
+include 'core'
+include 'web'
