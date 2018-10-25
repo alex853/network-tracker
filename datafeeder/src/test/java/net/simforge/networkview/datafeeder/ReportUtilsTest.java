@@ -1,7 +1,6 @@
-package net.simforge.networkview.tools;
+package net.simforge.networkview.datafeeder;
 
 import junit.framework.TestCase;
-import net.simforge.commons.misc.JavaTime;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;

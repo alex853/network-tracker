@@ -11,7 +11,7 @@ public class PAIAirportsLoader {
     public static PAIAirports load() throws IOException {
         PAIAirports airports = new PAIAirports();
 
-        InputStream paiDataInputStream = PAIAirportsLoader.class.getResourceAsStream("/net/simforge/tracker/world/pai/Airports_PAI.txt");
+        InputStream paiDataInputStream = PAIAirportsLoader.class.getResourceAsStream("/pai/Airports_PAI.txt");
         String content = IOHelper.readInputStream(paiDataInputStream);
 
         StringTokenizer st = new StringTokenizer(content, "\r\n");

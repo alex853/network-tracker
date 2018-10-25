@@ -1,8 +1,8 @@
-package net.simforge.tracker.world.atmosphere;
+package net.simforge.networkview.world.atmosphere;
 
 import net.simforge.commons.misc.Geo;
-import net.simforge.tracker.world.airports.Airport;
-import net.simforge.tracker.world.airports.Airports;
+import net.simforge.networkview.world.airports.Airport;
+import net.simforge.networkview.world.airports.Airports;
 
 public class AltimeterRules {
     private boolean valid;

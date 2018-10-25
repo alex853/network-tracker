@@ -1,4 +1,4 @@
-package net.simforge.networkview.tools;
+package net.simforge.networkview.datafeeder;
 
 import junit.framework.TestCase;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;

@@ -1,4 +1,4 @@
-package net.simforge.tracker.world.atmosphere;
+package net.simforge.networkview.world.atmosphere;
 
 import net.simforge.commons.misc.Str;
 

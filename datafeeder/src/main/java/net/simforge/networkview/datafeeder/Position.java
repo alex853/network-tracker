@@ -1,4 +1,4 @@
-package net.simforge.networkview.world;
+package net.simforge.networkview.datafeeder;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Str;

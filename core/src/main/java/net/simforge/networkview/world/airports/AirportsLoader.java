@@ -24,7 +24,7 @@ public class AirportsLoader {
             builder.setCoords(new Geo.Coords(paiAirport.getLatitude(), paiAirport.getLongitude()));
             builder.setElevation(paiAirport.getAltitude());
 
-            String resourceName = "/net/simforge/tracker/world/airports/%s.properties";
+            String resourceName = "/boundaries/%s.properties";
             resourceName = resourceName.replace("%s", paiAirport.getIcao());
             InputStream resourceInputStream = PAIAirportsLoader.class.getResourceAsStream(resourceName);
 

@@ -1,4 +1,4 @@
-package net.simforge.tracker.world.airports;
+package net.simforge.networkview.world.airports;
 
 import junit.framework.TestCase;
 import net.simforge.commons.misc.Geo;
