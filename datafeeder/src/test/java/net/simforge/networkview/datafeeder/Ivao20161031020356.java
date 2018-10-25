@@ -2,7 +2,7 @@ package net.simforge.networkview.datafeeder;
 
 import junit.framework.TestCase;
 import net.simforge.commons.io.IOHelper;
-import net.simforge.tracker.Network;
+import net.simforge.networkview.Network;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +16,7 @@ public class Ivao20161031020356 extends TestCase {
     // heading on the first row is incorrect
 
     public void test() throws IOException {
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/tracker/datafeeder/ivao-20161031020356.txt");
+        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/datafeeder/ivao-20161031020356.txt");
         String content = IOHelper.readInputStream(is);
         ReportFile reportFile = new ReportFile(Network.IVAO, content);
 

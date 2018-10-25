@@ -2,16 +2,14 @@ package net.simforge.networkview.datafeeder;
 
 import net.simforge.commons.io.IOHelper;
 import net.simforge.commons.legacy.BM;
-import net.simforge.tracker.Network;
-import net.simforge.tracker.tools.ReportUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+import net.simforge.networkview.Network;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,9 +18,9 @@ public class ReportStorage {
 
     public static final String DEFAULT_STORAGE_ROOT = "../data";
 
-    private static DateTimeFormatter yyyy = DateTimeFormat.forPattern("yyyy").withZoneUTC();
-    private static DateTimeFormatter yyyyMM = DateTimeFormat.forPattern("yyyy-MM").withZoneUTC();
-    private static DateTimeFormatter yyyyMMdd = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
+    private static DateTimeFormatter yyyy = DateTimeFormatter.ofPattern("yyyy");//.withZoneUTC();
+    private static DateTimeFormatter yyyyMM = DateTimeFormatter.ofPattern("yyyy-MM");//.withZoneUTC();
+    private static DateTimeFormatter yyyyMMdd = DateTimeFormatter.ofPattern("yyyy-MM-dd");//.withZoneUTC();
 
     private File root;
     private Network network;
@@ -52,8 +50,8 @@ public class ReportStorage {
     }
 
     private String reportToFullPath(String report) {
-        DateTime dateTime = ReportUtils.fromTimestamp(report);
-        return yyyy.print(dateTime) + "/" + yyyyMM.print(dateTime) + "/" + yyyyMMdd.print(dateTime) + "/" + report + ".txt";
+        LocalDateTime dateTime = ReportUtils.fromTimestampJava(report);
+        return yyyy.format(dateTime) + "/" + yyyyMM.format(dateTime) + "/" + yyyyMMdd.format(dateTime) + "/" + report + ".txt";
     }
 
     public String getFirstReport() throws IOException {

@@ -1,7 +1,7 @@
 package net.simforge.networkview.datafeeder;
 
 import net.simforge.commons.misc.Str;
-import net.simforge.tracker.Network;
+import net.simforge.networkview.Network;
 
 import java.util.*;
 

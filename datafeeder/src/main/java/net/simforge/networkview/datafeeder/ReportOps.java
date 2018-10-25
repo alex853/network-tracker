@@ -4,7 +4,6 @@ import net.simforge.commons.legacy.BM;
 import net.simforge.commons.misc.JavaTime;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
-import net.simforge.tracker.tools.ReportUtils;
 import org.hibernate.Session;
 
 import java.util.List;

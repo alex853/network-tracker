@@ -13,8 +13,7 @@ import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
 import net.simforge.commons.misc.Misc;
 import net.simforge.commons.runtime.ThreadMonitor;
-import net.simforge.tracker.Network;
-import net.simforge.tracker.tools.ReportUtils;
+import net.simforge.networkview.Network;
 
 public class Download extends BaseTask {
 

@@ -6,10 +6,8 @@ import net.simforge.commons.io.Marker;
 import net.simforge.commons.misc.JavaTime;
 import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
-import net.simforge.tracker.Network;
-import net.simforge.tracker.SessionManager;
+import net.simforge.networkview.Network;
 import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.tracker.tools.ReportUtils;
 import org.hibernate.Session;
 
 import java.time.LocalDateTime;

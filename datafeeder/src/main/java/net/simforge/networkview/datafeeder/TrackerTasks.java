@@ -1,6 +1,5 @@
 package net.simforge.networkview.datafeeder;
 
-import net.simforge.tracker.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

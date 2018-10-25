@@ -2,7 +2,7 @@ package net.simforge.networkview.datafeeder;
 
 import junit.framework.TestCase;
 import net.simforge.commons.io.IOHelper;
-import net.simforge.tracker.Network;
+import net.simforge.networkview.Network;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ public class Ivao20151207212608 extends TestCase {
     // log entry for invalid line can be out of database fields limits, test checks is
 
     public void test() throws IOException {
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/tracker/datafeeder/ivao-20151207212608.txt");
+        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/datafeeder/ivao-20151207212608.txt");
         String content = IOHelper.readInputStream(is);
         ReportFile reportFile = new ReportFile(Network.IVAO, content);
 

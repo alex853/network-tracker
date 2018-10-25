@@ -1,9 +1,6 @@
 package net.simforge.networkview.datafeeder;
 
 import junit.framework.TestCase;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
 
 import java.time.LocalDateTime;
 
@@ -38,30 +35,6 @@ public class ReportUtilsTest extends TestCase {
         } catch (Exception e) {
             // correct control flow
         }
-    }
-
-    public void testFromTimestamp_joda() {
-        DateTime dateTime = ReportUtils.fromTimestamp("20151201010203");
-        assertEquals(2015, dateTime.getYear());
-        assertEquals(12, dateTime.getMonthOfYear());
-        assertEquals(1, dateTime.getDayOfMonth());
-        assertEquals(1, dateTime.getHourOfDay());
-        assertEquals(2, dateTime.getMinuteOfHour());
-        assertEquals(3, dateTime.getSecondOfMinute());
-    }
-
-    public void testFromTimestamp_joda_wrongInput() {
-        try {
-            ReportUtils.fromTimestamp("2015a20a0102a3");
-            fail();
-        } catch (Exception e) {
-            // correct control flow
-        }
-    }
-
-    public void testUTCtimezone_joda() {
-        DateTime dateTime = ReportUtils.fromTimestamp("20151201010203");
-        assertEquals(DateTimeZone.UTC, dateTime.getZone());
     }
 
     public void testToTimestamp_java() {

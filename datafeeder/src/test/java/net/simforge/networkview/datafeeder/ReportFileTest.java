@@ -2,7 +2,7 @@ package net.simforge.networkview.datafeeder;
 
 import junit.framework.TestCase;
 import net.simforge.commons.io.IOHelper;
-import net.simforge.tracker.Network;
+import net.simforge.networkview.Network;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ReportFileTest extends TestCase {
     public void testVatsimReport() throws IOException {
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/tracker/datafeeder/vatsim-data.txt");
+        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/datafeeder/vatsim-data.txt");
         String content = IOHelper.readInputStream(is);
         ReportFile reportFile = new ReportFile(Network.VATSIM, content);
 
@@ -41,7 +41,7 @@ public class ReportFileTest extends TestCase {
     }
 
     public void testIvaoReport() throws IOException {
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/tracker/datafeeder/ivao-whazzup.txt");
+        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/datafeeder/ivao-whazzup.txt");
         String content = IOHelper.readInputStream(is);
         ReportFile reportFile = new ReportFile(Network.IVAO, content);
 

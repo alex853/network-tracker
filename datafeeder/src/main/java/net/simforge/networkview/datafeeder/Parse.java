@@ -5,13 +5,11 @@ import net.simforge.commons.io.Marker;
 import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
 import net.simforge.commons.misc.Misc;
-import net.simforge.tracker.Network;
-import net.simforge.tracker.SessionManager;
+import net.simforge.networkview.Network;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportLogEntry;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotFpRemarks;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
-import net.simforge.tracker.tools.ParsingLogics;
 import org.hibernate.Session;
 
 import java.io.IOException;
