@@ -1,9 +1,9 @@
-package flights.model.criteria;
+package net.simforge.networkview.flights.model.criteria;
 
-import flights.model.Flight;
-import net.simforge.tracker.tools.ParsingLogics;
-import net.simforge.tracker.world.Position;
-import net.simforge.tracker.world.ReferenceData;
+import net.simforge.networkview.datafeeder.ParsingLogics;
+import net.simforge.networkview.datafeeder.Position;
+import net.simforge.networkview.flights.model.Flight;
+import net.simforge.networkview.world.ReferenceData;
 
 public class LostFlightEnduranceCriterion implements Criterion {
     private Flight flight;

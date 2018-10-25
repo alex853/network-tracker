@@ -1,17 +1,17 @@
-package net.simforge.tracker.flights.model;
+package net.simforge.networkview.flights.model;
 
 import junit.framework.TestCase;
 import net.simforge.commons.io.Csv;
 import net.simforge.commons.io.IOHelper;
-import net.simforge.tracker.TrackerUtil;
-import net.simforge.tracker.flights.datasource.CsvDatasource;
+import net.simforge.networkview.TrackerUtil;
+import net.simforge.networkview.flights.datasource.CsvDatasource;
 
 import java.io.InputStream;
 
 public class TrackingUtilTest extends TestCase {
 
     public void testGetTimeBetween() throws Exception {
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/tracker/flights/model/pilot-1309680_from-1_amount-60.csv");
+        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/flights/model/pilot-1309680_from-1_amount-60.csv");
         String csvContent = IOHelper.readInputStream(is);
         MainContext mainContext = new MainContext();
         mainContext.setReportDatasource(new CsvDatasource(Csv.fromContent(csvContent)));

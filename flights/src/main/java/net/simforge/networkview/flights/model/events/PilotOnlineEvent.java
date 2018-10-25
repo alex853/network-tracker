@@ -1,12 +1,12 @@
-package flights.model.events;
+package net.simforge.networkview.flights.model.events;
 
-import flights.model.Flight;
-import flights.model.FlightOps;
-import flights.model.FlightStatus;
-import flights.model.PilotContext;
-import flights.model.criteria.Criterion;
-import flights.model.criteria.EllipseCriterion;
-import net.simforge.tracker.world.Position;
+import net.simforge.networkview.datafeeder.Position;
+import net.simforge.networkview.flights.model.Flight;
+import net.simforge.networkview.flights.model.FlightOps;
+import net.simforge.networkview.flights.model.FlightStatus;
+import net.simforge.networkview.flights.model.PilotContext;
+import net.simforge.networkview.flights.model.criteria.Criterion;
+import net.simforge.networkview.flights.model.criteria.EllipseCriterion;
 
 public class PilotOnlineEvent extends PilotEvent {
     public PilotOnlineEvent(int pilotNumber, long reportId) {

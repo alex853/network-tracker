@@ -1,12 +1,12 @@
-package flights.model;
+package net.simforge.networkview.flights.model;
 
-import flights.model.events.PilotKnownPositionEvent;
-import flights.model.events.PilotUnknownPositionEvent;
-import flights.model.events.TrackingEventHandler;
+import net.simforge.networkview.datafeeder.Position;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
-import flights.model.events.TrackingEvent;
-import net.simforge.tracker.world.Position;
+import net.simforge.networkview.flights.model.events.PilotKnownPositionEvent;
+import net.simforge.networkview.flights.model.events.PilotUnknownPositionEvent;
+import net.simforge.networkview.flights.model.events.TrackingEvent;
+import net.simforge.networkview.flights.model.events.TrackingEventHandler;
 
 import java.util.ArrayList;
 import java.util.Collections;

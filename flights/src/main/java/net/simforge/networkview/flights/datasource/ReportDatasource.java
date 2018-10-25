@@ -1,4 +1,4 @@
-package flights.datasource;
+package net.simforge.networkview.flights.datasource;
 
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;

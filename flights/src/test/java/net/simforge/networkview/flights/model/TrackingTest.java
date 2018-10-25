@@ -1,12 +1,12 @@
-package net.simforge.tracker.flights.model;
+package net.simforge.networkview.flights.model;
 
 import junit.framework.TestCase;
 import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
-import net.simforge.tracker.flights.datasource.ReportDatasource;
-import net.simforge.tracker.flights.model.events.FlightStatusEvent;
-import net.simforge.tracker.flights.model.events.TrackingEvent;
+import net.simforge.networkview.flights.datasource.ReportDatasource;
+import net.simforge.networkview.flights.model.events.FlightStatusEvent;
+import net.simforge.networkview.flights.model.events.TrackingEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

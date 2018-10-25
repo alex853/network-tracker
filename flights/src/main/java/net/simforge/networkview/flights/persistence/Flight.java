@@ -1,8 +1,8 @@
-package flights.persistence;
+package net.simforge.networkview.flights.persistence;
 
 import net.simforge.commons.hibernate.Auditable;
 import net.simforge.commons.hibernate.BaseEntity;
-import net.simforge.tracker.Network;
+import net.simforge.networkview.Network;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

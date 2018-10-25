@@ -1,28 +1,30 @@
-package net.simforge.tracker.flights.persistence;
+package net.simforge.networkview.flights.persistence;
 
 import net.simforge.commons.hibernate.SessionFactoryBuilder;
 import net.simforge.commons.io.Csv;
 import net.simforge.commons.io.IOHelper;
-import net.simforge.tracker.Network;
-import net.simforge.tracker.flights.FlightRecognition;
-import net.simforge.tracker.flights.PersistenceStrategy;
-import net.simforge.tracker.flights.datasource.CsvDatasource;
-import net.simforge.tracker.flights.model.FlightStatus;
-import net.simforge.tracker.flights.model.TrackingTest;
+import net.simforge.networkview.Network;
+import net.simforge.networkview.flights.FlightRecognition;
+import net.simforge.networkview.flights.PersistenceStrategy;
+import net.simforge.networkview.flights.datasource.CsvDatasource;
+import net.simforge.networkview.flights.model.FlightStatus;
+import net.simforge.networkview.flights.model.TrackingTest;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.junit.Ignore;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
+@Ignore
 public class PersistenceTest_Pilot1300812_1_20_ArrivingToUBBB extends TrackingTest {
 
     private SessionFactory sessionFactory;
 
     @Override
     protected void setUp() throws Exception {
-        System.setProperty("simforge.settings", new File(Class.class.getResource("/net/simforge/tracker/flights/persistence/simforge.properties").toURI()).getParentFile().getAbsolutePath());
+        System.setProperty("simforge.settings", new File(Class.class.getResource("/net/simforge/networkview/flights/persistence/simforge.properties").toURI()).getParentFile().getAbsolutePath());
 
         sessionFactory = SessionFactoryBuilder
                 .forDatabase("flights")
@@ -31,7 +33,7 @@ public class PersistenceTest_Pilot1300812_1_20_ArrivingToUBBB extends TrackingTe
                 .build();;
         setStrategy(new PersistenceStrategy(Network.VATSIM, sessionFactory));
 
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/tracker/flights/model/pilot-1300812_from-1_amount-60.csv");
+        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/flights/model/pilot-1300812_from-1_amount-60.csv");
         String csvContent = IOHelper.readInputStream(is);
         setDatasource(new CsvDatasource(Csv.fromContent(csvContent)));
 

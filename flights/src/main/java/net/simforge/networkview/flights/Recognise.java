@@ -1,18 +1,17 @@
-package flights;
+package net.simforge.networkview.flights;
 
-import flights.datasource.MultiSessionDBDatasource;
-import flights.model.Flight;
-import flights.model.MainContext;
-import flights.model.PilotContext;
 import net.simforge.commons.legacy.BM;
 import net.simforge.commons.legacy.logging.LogHelper;
 import net.simforge.commons.io.Marker;
 import net.simforge.commons.runtime.RunningMarker;
 import net.simforge.commons.runtime.ThreadMonitor;
-import net.simforge.tracker.Network;
-import net.simforge.tracker.SessionManager;
+import net.simforge.networkview.Network;
+import net.simforge.networkview.datafeeder.SessionManager;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
-import org.joda.time.DateTimeConstants;
+import net.simforge.networkview.flights.datasource.MultiSessionDBDatasource;
+import net.simforge.networkview.flights.model.Flight;
+import net.simforge.networkview.flights.model.MainContext;
+import net.simforge.networkview.flights.model.PilotContext;
 
 import java.io.IOException;
 import java.util.List;
@@ -111,16 +110,16 @@ public class Recognise {
                     int processed = mainContext.processReports(1);
 
                     if (processed == 0) { // no reports found
-                        sleepTime = DateTimeConstants.MILLIS_PER_MINUTE;
+                        sleepTime = 60000;//DateTimeConstants.MILLIS_PER_MINUTE;
                     } else {
-                        sleepTime = DateTimeConstants.MILLIS_PER_SECOND;
+                        sleepTime = 1000;//DateTimeConstants.MILLIS_PER_SECOND;
                     }
 
                     // todo marker.setString(nextReport);
                 } catch (Exception e) {
                     logException(e);
                     log("Long sleeping due to exception");
-                    sleepTime = 5 * DateTimeConstants.MILLIS_PER_MINUTE; // 5 mins after exception
+                    sleepTime = 5 * 60000;//DateTimeConstants.MILLIS_PER_MINUTE; // 5 mins after exception
                 } finally {
                     BM.stop();
                 }

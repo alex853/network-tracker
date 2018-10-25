@@ -1,6 +1,6 @@
 package net.simforge.tracker.webapp.tracking2015.rest.dto;
 
-import net.simforge.tracker.flights.model.Flight;
+import net.simforge.networkview.flights.model.Flight;
 import net.simforge.tracker.world.Position;
 
 public class FlightDto {

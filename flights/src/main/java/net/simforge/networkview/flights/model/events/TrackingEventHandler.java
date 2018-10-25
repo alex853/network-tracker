@@ -1,6 +1,6 @@
-package flights.model.events;
+package net.simforge.networkview.flights.model.events;
 
-import flights.model.PilotContext;
+import net.simforge.networkview.flights.model.PilotContext;
 
 import java.util.HashMap;
 import java.util.Map;

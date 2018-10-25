@@ -1,8 +1,8 @@
-package flights.model;
+package net.simforge.networkview.flights.model;
 
-import flights.model.events.FlightStatusEvent;
-import flights.model.events.FlightplanEvent;
-import net.simforge.tracker.world.Position;
+import net.simforge.networkview.datafeeder.Position;
+import net.simforge.networkview.flights.model.events.FlightStatusEvent;
+import net.simforge.networkview.flights.model.events.FlightplanEvent;
 
 public class FlightOps {
     public static Flight create(PilotContext pilotContext) {

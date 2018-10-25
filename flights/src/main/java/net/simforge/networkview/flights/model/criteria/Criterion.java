@@ -1,6 +1,6 @@
-package flights.model.criteria;
+package net.simforge.networkview.flights.model.criteria;
 
-import net.simforge.tracker.world.Position;
+import net.simforge.networkview.datafeeder.Position;
 
 public interface Criterion {
     void process(Position position);

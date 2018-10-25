@@ -1,5 +1,6 @@
 package net.simforge.networkview;
 
+@Deprecated
 public class TrackerUtil {
     public static final Object Minute = new Object();
     public static final Object Second = new Object();

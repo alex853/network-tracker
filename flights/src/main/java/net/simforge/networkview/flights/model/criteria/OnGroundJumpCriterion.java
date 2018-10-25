@@ -1,9 +1,9 @@
-package flights.model.criteria;
+package net.simforge.networkview.flights.model.criteria;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Misc;
-import flights.model.Flight;
-import net.simforge.tracker.world.Position;
+import net.simforge.networkview.datafeeder.Position;
+import net.simforge.networkview.flights.model.Flight;
 
 public class OnGroundJumpCriterion implements Criterion {
     private Flight flight;

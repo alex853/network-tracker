@@ -1,11 +1,11 @@
 package net.simforge.networkview.flights;
 
+import net.simforge.networkview.Network;
 import net.simforge.networkview.flights.model.Flight;
 import net.simforge.networkview.flights.model.MainContext;
 import net.simforge.networkview.flights.model.PilotContext;
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
-import net.simforge.tracker.Network;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -34,7 +34,7 @@ public class PersistenceStrategy implements MainContext.Strategy {
 
             try (Session session = sessionFactory.openSession()) {
                 HibernateUtils.transaction(session, () -> {
-                    flights.persistence.Flight dbFlight = loadFlight(session, pilotContext.getPilotNumber(), firstSeenReportId);
+                    net.simforge.networkview.flights.persistence.Flight dbFlight = loadFlight(session, pilotContext.getPilotNumber(), firstSeenReportId);
 
                     if (dbFlight == null) {
                         saveFlight(session, flight);
@@ -46,12 +46,12 @@ public class PersistenceStrategy implements MainContext.Strategy {
         }
     }
 
-    private flights.persistence.Flight loadFlight(Session session, int pilotNumber, long firstSeenReportId) {
+    private net.simforge.networkview.flights.persistence.Flight loadFlight(Session session, int pilotNumber, long firstSeenReportId) {
         BM.start("PersistenceStrategy.loadFlight");
         try {
 
             //noinspection JpaQlInspection,UnnecessaryLocalVariable
-            flights.persistence.Flight dbFlight = (flights.persistence.Flight) session
+            net.simforge.networkview.flights.persistence.Flight dbFlight = (net.simforge.networkview.flights.persistence.Flight) session
                     .createQuery("from Flight where network = :network and pilotNumber = :pilotNumber and firstSeenReportId = :firstSeenReportId")
                     .setInteger("network", network.getCode())
                     .setInteger("pilotNumber", pilotNumber)
@@ -69,7 +69,7 @@ public class PersistenceStrategy implements MainContext.Strategy {
         BM.start("PersistenceStrategy.saveFlight");
         try {
 
-            flights.persistence.Flight dbFlight = new flights.persistence.Flight();
+            net.simforge.networkview.flights.persistence.Flight dbFlight = new net.simforge.networkview.flights.persistence.Flight();
             convert(flight, dbFlight);
 
             session.save(dbFlight);
@@ -79,7 +79,7 @@ public class PersistenceStrategy implements MainContext.Strategy {
         }
     }
 
-    private void updateFlight(Session session, Flight flight, flights.persistence.Flight dbFlight) {
+    private void updateFlight(Session session, Flight flight, net.simforge.networkview.flights.persistence.Flight dbFlight) {
         BM.start("PersistenceStrategy.updateFlight");
         try {
 
@@ -92,7 +92,7 @@ public class PersistenceStrategy implements MainContext.Strategy {
         }
     }
 
-    private void convert(Flight flight, flights.persistence.Flight dbFlight) {
+    private void convert(Flight flight, net.simforge.networkview.flights.persistence.Flight dbFlight) {
         dbFlight.setNetwork(network);
         dbFlight.setPilotNumber(flight.getPilotContext().getPilotNumber());
 

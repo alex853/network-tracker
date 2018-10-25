@@ -1,8 +1,8 @@
-package flights.model;
+package net.simforge.networkview.flights.model;
 
-import flights.model.criteria.TrackTrailCriterion;
-import flights.model.criteria.LostFlightEnduranceCriterion;
-import net.simforge.tracker.world.Position;
+import net.simforge.networkview.datafeeder.Position;
+import net.simforge.networkview.flights.model.criteria.LostFlightEnduranceCriterion;
+import net.simforge.networkview.flights.model.criteria.TrackTrailCriterion;
 
 import java.time.Duration;
 

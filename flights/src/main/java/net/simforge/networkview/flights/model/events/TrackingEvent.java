@@ -1,4 +1,4 @@
-package flights.model.events;
+package net.simforge.networkview.flights.model.events;
 
 public interface TrackingEvent {
 

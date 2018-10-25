@@ -1,6 +1,6 @@
-package flights.model;
+package net.simforge.networkview.flights.model;
 
-import net.simforge.tracker.world.Position;
+import net.simforge.networkview.datafeeder.Position;
 
 public class Flightplan {
     private String aircraft;

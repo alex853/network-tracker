@@ -1,9 +1,9 @@
-package flights.model.events;
+package net.simforge.networkview.flights.model.events;
 
-import flights.model.Flight;
-import flights.model.FlightOps;
-import flights.model.FlightStatus;
-import flights.model.PilotContext;
+import net.simforge.networkview.flights.model.Flight;
+import net.simforge.networkview.flights.model.FlightOps;
+import net.simforge.networkview.flights.model.FlightStatus;
+import net.simforge.networkview.flights.model.PilotContext;
 
 public class PilotLandingEvent extends PilotEvent {
     public PilotLandingEvent(int pilotNumber, long reportId) {

@@ -1,18 +1,16 @@
-package flights.model;
+package net.simforge.networkview.flights.model;
 
-import flights.datasource.ReportDatasource;
+import net.simforge.networkview.TrackerUtil;
+import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
-import net.simforge.tracker.tools.ReportUtils;
+import net.simforge.networkview.flights.datasource.ReportDatasource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.ZoneOffset;
 import java.util.*;
-
-import static net.simforge.tracker.TrackerUtil.Second;
-import static net.simforge.tracker.TrackerUtil.duration;
 
 public class MainContext {
 

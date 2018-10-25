@@ -1,5 +1,5 @@
 rootProject.name = 'network-tracker'
 include 'core'
 include 'datafeeder'
-//include 'flights'
+include 'flights'
 include 'web'

@@ -1,9 +1,10 @@
-package net.simforge.tracker.flights.persistence;
+package net.simforge.networkview.flights.persistence;
 
 import net.simforge.networkview.datafeeder.persistence.Report;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class HSQLDBTest {
     @Test
     public void testConnection() throws ClassNotFoundException, SQLException {

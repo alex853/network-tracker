@@ -1,15 +1,15 @@
-package net.simforge.tracker.flights.model;
+package net.simforge.networkview.flights.model;
 
 import net.simforge.commons.io.Csv;
 import net.simforge.commons.io.IOHelper;
-import net.simforge.tracker.flights.datasource.CsvDatasource;
+import net.simforge.networkview.flights.datasource.CsvDatasource;
 
 import java.io.InputStream;
 
 public class Test_Pilot1045435_RJAAtoVHHH extends TrackingTest {
     @Override
     protected void setUp() throws Exception {
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/tracker/flights/model/pilot-1045435_from-2015179142_amount-250.csv");
+        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/flights/model/pilot-1045435_from-2015179142_amount-250.csv");
         String csvContent = IOHelper.readInputStream(is);
 
         setDatasource(new CsvDatasource(Csv.fromContent(csvContent)));

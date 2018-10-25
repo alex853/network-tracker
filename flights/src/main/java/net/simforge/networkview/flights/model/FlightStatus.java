@@ -1,4 +1,4 @@
-package flights.model;
+package net.simforge.networkview.flights.model;
 
 public enum FlightStatus {
     Departure(100, null),
