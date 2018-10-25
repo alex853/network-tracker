@@ -2,8 +2,8 @@ package net.simforge.tracker.webapp;
 
 import net.simforge.commons.misc.JavaTime;
 import net.simforge.tracker.Network;
-import net.simforge.tracker.datafeeder.persistence.Report;
-import net.simforge.tracker.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.tracker.tools.ReportUtils;
 import net.simforge.tracker.webapp.dto.NetworkStatusDto;
 import net.simforge.tracker.webapp.dto.PilotPositionDto;

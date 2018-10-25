@@ -2,7 +2,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-//archivesBaseName = 'simforge-tracker'
+//archivesBaseName = 'network-view-core'
 
 repositories {
     mavenCentral()
@@ -13,8 +13,8 @@ repositories {
 }
 
 dependencies {
-/*    compile group: 'net.simforge', name: 'simforge-commons', version: '1.0.1'
-    compile group: 'net.simforge', name: 'simforge-commons-ext', version: '1.0.1'
+    compile group: 'net.simforge', name: 'simforge-commons', version: '1.0.1'
+/*    compile group: 'net.simforge', name: 'simforge-commons-ext', version: '1.0.1'
 
 
 

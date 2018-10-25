@@ -11,7 +11,7 @@ import net.simforge.commons.runtime.RunningMarker;
 import net.simforge.commons.runtime.ThreadMonitor;
 import net.simforge.tracker.Network;
 import net.simforge.tracker.SessionManager;
-import net.simforge.tracker.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import org.joda.time.DateTimeConstants;
 
 import java.io.IOException;

@@ -1,8 +1,8 @@
 package net.simforge.tracker.webapp.tracking2015.rest.dto;
 
 import net.simforge.commons.misc.Misc;
-import net.simforge.tracker.datafeeder.persistence.Report;
-import net.simforge.tracker.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.tracker.flights.model.Flight;
 import net.simforge.tracker.flights.model.PilotContext;
 import net.simforge.tracker.flights.model.events.TrackingEvent;

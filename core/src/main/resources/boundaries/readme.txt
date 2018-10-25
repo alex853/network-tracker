@@ -1,0 +1,1 @@
+This folder contains overridden boundaries for huge airports or airports with complex layout.

@@ -1,8 +1,8 @@
 package flights.model;
 
 import flights.datasource.ReportDatasource;
-import net.simforge.tracker.datafeeder.persistence.Report;
-import net.simforge.tracker.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.tracker.tools.ReportUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

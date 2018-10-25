@@ -3,8 +3,8 @@ package flights.model;
 import flights.model.events.PilotKnownPositionEvent;
 import flights.model.events.PilotUnknownPositionEvent;
 import flights.model.events.TrackingEventHandler;
-import net.simforge.tracker.datafeeder.persistence.Report;
-import net.simforge.tracker.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import flights.model.events.TrackingEvent;
 import net.simforge.tracker.world.Position;
 

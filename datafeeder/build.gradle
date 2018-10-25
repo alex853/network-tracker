@@ -2,7 +2,7 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-//archivesBaseName = 'simforge-tracker'
+archivesBaseName = 'network-view-datafeeder'
 
 repositories {
     mavenCentral()

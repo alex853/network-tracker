@@ -6,7 +6,7 @@ import net.simforge.networkview.flights.model.PilotContext;
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
 import net.simforge.tracker.Network;
-import net.simforge.tracker.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
