@@ -1,0 +1,140 @@
+<html>
+<head>
+<title>VATSIM Tracker for Google Earth</title>
+
+    <LINK href="default.css" rel="stylesheet" type="text/css">
+
+<!-- uservoice.com code -->
+<script type="text/javascript">
+var uservoiceOptions = {
+  /* required */
+  key: 'simforgenet',
+  host: 'simforgenet.uservoice.com',
+  forum: '52699',
+  showTab: true,
+  /* optional */
+  alignment: 'left',
+  background_color:'#f00',
+  text_color: 'white',
+  hover_color: '#06C',
+  lang: 'en'
+};
+
+function _loadUserVoice() {
+  var s = document.createElement('script');
+  s.setAttribute('type', 'text/javascript');
+  s.setAttribute('src', ("https:" == document.location.protocol ? "https://" : "http://") + "cdn.uservoice.com/javascripts/widgets/tab.js");
+  document.getElementsByTagName('head')[0].appendChild(s);
+}
+_loadSuper = window.onload;
+window.onload = (typeof window.onload != 'function') ? _loadUserVoice : function() { _loadSuper(); _loadUserVoice(); };
+</script>
+
+<!-- Google Analytics code -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-15732132-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</head>
+<body>
+<h2>VATSIM Tracker for Google Earth</h2>
+<table class="main">
+    <tr>
+        <td><a href="screenshots/screenshot-1131.html"><img src="screenshots/screenshot-1131-thumb.jpg" alt="JAF272 has departed from Palma de Mallorca and his climb to FL360" border="0"/></a></td>
+        <td>
+            This service allows to observe VATSIM pilots in Google Earth.<br>
+            It shows all connected pilots and their positions for last 30 minutes.<br>
+            You may watch aircraft tracks, climbs and descends, time accelerations etc.<br>
+            <br>
+            Open <a href="tracker.kml" onClick="javascript: pageTracker._trackPageview('/vatsim-tracker/tracker.kml');">VATSIM Tracker for Google Earth</a><br>
+            <br>
+            <font color="gray">To use this service you need to install Google Earth on your PC.<br>
+            You may download it <a href="http://earth.google.com/">here</a></font>
+        </td>
+    </tr>
+</table>
+<br>
+<br>
+<br>
+<h3>Screenshots</h3>
+<table class="screens">
+    <tr>
+        <td><a href="screenshots/screenshot-1125.html"><img src="screenshots/screenshot-1125-thumb.jpg" alt="AAL527 is climbing from New York..." border="0"/></a></td>
+        <td><a href="screenshots/screenshot-1135.html"><img src="screenshots/screenshot-1135-thumb.jpg" alt="General overview of eastern atlantic airspace near Europe" border="0"/></a></td>
+        <td><a href="screenshots/screenshot-1128.html"><img src="screenshots/screenshot-1128-thumb.jpg" alt="Overview of Frankfurt airport" border="0"/></a></td>
+        <td><a href="screenshots/screenshot-1134.html"><img src="screenshots/screenshot-1134-thumb.jpg" alt="Looks like flyin of Speedbirds" border="0"/></a></td>
+    </tr>
+</table>
+<br>
+<br>
+<br>
+<br>
+<br>
+<h3>Legend</h3>
+<b class="under">Aircraft symbols</b>
+<table class="legend">
+    <tr>
+        <td class="col_label"><img src="img/aircraft-flying.png" width="32"/></td>
+        <td class="col_value">Flying<br>
+            Pilot is online right now and is in air.
+        </td>
+    </tr>
+    <tr>
+        <td class="col_label"><img src="img/aircraft-on-ground.png"/></td>
+        <td class="col_value">On ground<br>
+            Pilot is online right now and is on ground.
+        </td>
+    </tr>
+    <tr>
+        <td class="col_label"><img src="img/aircraft-offline.png"/></td>
+        <td class="col_value">Offline<br>
+            Pilot is offline. In air and on ground pilots are shown by same symbol.
+        </td>
+    </tr>
+</table>
+<br>
+<br>
+<b class="under">Track segment colours</b>
+<table class="legend">
+    <tr>
+        <td class="col_label"><b class="blue">blue segment</b></td>
+        <td class="col_value">Flying<br>
+            Pilot is flying in air - starting and finishing points are in air
+        </td>
+    </tr>
+    <tr>
+        <td class="col_label"><b class="green">green segment</b></td>
+        <td class="col_value">On ground<br>
+            Pilot is moving on ground - starting and finishing points are on ground.
+        </td>
+    </tr>
+    <tr>
+        <td class="col_label"><b class="orange">orange segment</b></td>
+        <td class="col_value">Missing data<br>
+            One or few snapshots are missing however pilot is online right now.
+        </td>
+    </tr>
+    <tr>
+        <td class="col_label"><b class="red">red segment</b></td>
+        <td class="col_value">Jump on ground<br>
+            Pilot was on ground and moved his aircraft to another airport or parking.
+        </td>
+    </tr>
+    <tr>
+        <td class="col_label"><b class="gray">gray segment</b></td>
+        <td class="col_value">Offline<br>
+            Pilot is offline now. All segments are shown like this.
+        </td>
+    </tr>
+</table>
+<br>
+<br>
+<br>
+Send you comments, wishes and bug reports to <a href="mailto:simforge.net@gmail.com">simforge.net@gmail.com</a><br>
+</body>
+</html>

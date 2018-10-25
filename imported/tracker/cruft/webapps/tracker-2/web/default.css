@@ -1,0 +1,23 @@
+body {padding: 10px 10px 10px 30px; font: normal 13px Arial; color: #555;}
+
+table td {font: normal 13px Arial; color: #555;}
+
+a, a:visited {color: #0099FF}
+a:hover {color: #006699}
+
+
+h1 {font: bold 20px Arial}
+h2 {font: bold 16px Arial}
+
+*.blue {color: #0066CC; font-weight: bold;}
+*.green {color: #33CC33; font-weight: bold;}
+*.orange {color: #FF6600; font-weight: bold;}
+*.red {color: #CC0000; font-weight: bold;}
+*.gray {color: #999999; font-weight: bold;}
+
+b.under {text-decoration: underline}
+
+table.main tr td {vertical-align: top; padding: 5px;}
+
+table.legend {border-collapse: collapse; margin-top: 10px;}
+table.legend tr td {border-top: 1px solid #bbb; border-bottom: 1px solid #bbb; padding: 3px 15px 3px 5px;}

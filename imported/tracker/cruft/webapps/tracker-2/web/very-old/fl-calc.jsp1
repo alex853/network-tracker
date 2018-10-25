@@ -1,0 +1,57 @@
+<%@ page import="web.FLCalc" %>
+<html>
+  <head>
+      <title>FL Calculation</title>
+  </head>
+  <body style="background-color: RGB(250, 250, 250)">
+
+  <%
+
+      String altStr = request.getParameter("alt");
+      String qnhStr = request.getParameter("qnh");
+
+      int alt = Integer.parseInt(altStr);
+      int qnh = Integer.parseInt(qnhStr);
+
+      FLCalc flCalc = FLCalc.get(alt, qnh);
+
+
+  %>
+
+  <table>
+      <tr>
+          <td>Reported altitude</td>
+          <td><%=flCalc.getReportedAltitude()%></td>
+      </tr>
+      <tr>
+          <td>Reported QNH Mb</td>
+          <td><%=flCalc.getReportedQnhMb()%></td>
+      </tr>
+      <tr>
+          <td>Pressure Correction</td>
+          <td><%=flCalc.getPressureCorrection()%></td>
+      </tr>
+      <tr>
+          <td>Altitude</td>
+          <td><%=flCalc.getAltitude()%></td>
+      </tr>
+      <tr>
+          <td>Actual FL</td>
+          <td><%=flCalc.getActualFlightLevel()%></td>
+      </tr>
+      <tr>
+          <td>Nearest x1000 FL</td>
+          <td><%=flCalc.getNearestX1000FlightLevel()%></td>
+      </tr>
+      <tr>
+          <td>Deviation</td>
+          <td><%=flCalc.getDeviation()%></td>
+      </tr>
+      <tr>
+          <td>On x1000 FL</td>
+          <td><%=flCalc.isOnX1000FlightLevel() ? "Yes" : "No"%></td>
+      </tr>
+  </table>
+
+  </body>
+</html>

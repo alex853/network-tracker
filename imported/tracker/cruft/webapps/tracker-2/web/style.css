@@ -1,0 +1,166 @@
+
+* {
+    font: normal 14px Arial;
+}
+
+.maininfo {
+    border-collapse: collapse;
+    border: 0;
+    margin: 20px 0 20px 0;
+}
+.maininfo td {
+        font: normal 17px Arial;
+}
+.maininfo .label {
+    color: #777;
+    padding-right: 10px;
+}
+.maininfo .value {
+    color: #333;
+    padding-right: 50px;
+}
+
+.divtable {
+    float: left;
+    margin-right: 50px;
+}
+.divtable .header {
+    font: normal 17px Arial;
+    background: #eee;
+    padding: 3px 10px 3px 5px;
+    border-top: 2px solid #aaa;
+}
+
+.divtable2 {
+    margin-right: 200px;
+    margin-bottom: 20px;
+}
+.divtable2 div.margins {
+    margin: 5px;
+}
+.divtable2 .header {
+    font: normal 17px Arial;
+    background: #eee;
+    padding: 3px 10px 3px 5px;
+    border-top: 2px solid #aaa;
+    width: 200px;
+}
+.divtable2 a {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+
+.divtable .header span {
+    color: #888;
+}
+.divtable table {
+    border-collapse: collapse;
+}
+.divtable table th {
+    font: bold 12px Arial;
+    text-align: left;
+    padding: 2px 20px 2px 5px;
+    border-bottom: 1px solid #888;
+    color: #666;
+}
+.divtable table td {
+    border-bottom: 1px solid #ccc;
+    padding: 2px 20px 2px 5px;
+    color: #222;
+}
+.divtable table tr.jump td {
+    background-color: #f0f0f0;
+}
+.divtable table td.inProgress,
+.divtable table td.inProgress a {
+    font-style: italic;
+}
+
+.divtable table tr.offline td {
+    color: #303030;
+    background-color: #f0f0f0;
+}
+
+.divtable table tr.now td {
+    color: #303030;
+    background-color: #bbffd1;
+}
+
+.divtable table tr.no-reports td {
+    color: #303030;
+    background-color: #f0d0d0;
+}
+
+.days { height: 25px; }
+.days .prev { float: left; }
+.days .next { float: right; }
+
+
+
+
+
+
+
+.flightsTable {
+    float: left;
+    margin-right: 50px;
+}
+.flightsTable .header {
+    font: normal 17px Arial;
+    background: #eee;
+    padding: 4px 10px 4px 5px;
+    border-top: 2px solid #aaa;
+}
+.flightsTable .header span {
+    color: #888;
+}
+.flightsTable table {
+    border-collapse: collapse;
+}
+.flightsTable table th {
+    font: bold 12px Arial;
+    text-align: left;
+    padding: 2px 20px 2px 5px;
+    border-bottom: 1px solid #888;
+    color: #666;
+}
+.flightsTable table td {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+    vertical-align: top;
+    padding: 2px 20px 2px 5px;
+    color: #222;
+}
+.flightsTable table td.no-borders {
+    border-top: 1px solid #fff;
+    border-bottom: 1px solid #fff;
+    vertical-align: top;
+    padding: 2px 20px 2px 5px;
+    color: #222;
+}
+.flightsTable table td span.fp-data,
+.flightsTable table td a.fp-data {
+    font: normal 9px Arial;
+}
+.flightsTable table td span.eta,
+.flightsTable table td a.eta {
+    font-style: italic;
+}
+.flightsTable table td.Done {
+}
+.flightsTable table td.InProgress {
+    background-color: #d9ead3;
+}
+.flightsTable table td.Disconnected {
+    background-color: #fff2cc;
+}
+.flightsTable table td.Terminated {
+    background-color: #f4cccc;
+}
+.flightsTable table td.Jump {
+    background-color: #f0f0f0;
+}
+.flightsTable table td.caution {
+    background-color: #f7ff8c;
+}

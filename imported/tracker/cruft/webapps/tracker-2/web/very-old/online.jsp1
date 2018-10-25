@@ -1,0 +1,177 @@
+<%@ page import="actions.analyze_ng.DBOps" %>
+<%@ page import="actions.analyze_ng.ReportInfo" %>
+<%@ page import="java.sql.Connection" %>
+<%@ page import="actions.analyze_ng.ReportPilotPosition" %>
+<%@ page import="java.util.*" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="forge.commons.db.DB" %>
+<%@ page import="forge.commons.Str" %>
+<%@ page import="web.*"%>
+<html>
+<head>
+    <title>Online</title>
+    <style type="text/css">
+        .onLevel-base {
+            color: RGB( 180, 180, 180 )
+        }
+
+        .onLevel-fl {
+            color: RGB( 100, 200, 100 )
+        }
+
+        .outOfLevel-base {
+        }
+
+        .outOfLevel-fl {
+            color: red
+        }
+
+
+
+        .onLevel {
+            color: RGB( 100, 200, 100 )
+        }
+
+        .outOfLevel {
+            color: red
+        }
+
+        .low {
+            color: RGB( 220, 220, 220 )
+        }
+
+        .onLevelCorrectDir {
+            color: RGB( 100, 200, 100 )
+        }
+
+        .onLevelIncorrectDir {
+            color: RGB( 255, 100, 30 )
+        }
+
+    </style>
+
+    <script type="text/javascript">
+        function showFlCalc(alt, qnh) {
+            open("fl-calc.jsp?alt=" + alt + "&qnh=" + qnh, "displayWindow", "width=400,height=300,status=no,toolbar=no,menubar=no");
+        }
+    </script>
+</head>
+
+<body style="background-color: RGB(250, 250, 250)">
+
+
+<%
+
+    ReportInfo newestReport = DBOps.findNewestReport();
+    List<ReportInfo> reports = DBOps.loadNPreviousReports(newestReport.getReportId(), 15);
+
+    Map<Integer, Online_PilotInfo> pilots = new TreeMap<Integer, Online_PilotInfo>();
+
+    for (ReportInfo eachReport : reports) {
+        Connection connx = DB.getConnection();
+        List<ReportPilotPosition> positions = DBOps.loadPilotPositions(connx, eachReport);
+        connx.close();
+
+        for (ReportPilotPosition position : positions) {
+            int pilotId = position.getPilotId();
+            Online_PilotInfo pilotInfo = pilots.get(pilotId);
+            if (pilotInfo == null) {
+                pilotInfo = new Online_PilotInfo(pilotId, position.getCallsign());
+                pilots.put(pilotId, pilotInfo);
+            }
+            pilotInfo.putReportPosition(position);
+        }
+    }
+
+
+%>
+
+Pilots <%=pilots.size()%><br>
+
+
+<table>
+    <tr>
+        <td>Pilot ID</td>
+        <td>Callsign</td>
+        <%
+
+            for (ReportInfo eachReport : reports) {
+        %>
+        <td><%=new SimpleDateFormat("HH:mm").format(eachReport.getReportDt())%></td>
+        <%
+            }
+
+        %>
+    </tr>
+
+    <%
+
+        for (Integer pilotId : pilots.keySet()) {
+            Online_PilotInfo pilot = pilots.get(pilotId);
+
+    %>
+
+    <tr>
+        <td class="<%=false ? "onLevel" : "outOfLevel"%>-base"><a href="pilot.jsp1?pilotId=<%=pilot.getPilotId()%>"
+                                                                  target="pilot_<%=pilot.getPilotId()%>"><%=pilot.getPilotId()%></a>
+        </td>
+        <td class="<%=false ? "onLevel" : "outOfLevel"%>-base"><a href="pilot.jsp1?pilotId=<%=pilot.getPilotId()%>"
+                                                                  target="pilot_<%=pilot.getPilotId()%>"><%=Str.mn(pilot.getCallsign())%></a>
+        </td>
+
+        <%
+            for (ReportInfo eachReport : reports) {
+
+                ReportPilotPosition position = pilot.getPosition(eachReport.getReportId());
+                if (position == null) {
+        %>
+
+        <td>&nbsp;</td>
+
+        <%
+                } else {
+
+                    AltQNH alt = AltQNH.get(position);
+                    int altitude = alt.getAltitude();
+
+                    boolean low = altitude < 9500;
+
+                    LevelSystem levelSystem = LevelSystem.RVSM;
+                    FL nearest = levelSystem.getNearest(altitude);
+                    boolean onLevel = nearest.isOnLevel(altitude);
+
+                    int heading = position.getHeading();
+                    Direction direction = Direction.eastWestByHeading(heading);
+                    boolean correctDir = nearest.getDirection() == direction;
+
+                    String tdClass =
+                            low ? "low" : (
+                                    onLevel ? (
+                                            correctDir ? "onLevelCorrectDir" : "onLevelIncorrectDir") : "outOfLevel");
+
+        %>
+
+        <td class="<%=tdClass%>">
+            <%=FLCalc.printFL(alt.getActualFlightLevel())%><br>
+            <%=onLevel ? nearest : "&nbsp;"%>
+        </td>
+
+        <%
+                }
+            }
+
+        %>
+
+    </tr>
+
+    <%
+
+        }
+
+    %>
+
+</table>
+
+
+</body>
+</html>

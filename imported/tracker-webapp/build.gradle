@@ -1,0 +1,30 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':commons')
+    compile project(':tracker')
+
+    compile('javax.servlet:servlet-api:2.5')
+    compile('org.glassfish.jersey.containers:jersey-container-servlet:2.19')
+    compile('org.glassfish.jersey.media:jersey-media-json-jackson:2.4.1')
+
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.7'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+
+    testCompile 'junit:junit:4.11'
+}
+
+war {
+    from('./') {
+        include 'simforge.properties'
+        include 'logback.xml'
+        into('WEB-INF/classes')
+    }
+}

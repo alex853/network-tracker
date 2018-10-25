@@ -1,0 +1,10 @@
+Ext.require([
+    'Ext.panel.*',
+    'Ext.toolbar.*',
+    'Ext.button.*',
+    'Ext.grid.*',
+    'Ext.data.*',
+    'Ext.container.ButtonGroup',
+    'Ext.layout.container.Table',
+    'Ext.ux.GMapPanel'
+]);

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="simforge.net/vatsim-tracker">
+  <name>VATSIM Tracker</name>
+  <description>Current VATSIM pilot positions and tracks (see http://simforge.net/ for legend)</description>
+  <NetworkLink>
+    <name>Data feed</name>
+    <description>Data updates every 2 minutes</description>
+    <Link>
+      <href>#root#tracker</href>
+      <refreshMode>onInterval</refreshMode>
+      <refreshInterval>120</refreshInterval>
+    </Link>
+  </NetworkLink>
+</Document>
+</kml>

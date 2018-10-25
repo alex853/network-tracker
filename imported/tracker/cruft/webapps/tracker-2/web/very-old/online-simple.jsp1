@@ -1,0 +1,107 @@
+<%@ page import="actions.analyze_ng.DBOps" %>
+<%@ page import="actions.analyze_ng.ReportInfo" %>
+<%@ page import="java.sql.Connection" %>
+<%@ page import="actions.analyze_ng.ReportPilotPosition" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.Comparator" %>
+<%@ page import="forge.commons.db.DB"%>
+<html>
+  <head><title>Simple jsp page</title></head>
+  <body>
+
+
+  <%
+
+      ReportInfo report = DBOps.findNewestReport();
+
+  %>
+  Report id <%=report.getReportId()%> date <%=report.getReportDt()%><br>
+
+  <%
+
+      Connection connx = DB.getConnection();
+      List<ReportPilotPosition> positions = DBOps.loadPilotPositions(connx, report);
+      connx.close();
+
+  %>
+  Pilots <%=positions.size()%><br>
+
+  <%
+
+      Collections.sort(positions, new Comparator<ReportPilotPosition>() {
+          public int compare(ReportPilotPosition o1, ReportPilotPosition o2) {
+              return Integer.valueOf(o1.getPilotId()).compareTo(o2.getPilotId());
+          }
+      });
+
+  %>
+
+  <table>
+      <tr>
+          <td>CID</td>
+          <td>Alt Rep</td>
+          <td>FL Rep</td>
+          <td>QNH Rep</td>
+          <td>Alt Crtd</td>
+          <td>FL Crtd</td>
+          <td>On Level Rep</td>
+          <td>On Level Crtd</td>
+      </tr>
+
+<%
+
+      for (ReportPilotPosition position : positions) {
+          int alt = position.getAltitude();
+
+          if (alt < 10000)
+              continue;
+
+          int fl = (int) Math.round(alt / 100.0);
+          int qnh = position.getQnhMb();
+
+          int altC = (int) (qnh > 0 ? (1013.0 / qnh * alt) : alt);
+          int flC = (int) Math.round(altC / 100.0);
+
+          int fl10 = (int) Math.round(fl / 10.0) * 10;
+          boolean onLevel = Math.abs(fl - fl10) <= 2;
+
+          int fl10C = (int) Math.round(flC / 10.0) * 10;
+          boolean onLevelC = Math.abs(flC - fl10C) <= 2;
+
+          double pstd = 1013.25;
+          double altpress =  (1 - Math.pow((qnh/pstd), 0.190284)) * 145366.45;
+
+          int altC2 = (int) (alt + altpress);
+          int flC2 = (int) Math.round(altC2 / 100.0);
+          int fl10C2 = (int) Math.round(flC2 / 10.0) * 10;
+          boolean onLevelC2 = Math.abs(flC2 - fl10C2) <= 2;
+
+%>
+
+      <tr>
+          <td><%=position.getPilotId()%></td>
+          <td><%=alt%></td>
+          <td><%=fl%></td>
+          <td><%=qnh%></td>
+          <td><%=altC%></td>
+          <td><%=flC%></td>
+          <td><%=onLevel%></td>
+          <td><%=onLevelC%></td>
+          <td><%=altpress%></td>
+          <td><%=altC2%></td>
+          <td><%=flC2%></td>
+          <td><%=onLevelC2%></td>
+      </tr>
+      
+<%
+
+      }
+
+%>
+
+  </table>
+
+
+  </body>
+</html>
