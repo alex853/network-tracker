@@ -9,7 +9,7 @@ import java.io.InputStream;
 public class Test_Pilot1283157_F14overOcean extends TrackingTest {
     @Override
     protected void setUp() throws Exception {
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/flights/model/pilot-1283157_from-2015182747_amount-250.csv");
+        InputStream is = Class.class.getResourceAsStream("/snapshots/pilot-1283157_from-2015182747_amount-250.csv");
         String csvContent = IOHelper.readInputStream(is);
 
         setDatasource(new CsvDatasource(Csv.fromContent(csvContent)));

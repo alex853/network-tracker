@@ -33,7 +33,7 @@ public class PersistenceTest_Pilot1300812_1_20_ArrivingToUBBB extends TrackingTe
                 .build();;
         setStrategy(new PersistenceStrategy(Network.VATSIM, sessionFactory));
 
-        InputStream is = Class.class.getResourceAsStream("/net/simforge/networkview/flights/model/pilot-1300812_from-1_amount-60.csv");
+        InputStream is = Class.class.getResourceAsStream("/snapshots/pilot-1300812_from-1_amount-60.csv");
         String csvContent = IOHelper.readInputStream(is);
         setDatasource(new CsvDatasource(Csv.fromContent(csvContent)));
 
