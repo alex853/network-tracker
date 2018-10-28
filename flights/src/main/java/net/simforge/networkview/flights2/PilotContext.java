@@ -59,7 +59,7 @@ public class PilotContext {
         } else {
             position = Position.createOfflinePosition(report);
         }
-        newContext.positions.add(position);
+        newContext.positions.add(0, position);
         newContext.lastProcessedReport = position.getReport();
 
         TrackingEvent event;
@@ -97,7 +97,12 @@ public class PilotContext {
     }
 
     private PilotContext makeCopy() {
-        throw new UnsupportedOperationException("PilotContext.makeCopy");
+        PilotContext newContext = new PilotContext(pilotNumber);
+        newContext.positions.addAll(positions);
+        newContext.eventsQueue.addAll(eventsQueue);
+        newContext.lastProcessedReport = lastProcessedReport;
+        // todo other fields
+        return newContext;
     }
 
     private void processEvents() {
