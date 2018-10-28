@@ -15,8 +15,12 @@ public class Test1 {
         InputStream is = Class.class.getResourceAsStream("/snapshots/pilot-1309680_from-1_amount-60.csv");
         String csvContent = IOHelper.readInputStream(is);
         ReportDatasource reportDatasource = new CsvDatasource(Csv.fromContent(csvContent));
-        PersistenceLayer persistenceLayer = new PersistenceLayer1();
+        PersistenceLayer persistenceLayer = new InMemoryNoOpPersistenceLayer();
 
         MainContext mainContext = new MainContext(reportDatasource, persistenceLayer);
+
+        for (int i = 0; i < 60; i++) {
+            mainContext.processReports(1);
+        }
     }
 }

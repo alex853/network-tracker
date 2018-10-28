@@ -44,11 +44,13 @@ public class MainContext {
             Map<Integer, PilotContext> newPilotContexts = new HashMap<>();
 
             for (ReportPilotPosition pilotPosition : pilotPositions) {
-                PilotContext pilotContext = pilotContexts.get(pilotPosition.getPilotNumber());
+                int pilotNumber = pilotPosition.getPilotNumber();
+
+                PilotContext pilotContext = pilotContexts.get(pilotNumber);
                 if (pilotContext == null) {
-                    pilotContext = persistenceLayer.loadContext(pilotContext.getPilotNumber());
+                    pilotContext = persistenceLayer.loadContext(pilotNumber);
                     if (pilotContext == null) {
-                        pilotContext = persistenceLayer.createContext(pilotContext.getPilotNumber());
+                        pilotContext = persistenceLayer.createContext(pilotNumber);
                     }
                 }
 
@@ -56,7 +58,7 @@ public class MainContext {
                 PilotContext newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
 
                 if (newPilotContext.isActive()) {
-                    newPilotContexts.put(pilotPosition.getPilotNumber(), newPilotContext);
+                    newPilotContexts.put(pilotNumber, newPilotContext);
                 }
             }
 
