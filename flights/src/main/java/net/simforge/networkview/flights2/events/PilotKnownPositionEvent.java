@@ -2,6 +2,8 @@ package net.simforge.networkview.flights2.events;
 
 import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights2.flight.Flight;
+import net.simforge.networkview.flights2.flight.FlightStatus;
 
 public class PilotKnownPositionEvent extends PilotEvent {
 
@@ -10,12 +12,7 @@ public class PilotKnownPositionEvent extends PilotEvent {
     }
 
     static {
-        TrackingEventHandler.registry.put(PilotKnownPositionEvent.class, new EventHandler());
-    }
-
-    private static class EventHandler implements TrackingEventHandler<PilotKnownPositionEvent> {
-        @Override
-        public void process(PilotContext.ModificationsDelegate delegate, PilotKnownPositionEvent event) {
+        TrackingEventHandler.registry.put(PilotKnownPositionEvent.class, (TrackingEventHandler<PilotKnownPositionEvent>) (delegate, event) -> {
             PilotContext pilotContext = delegate.getPilotContext();
             Position prevPosition = pilotContext.getPrevPosition();
             Position nextPosition = pilotContext.getCurrPosition();
@@ -34,10 +31,10 @@ public class PilotKnownPositionEvent extends PilotEvent {
                 }
             }
 
-            /*todo if (!hasEvents) {
+            if (!hasEvents) {
                 Flight flight = pilotContext.getCurrFlight();
                 if (flight != null) {
-                    if (OnGroundJumpCriterion.get(flight).meets(nextPosition)) {
+                    /* todo if (OnGroundJumpCriterion.get(flight).meets(nextPosition)) {
                         // stop current flight
                         // start new flight
 
@@ -48,21 +45,21 @@ public class PilotKnownPositionEvent extends PilotEvent {
                         }
 
                         FlightOps.create(pilotContext);
-                    } else {
+                    } else*/ {
                         // if flight is already for some time in Arrival status then finish the flight
                         if (flight.getStatus().is(FlightStatus.Arrival)) {
-                            double timeBetween = pilotContext.getMainContext().getTimeBetween(flight.getDestination().getReportId(), nextPosition.getReportId());
+                            /* todo double timeBetween = pilotContext.getMainContext().getTimeBetween(flight.getDestination().getReportId(), nextPosition.getReportId());
                             if (timeBetween >= TrackerUtil.duration(10, TrackerUtil.Minute)) {
                                 FlightOps.finish(pilotContext, flight);
 
                                 flight = FlightOps.create(pilotContext);
-                            }
+                            }*/
                         }
 
-                        FlightOps.continueFlight(pilotContext, flight);
+                        delegate.continueFlight(flight);
                     }
                 }
-            }*/
-        }
+            }
+        });
     }
 }

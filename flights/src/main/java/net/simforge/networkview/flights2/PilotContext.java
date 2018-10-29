@@ -171,6 +171,24 @@ public class PilotContext {
             currFlight = flight;
         }
 
+        public void continueFlight(Flight _flight) {
+            FlightImpl flight = (FlightImpl) _flight;
+
+            Position position = getPilotContext().getCurrPosition();
+
+            flight.setLastSeen(position);
+
+            if (flight.getStatus().is(FlightStatus.Departure)
+                    && position.isPositionKnown()
+                    && position.isOnGround()) {
+                flight.setOrigin(position);
+            }
+
+            // todo processCriteria(flight, position);
+
+            collectFlightplan(flight);
+        }
+
         public void terminateFlight(Flight flight) {
             throw new UnsupportedOperationException("ModificationsDelegate.terminateFlight");
         }
@@ -190,9 +208,6 @@ public class PilotContext {
         private void putMovementStatusEvent(Flight flight) {
             enqueueEvent(new FlightStatusEvent(getPilotContext(), flight));
         }
-
-
-
     }
 
     private class FlightImpl implements Flight {
@@ -266,6 +281,7 @@ public class PilotContext {
             copy.origin = origin;
             copy.destination = destination;
             copy.lastSeen = lastSeen;
+            copy.flightplan = flightplan;
             return copy;
         }
     }
