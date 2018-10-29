@@ -81,11 +81,17 @@ public class PilotContext {
     }
 
     public Position getCurrPosition() {
-        throw new UnsupportedOperationException("PilotContext.getCurrPosition");
+        if (positions.isEmpty()) {
+            return null;
+        }
+        return positions.get(0);
     }
 
     public Position getPrevPosition() {
-        throw new UnsupportedOperationException("PilotContext.getPrevPosition");
+        if (positions.size() < 2) {
+            return null;
+        }
+        return positions.get(1);
     }
 
     public List<Position> getPositions() {

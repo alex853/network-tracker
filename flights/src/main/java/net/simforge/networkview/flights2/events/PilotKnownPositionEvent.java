@@ -21,7 +21,7 @@ public class PilotKnownPositionEvent extends PilotEvent {
             Position nextPosition = pilotContext.getCurrPosition();
 
             boolean hasEvents = false;
-            if (!prevPosition.isPositionKnown()) {
+            if (prevPosition == null || !prevPosition.isPositionKnown()) {
                 delegate.enqueueEvent(new PilotOnlineEvent(pilotContext.getPilotNumber(), nextPosition.getReport()));
                 hasEvents = true;
             } else {
