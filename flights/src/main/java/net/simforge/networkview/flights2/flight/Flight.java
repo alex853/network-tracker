@@ -1,10 +1,20 @@
 package net.simforge.networkview.flights2.flight;
 
-public class Flight {
-    private FlightStatus status;
+import net.simforge.networkview.flights.model.Flightplan;
+import net.simforge.networkview.flights2.Position;
 
-    public FlightStatus getStatus() {
-        return status;
-    }
+public interface Flight {
+
+    FlightStatus getStatus();
+
+    Position getFirstSeen();
+
+    Position getOrigin();
+
+    Position getDestination();
+
+    Position getLastSeen();
+
+    Flightplan getFlightplan();
 
 }

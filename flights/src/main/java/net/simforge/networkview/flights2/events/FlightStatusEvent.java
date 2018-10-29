@@ -15,4 +15,10 @@ public class FlightStatusEvent extends BaseEvent {
     public Flight getFlight() {
         return flight;
     }
+
+    static {
+        TrackingEventHandler.registry.put(FlightStatusEvent.class,
+                (TrackingEventHandler<FlightStatusEvent>) (delegate, event) -> { /* no op */ });
+    }
+
 }

@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights2;
 
-public class InMemoryNoOpPersistenceLayer implements PersistenceLayer {
+public class NoOpPersistenceLayer implements PersistenceLayer {
     @Override
     public PilotContext createContext(int pilotNumber) {
         return new PilotContext(pilotNumber);
@@ -13,6 +13,6 @@ public class InMemoryNoOpPersistenceLayer implements PersistenceLayer {
 
     @Override
     public PilotContext saveChanges(PilotContext pilotContext) {
-        throw new UnsupportedOperationException("StupidInMemoryPersistenceLayer.saveChanges");
+        return pilotContext; // we do not save anything
     }
 }

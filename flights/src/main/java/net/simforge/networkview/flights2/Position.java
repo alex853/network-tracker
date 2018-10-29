@@ -110,11 +110,13 @@ public class Position {
     }
 
     public int getActualAltitude() {
+        checkPropertyUsage();
         checkPositionKnown();
         return actualAltitude;
     }
 
     public String getActualFL() {
+        checkPropertyUsage();
         checkPositionKnown();
         return actualFL;
     }
@@ -125,19 +127,24 @@ public class Position {
     }
 
     public boolean isInAirport() {
+        checkPropertyUsage();
         checkPositionKnown();
         return inAirport;
     }
 
     public String getAirportIcao() {
+        checkPropertyUsage();
         checkPositionKnown();
         return airportIcao;
     }
 
-    private void checkPositionKnown() {
+    private void checkPropertyUsage() {
         if (Math.random() >= 0) {
             throw new UnsupportedOperationException(); // todo check every method you use!
         }
+    }
+
+    private void checkPositionKnown() {
         if (!isPositionKnown()) {
             throw new IllegalStateException("Position is unknown");
         }
