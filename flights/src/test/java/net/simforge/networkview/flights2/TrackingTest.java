@@ -52,21 +52,22 @@ public abstract class TrackingTest extends TestCase {
 
     @SuppressWarnings({"UnusedDeclaration"})
     public void testTracking() throws IOException {
-        PersistenceLayer persistenceLayer = new NoOpPersistenceLayer();
+        Report fromReport = reportDatasource.loadReport(fromReportId);
 
-        MainContext mainContext = new MainContext(reportDatasource, persistenceLayer);
+        MainContext mainContext = new MainContext(reportDatasource, new NoOpPersistenceLayer());
+        mainContext.setLastReport(fromReport);
 
         int reportsToProcess = toReportId - fromReportId + 1;
 
         for (int i = 0; i < reportsToProcess; i++) {
             mainContext.processReports(1);
 
-            report = mainContext.getLastReport();
+            this.report = mainContext.getLastReport();
 
             pilotContext = mainContext.getPilotContext(pilotNumber);
             if (pilotContext != null) {
                 flight = pilotContext.getCurrFlight();
-                pilotEventHistory.put(report.getId(), pilotContext.getRecentEvents());
+                pilotEventHistory.put(this.report.getId(), pilotContext.getRecentEvents());
             }
 
             invokeSingleReportCheckMethod();

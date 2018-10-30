@@ -90,6 +90,10 @@ public class MainContext {
         return lastReport;
     }
 
+    public void setLastReport(Report lastReport) {
+        this.lastReport = lastReport;
+    }
+
     public PilotContext getPilotContext(int pilotNumber) {
         return pilotContexts.get(pilotNumber);
     }
