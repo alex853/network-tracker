@@ -219,8 +219,8 @@ public abstract class TrackingTest extends TestCase {
     }
 
     protected void checkFlightRoute(Flight flight, String origin, String destination) {
-        assertEquals(origin, flight.getOrigin().getAirportIcao());
-        assertEquals(destination, flight.getDestination().getAirportIcao());
+        assertEquals(origin, flight.getOrigin() != null ? flight.getOrigin().getAirportIcao() : null);
+        assertEquals(destination, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
         logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(origin, "[--]"), Misc.mn(destination, "[--]")));
     }
 

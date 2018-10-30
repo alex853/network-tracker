@@ -127,13 +127,11 @@ public class Position {
     }
 
     public boolean isInAirport() {
-        checkPropertyUsage();
         checkPositionKnown();
         return inAirport;
     }
 
     public String getAirportIcao() {
-        checkPropertyUsage();
         checkPositionKnown();
         return airportIcao;
     }
