@@ -86,4 +86,11 @@ public class MainContext {
         return processedReports;
     }
 
+    public Report getLastReport() {
+        return lastReport;
+    }
+
+    public PilotContext getPilotContext(int pilotNumber) {
+        return pilotContexts.get(pilotNumber);
+    }
 }

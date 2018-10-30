@@ -12,10 +12,7 @@ import net.simforge.networkview.flights2.events.TrackingEventHandler;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PilotContext {
@@ -24,6 +21,7 @@ public class PilotContext {
     private final int pilotNumber;
     private final List<Position> positions = new LinkedList<>();
     private final Queue<TrackingEvent> eventsQueue = new LinkedList<>();
+    private final List<TrackingEvent> recentEvents = new ArrayList<>();
     private final ModificationsDelegate delegate = new ModificationsDelegate();
 
     private String lastProcessedReport;
@@ -110,6 +108,10 @@ public class PilotContext {
         return currFlight;
     }
 
+    public List<TrackingEvent> getRecentEvents() {
+        return Collections.unmodifiableList(recentEvents);
+    }
+
     private PilotContext makeCopy() {
         PilotContext newContext = new PilotContext(pilotNumber);
 
@@ -133,9 +135,8 @@ public class PilotContext {
                 throw new IllegalStateException(); // todo message
             }
 
+            //noinspection unchecked
             eventHandler.process(this.delegate, event);
-
-            // todo save event to some other location?
         }
 
     }
@@ -151,6 +152,7 @@ public class PilotContext {
 
         public void enqueueEvent(TrackingEvent event) {
             eventsQueue.add(event);
+            recentEvents.add(event);
         }
 
         public void startFlight(Position firstSeenPosition) {
