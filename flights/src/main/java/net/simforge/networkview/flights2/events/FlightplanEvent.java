@@ -12,6 +12,7 @@ public class FlightplanEvent extends BaseEvent {
     static {
         TrackingEventHandler.registry.put(FlightplanEvent.class,
                 (TrackingEventHandler<FlightplanEvent>) (delegate, event) -> { /* no op */ });
+        // todo if aircraft is on ground in status Arrival and Flightplan has changed - we need to finish flight and start new one
     }
 
 }

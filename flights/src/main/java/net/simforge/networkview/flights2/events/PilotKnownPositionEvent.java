@@ -49,6 +49,7 @@ public class PilotKnownPositionEvent extends PilotEvent {
                         // if flight is already for some time in Arrival status then finish the flight
                         if (flight.getStatus().is(FlightStatus.Arrival)) {
                             /* todo double timeBetween = pilotContext.getMainContext().getTimeBetween(flight.getDestination().getReportId(), nextPosition.getReportId());
+                            // todo increase time?
                             if (timeBetween >= TrackerUtil.duration(10, TrackerUtil.Minute)) {
                                 FlightOps.finish(pilotContext, flight);
 
