@@ -11,12 +11,7 @@ public class PilotOnlineEvent extends PilotEvent {
     }
 
     static {
-        TrackingEventHandler.registry.put(PilotOnlineEvent.class, new EventHandler());
-    }
-
-    private static class EventHandler implements TrackingEventHandler<PilotOnlineEvent> {
-        @Override
-        public void process(PilotContext.ModificationsDelegate delegate, PilotOnlineEvent event) {
+        TrackingEventHandler.registry.put(PilotOnlineEvent.class, (TrackingEventHandler<PilotOnlineEvent>) (delegate, event) -> {
             PilotContext pilotContext = delegate.getPilotContext();
             Position position = pilotContext.getCurrPosition();
 
@@ -43,6 +38,6 @@ public class PilotOnlineEvent extends PilotEvent {
 
                 delegate.startFlight(position);
             }
-        }
+        });
     }
 }

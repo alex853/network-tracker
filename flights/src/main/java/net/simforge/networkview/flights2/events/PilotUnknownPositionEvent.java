@@ -10,12 +10,7 @@ public class PilotUnknownPositionEvent extends PilotEvent {
     }
 
     static {
-        TrackingEventHandler.registry.put(PilotUnknownPositionEvent.class, new EventHandler());
-    }
-
-    private static class EventHandler implements TrackingEventHandler<PilotUnknownPositionEvent> {
-        @Override
-        public void process(PilotContext.ModificationsDelegate delegate, PilotUnknownPositionEvent event) {
+        TrackingEventHandler.registry.put(PilotUnknownPositionEvent.class, (TrackingEventHandler<PilotUnknownPositionEvent>) (delegate, event) -> {
             PilotContext pilotContext = delegate.getPilotContext();
             Position prevPosition = pilotContext.getPrevPosition();
             Position nextPosition = pilotContext.getCurrPosition();
@@ -38,6 +33,6 @@ public class PilotUnknownPositionEvent extends PilotEvent {
                     }
                 }
             }*/
-        }
+        });
     }
 }

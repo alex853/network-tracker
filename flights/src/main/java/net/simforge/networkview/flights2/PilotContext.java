@@ -191,8 +191,51 @@ public class PilotContext {
             collectFlightplan(flight);
         }
 
+        public void finishFlight(Flight flight) {
+            throw new UnsupportedOperationException("ModificationsDelegate.terminateFlight");
+        }
+
+        public void lostFlight(Flight _flight) {
+            FlightImpl flight = (FlightImpl) _flight;
+
+            flight.setStatus(FlightStatus.Lost);
+
+            putMovementStatusEvent(flight);
+        }
+
         public void terminateFlight(Flight flight) {
             throw new UnsupportedOperationException("ModificationsDelegate.terminateFlight");
+        }
+
+        public void takeoff(Flight _flight) {
+            FlightImpl flight = (FlightImpl) _flight;
+
+            Position position = getPilotContext().getCurrPosition();
+
+            flight.setStatus(FlightStatus.Flying);
+            flight.setLastSeen(position);
+
+            // todo processCriteria(flight, position);
+
+            collectFlightplan(flight);
+
+            putMovementStatusEvent(flight);
+        }
+
+        public void landing(Flight _flight) {
+            FlightImpl flight = (FlightImpl) _flight;
+
+            Position position = getPilotContext().getCurrPosition();
+
+            flight.setStatus(FlightStatus.Arrival);
+            flight.setDestination(position);
+            flight.setLastSeen(position);
+
+            // todo processCriteria(flight, position);
+
+            collectFlightplan(flight);
+
+            putMovementStatusEvent(flight);
         }
 
         private void collectFlightplan(FlightImpl flight) {

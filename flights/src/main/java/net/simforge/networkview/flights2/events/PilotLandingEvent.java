@@ -2,6 +2,7 @@ package net.simforge.networkview.flights2.events;
 
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.PilotContext;
+import net.simforge.networkview.flights2.flight.FlightStatus;
 
 public class PilotLandingEvent extends PilotEvent {
     public PilotLandingEvent(int pilotNumber, String report) {
@@ -9,20 +10,15 @@ public class PilotLandingEvent extends PilotEvent {
     }
 
     static {
-        TrackingEventHandler.registry.put(PilotLandingEvent.class, new EventHandler());
-    }
-
-    private static class EventHandler implements TrackingEventHandler<PilotLandingEvent> {
-        @Override
-        public void process(PilotContext.ModificationsDelegate delegate, PilotLandingEvent event) {
+        TrackingEventHandler.registry.put(PilotLandingEvent.class, (TrackingEventHandler<PilotLandingEvent>) (delegate, event) -> {
             PilotContext pilotContext = delegate.getPilotContext();
             Flight flight = pilotContext.getCurrFlight();
 
-            /* todo if (!flight.getStatus().is(FlightStatus.Flying)) {
+            if (!flight.getStatus().is(FlightStatus.Flying)) {
                 throw new IllegalStateException("Landing is not suitable for flight in '" + flight.getStatus() + "' status");
             }
 
-            FlightOps.landing(pilotContext, flight);*/
-        }
+            delegate.landing(flight);
+        });
     }
 }
