@@ -191,8 +191,24 @@ public class PilotContext {
             collectFlightplan(flight);
         }
 
-        public void finishFlight(Flight flight) {
-            throw new UnsupportedOperationException("ModificationsDelegate.terminateFlight");
+        public void finishFlight(Flight _flight) {
+            FlightImpl flight = (FlightImpl) _flight;
+
+            flight.setStatus(FlightStatus.Finished);
+
+            putMovementStatusEvent(flight);
+
+            currFlight = null;
+        }
+
+        public void terminateFlight(Flight _flight) {
+            FlightImpl flight = (FlightImpl) _flight;
+
+            flight.setStatus(FlightStatus.Terminated);
+
+            putMovementStatusEvent(flight);
+
+            currFlight = null;
         }
 
         public void lostFlight(Flight _flight) {
@@ -201,10 +217,6 @@ public class PilotContext {
             flight.setStatus(FlightStatus.Lost);
 
             putMovementStatusEvent(flight);
-        }
-
-        public void terminateFlight(Flight flight) {
-            throw new UnsupportedOperationException("ModificationsDelegate.terminateFlight");
         }
 
         public void takeoff(Flight _flight) {
