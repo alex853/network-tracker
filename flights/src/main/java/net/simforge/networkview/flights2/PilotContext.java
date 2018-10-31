@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PilotContext {
-    private static final int MAX_POSITIONS_IN_MEMORY = 10; // todo cleanup positions!!!111
 
     private final int pilotNumber;
     private final Queue<TrackingEvent> eventsQueue = new LinkedList<>();
