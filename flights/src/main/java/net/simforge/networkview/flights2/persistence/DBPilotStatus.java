@@ -1,10 +1,15 @@
 package net.simforge.networkview.flights2.persistence;
 
-/**
- * Created by User on 26.10.2018.
- */
 public class DBPilotStatus {
-    private Integer pilotNumber;
-    private String lastProcessedReport;
-    private DBFlight currentFlight;
+    private int pilotNumber;
+    private String currReport;
+    private DBFlight currFlight;
+
+    public int getPilotNumber() {
+        return pilotNumber;
+    }
+
+    public void setPilotNumber(int pilotNumber) {
+        this.pilotNumber = pilotNumber;
+    }
 }
