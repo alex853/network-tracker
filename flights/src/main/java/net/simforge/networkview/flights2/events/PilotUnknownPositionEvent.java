@@ -5,14 +5,17 @@ import net.simforge.networkview.flights2.Position;
 
 public class PilotUnknownPositionEvent extends PilotEvent {
 
-    public PilotUnknownPositionEvent(PilotContext pilotContext) {
+    private Position prevPosition;
+
+    public PilotUnknownPositionEvent(PilotContext pilotContext, Position prevPosition) {
         super(pilotContext.getPilotNumber(), pilotContext.getLastProcessedReport(), "pilot/unknown");
+        this.prevPosition = prevPosition;
     }
 
     static {
         TrackingEventHandler.registry.put(PilotUnknownPositionEvent.class, (TrackingEventHandler<PilotUnknownPositionEvent>) (delegate, event) -> {
             PilotContext pilotContext = delegate.getPilotContext();
-            Position prevPosition = pilotContext.getPrevPosition();
+            Position prevPosition = event.prevPosition;
             Position nextPosition = pilotContext.getCurrPosition();
 
             boolean hasEvents = false;

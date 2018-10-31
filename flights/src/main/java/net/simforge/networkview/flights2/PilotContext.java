@@ -19,11 +19,11 @@ public class PilotContext {
     private static final int MAX_POSITIONS_IN_MEMORY = 10; // todo cleanup positions!!!111
 
     private final int pilotNumber;
-    private final List<Position> positions = new LinkedList<>();
     private final Queue<TrackingEvent> eventsQueue = new LinkedList<>();
     private final List<TrackingEvent> recentEvents = new ArrayList<>();
     private final ModificationsDelegate delegate = new ModificationsDelegate();
 
+    private Position currPosition;
     private String lastProcessedReport;
 
     private List<FlightImpl> flights = new ArrayList<>(); // ordered by first seen date/time, last 3 days flights
@@ -65,14 +65,14 @@ public class PilotContext {
         } else {
             position = Position.createOfflinePosition(report);
         }
-        newContext.positions.add(0, position);
+        newContext.currPosition = position;
         newContext.lastProcessedReport = position.getReport();
 
         TrackingEvent event;
         if (reportPilotPosition != null) {
-            event = new PilotKnownPositionEvent(this);
+            event = new PilotKnownPositionEvent(newContext, this.currPosition);
         } else {
-            event = new PilotUnknownPositionEvent(this);
+            event = new PilotUnknownPositionEvent(newContext, this.currPosition);
         }
 
         newContext.delegate.enqueueEvent(event);
@@ -87,17 +87,7 @@ public class PilotContext {
     }
 
     public Position getCurrPosition() {
-        if (positions.isEmpty()) {
-            return null;
-        }
-        return positions.get(0);
-    }
-
-    public Position getPrevPosition() {
-        if (positions.size() < 2) {
-            return null;
-        }
-        return positions.get(1);
+        return currPosition;
     }
 
     public List<Position> getPositions() {
@@ -115,8 +105,8 @@ public class PilotContext {
     private PilotContext makeCopy() {
         PilotContext newContext = new PilotContext(pilotNumber);
 
-        newContext.positions.addAll(positions);
         newContext.eventsQueue.addAll(eventsQueue);
+        newContext.currPosition = currPosition;
         newContext.lastProcessedReport = lastProcessedReport;
 
         newContext.flights = flights.stream().map(FlightImpl::makeCopy).collect(Collectors.toList());
