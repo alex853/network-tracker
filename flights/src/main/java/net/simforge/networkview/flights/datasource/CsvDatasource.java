@@ -103,7 +103,8 @@ public class CsvDatasource implements ReportDatasource {
 
     @Override
     public ReportPilotPosition loadPilotPosition(long reportId, int pilotNumber) throws IOException {
-        throw new UnsupportedOperationException("CsvDatasource.loadPilotPosition");
+        List<ReportPilotPosition> reportPilotPositions = loadPilotPositions(reportId);
+        return reportPilotPositions.stream().filter(p -> p.getPilotNumber() == pilotNumber).findFirst().orElse(null);
     }
 
     @Override

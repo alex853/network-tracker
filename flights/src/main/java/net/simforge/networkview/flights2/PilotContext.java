@@ -106,7 +106,7 @@ public class PilotContext {
         return Collections.unmodifiableList(recentEvents);
     }
 
-    private PilotContext makeCopy() {
+    public PilotContext makeCopy() {
         PilotContext newContext = new PilotContext(pilotNumber);
 
         newContext.eventsQueue.addAll(eventsQueue);
