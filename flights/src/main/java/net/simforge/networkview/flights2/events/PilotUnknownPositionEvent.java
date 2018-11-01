@@ -8,7 +8,7 @@ public class PilotUnknownPositionEvent extends PilotEvent {
     private Position prevPosition;
 
     public PilotUnknownPositionEvent(PilotContext pilotContext, Position prevPosition) {
-        super(pilotContext.getPilotNumber(), pilotContext.getLastProcessedReport(), "pilot/unknown");
+        super(pilotContext.getPilotNumber(), pilotContext.getCurrPosition().getReport(), "pilot/unknown");
         this.prevPosition = prevPosition;
     }
 

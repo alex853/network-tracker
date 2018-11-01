@@ -34,6 +34,15 @@ public enum FlightStatus {
         return false;
     }
 
+    public static FlightStatus byCode(int code) {
+        for (FlightStatus status : values()) {
+            if (status.getCode() == code) {
+                return status;
+            }
+        }
+        return null;
+    }
+
     public int getCode() {
         return code;
     }

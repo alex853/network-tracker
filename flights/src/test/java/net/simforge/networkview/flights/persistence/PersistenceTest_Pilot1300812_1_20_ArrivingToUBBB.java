@@ -24,13 +24,13 @@ public class PersistenceTest_Pilot1300812_1_20_ArrivingToUBBB extends TrackingTe
 
     @Override
     protected void setUp() throws Exception {
-        System.setProperty("simforge.settings", new File(Class.class.getResource("/net/simforge/networkview/flights/persistence/simforge.properties").toURI()).getParentFile().getAbsolutePath());
+//        System.setProperty("simforge.settings", new File(Class.class.getResource("/simforge.properties").toURI()).getParentFile().getAbsolutePath());
 
         sessionFactory = SessionFactoryBuilder
                 .forDatabase("flights")
                 .entities(FlightRecognition.entities)
                 .createSchemaIfNeeded()
-                .build();;
+                .build();
         setStrategy(new PersistenceStrategy(Network.VATSIM, sessionFactory));
 
         InputStream is = Class.class.getResourceAsStream("/snapshots/pilot-1300812_from-1_amount-60.csv");

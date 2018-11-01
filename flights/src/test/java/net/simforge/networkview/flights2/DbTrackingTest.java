@@ -1,11 +1,15 @@
 package net.simforge.networkview.flights2;
 
+import net.simforge.commons.hibernate.SessionFactoryBuilder;
 import net.simforge.commons.io.Csv;
 import net.simforge.commons.io.IOHelper;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.flights.datasource.CsvDatasource;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
+import net.simforge.networkview.flights2.persistence.DBFlight;
 import net.simforge.networkview.flights2.persistence.DBPersistenceLayer;
+import net.simforge.networkview.flights2.persistence.DBPilotStatus;
+import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,8 +26,14 @@ public class DbTrackingTest {
 
     @Test
     public void test() throws IOException {
+        SessionFactory flightsSessionFactory = SessionFactoryBuilder
+                .forDatabase("flights")
+                .entities(new Class[]{DBPilotStatus.class, DBFlight.class})
+                .createSchemaIfNeeded()
+                .build();
+
         ReportDatasource reportDatasource = loadReportDatasource();
-        PersistenceLayer persistenceLayer = new DBPersistenceLayer();
+        PersistenceLayer persistenceLayer = new DBPersistenceLayer(flightsSessionFactory, reportDatasource);
 
         for (int i = 1; i <= 60; i++) {
             MainContext mainContext = new MainContext(reportDatasource, persistenceLayer);

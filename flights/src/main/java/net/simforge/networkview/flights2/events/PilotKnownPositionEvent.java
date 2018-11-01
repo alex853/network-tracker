@@ -10,7 +10,7 @@ public class PilotKnownPositionEvent extends PilotEvent {
     private Position prevPosition;
 
     public PilotKnownPositionEvent(PilotContext pilotContext, Position prevPosition) {
-        super(pilotContext.getPilotNumber(), pilotContext.getLastProcessedReport(), "pilot/known");
+        super(pilotContext.getPilotNumber(), pilotContext.getCurrPosition().getReport(), "pilot/known");
         this.prevPosition = prevPosition;
     }
 

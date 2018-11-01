@@ -6,7 +6,7 @@ import net.simforge.networkview.flights2.PilotContext;
 public class FlightplanEvent extends BaseEvent {
 
     public FlightplanEvent(PilotContext pilotContext, Flight flight) {
-        super(pilotContext.getPilotNumber(), pilotContext.getLastProcessedReport(), "flight/flightplan");
+        super(pilotContext.getPilotNumber(), pilotContext.getCurrPosition().getReport(), "flight/flightplan");
     }
 
     static {

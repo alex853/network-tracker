@@ -8,7 +8,7 @@ public class FlightStatusEvent extends BaseEvent {
     private Flight flight;
 
     public FlightStatusEvent(PilotContext pilotContext, Flight flight) {
-        super(pilotContext.getPilotNumber(), pilotContext.getLastProcessedReport(), "flight/status/" + flight.getStatus().toString());
+        super(pilotContext.getPilotNumber(), pilotContext.getCurrPosition().getReport(), "flight/status/" + flight.getStatus().toString());
         this.flight = flight;
     }
 

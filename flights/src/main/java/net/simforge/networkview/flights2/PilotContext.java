@@ -10,6 +10,7 @@ import net.simforge.networkview.flights2.events.PilotUnknownPositionEvent;
 import net.simforge.networkview.flights2.events.TrackingEvent;
 import net.simforge.networkview.flights2.events.TrackingEventHandler;
 import net.simforge.networkview.flights2.flight.Flight;
+import net.simforge.networkview.flights2.flight.FlightDto;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
 import java.util.*;
@@ -17,16 +18,20 @@ import java.util.stream.Collectors;
 
 public class PilotContext {
 
+    public static final int RECENT_FLIGHTS_TIME_LIMIT_HOURS = 36;
+
     private final int pilotNumber;
     private final Queue<TrackingEvent> eventsQueue = new LinkedList<>();
     private final List<TrackingEvent> recentEvents = new ArrayList<>();
     private final ModificationsDelegate delegate = new ModificationsDelegate();
 
-    private Position currPosition;
-    private String lastProcessedReport;
+    protected Position lastSeenPosition;
+    protected Position currPosition;
 
-    private List<FlightImpl> flights = new ArrayList<>(); // ordered by first seen date/time, last 3 days flights
-    private FlightImpl currFlight; // if any, can be null
+    // ordered by first seen date/time, last 3 days flights
+    // this list does NOT contain currFlight
+    protected List<FlightDto> recentFlights = new ArrayList<>();
+    protected FlightDto currFlight; // if any, can be null
 
 
 
@@ -51,8 +56,8 @@ public class PilotContext {
      * The new context will have updated flights and some changes that have to be persisted.
      */
     public PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
-        if (lastProcessedReport != null
-                && report.getReport().compareTo(lastProcessedReport) <= 0) {
+        if (currPosition != null
+                && report.getReport().compareTo(currPosition.getReport()) <= 0) {
             throw new IllegalArgumentException(); // todo message
         }
 
@@ -61,11 +66,11 @@ public class PilotContext {
         Position position;
         if (reportPilotPosition != null) {
             position = Position.create(reportPilotPosition);
+            newContext.lastSeenPosition = position;
         } else {
             position = Position.createOfflinePosition(report);
         }
         newContext.currPosition = position;
-        newContext.lastProcessedReport = position.getReport();
 
         TrackingEvent event;
         if (reportPilotPosition != null) {
@@ -81,20 +86,20 @@ public class PilotContext {
         return newContext;
     }
 
-    public String getLastProcessedReport() {
-        return lastProcessedReport;
+    public Position getLastSeenPosition() {
+        return lastSeenPosition;
     }
 
     public Position getCurrPosition() {
         return currPosition;
     }
 
-    public List<Position> getPositions() {
-        throw new UnsupportedOperationException("PilotContext.getPositions");
-    }
-
     public Flight getCurrFlight() {
         return currFlight;
+    }
+
+    public List<Flight> getRecentFlights() {
+        return Collections.unmodifiableList(recentFlights);
     }
 
     public List<TrackingEvent> getRecentEvents() {
@@ -106,11 +111,10 @@ public class PilotContext {
 
         newContext.eventsQueue.addAll(eventsQueue);
         newContext.currPosition = currPosition;
-        newContext.lastProcessedReport = lastProcessedReport;
 
-        newContext.flights = flights.stream().map(FlightImpl::makeCopy).collect(Collectors.toList());
+        newContext.recentFlights = recentFlights.stream().map(FlightDto::makeCopy).collect(Collectors.toList());
         if (currFlight != null) {
-            newContext.currFlight = newContext.flights.get(newContext.flights.size() - 1);
+            newContext.currFlight = currFlight.makeCopy();
         }
 
         return newContext;
@@ -145,7 +149,7 @@ public class PilotContext {
         }
 
         public void startFlight(Position firstSeenPosition) {
-            FlightImpl flight = new FlightImpl();
+            FlightDto flight = new FlightDto();
 
             flight.setStatus(firstSeenPosition.isOnGround() ? FlightStatus.Departure : FlightStatus.Flying);
             flight.setFirstSeen(firstSeenPosition);
@@ -158,12 +162,12 @@ public class PilotContext {
 
             putMovementStatusEvent(flight);
 
-            flights.add(flight);
+            // we do not add it to recentFlights list
             currFlight = flight;
         }
 
         public void continueFlight(Flight _flight) {
-            FlightImpl flight = (FlightImpl) _flight;
+            FlightDto flight = (FlightDto) _flight;
 
             Position position = getPilotContext().getCurrPosition();
 
@@ -181,27 +185,29 @@ public class PilotContext {
         }
 
         public void finishFlight(Flight _flight) {
-            FlightImpl flight = (FlightImpl) _flight;
+            FlightDto flight = (FlightDto) _flight;
 
             flight.setStatus(FlightStatus.Finished);
 
             putMovementStatusEvent(flight);
 
+            recentFlights.add(currFlight);
             currFlight = null;
         }
 
         public void terminateFlight(Flight _flight) {
-            FlightImpl flight = (FlightImpl) _flight;
+            FlightDto flight = (FlightDto) _flight;
 
             flight.setStatus(FlightStatus.Terminated);
 
             putMovementStatusEvent(flight);
 
+            recentFlights.add(currFlight);
             currFlight = null;
         }
 
         public void lostFlight(Flight _flight) {
-            FlightImpl flight = (FlightImpl) _flight;
+            FlightDto flight = (FlightDto) _flight;
 
             flight.setStatus(FlightStatus.Lost);
 
@@ -209,7 +215,7 @@ public class PilotContext {
         }
 
         public void takeoff(Flight _flight) {
-            FlightImpl flight = (FlightImpl) _flight;
+            FlightDto flight = (FlightDto) _flight;
 
             Position position = getPilotContext().getCurrPosition();
 
@@ -224,7 +230,7 @@ public class PilotContext {
         }
 
         public void landing(Flight _flight) {
-            FlightImpl flight = (FlightImpl) _flight;
+            FlightDto flight = (FlightDto) _flight;
 
             Position position = getPilotContext().getCurrPosition();
 
@@ -239,7 +245,7 @@ public class PilotContext {
             putMovementStatusEvent(flight);
         }
 
-        private void collectFlightplan(FlightImpl flight) {
+        private void collectFlightplan(FlightDto flight) {
             Position position = getPilotContext().getCurrPosition();
             Flightplan flightplan = flightplanFromPosition(position);
             if (flightplan != null) {
@@ -253,82 +259,6 @@ public class PilotContext {
 
         private void putMovementStatusEvent(Flight flight) {
             enqueueEvent(new FlightStatusEvent(getPilotContext(), flight));
-        }
-    }
-
-    private class FlightImpl implements Flight {
-        private FlightStatus status;
-
-        private Position firstSeen;
-        private Position origin;
-        private Position destination;
-        private Position lastSeen;
-
-        private Flightplan flightplan;
-
-        @Override
-        public FlightStatus getStatus() {
-            return status;
-        }
-
-        public void setStatus(FlightStatus status) {
-            this.status = status;
-        }
-
-        @Override
-        public Position getFirstSeen() {
-            return firstSeen;
-        }
-
-        public void setFirstSeen(Position firstSeen) {
-            this.firstSeen = firstSeen;
-        }
-
-        @Override
-        public Position getOrigin() {
-            return origin;
-        }
-
-        public void setOrigin(Position origin) {
-            this.origin = origin;
-        }
-
-        @Override
-        public Position getDestination() {
-            return destination;
-        }
-
-        public void setDestination(Position destination) {
-            this.destination = destination;
-        }
-
-        @Override
-        public Position getLastSeen() {
-            return lastSeen;
-        }
-
-        public void setLastSeen(Position lastSeen) {
-            this.lastSeen = lastSeen;
-        }
-
-        @Override
-        public Flightplan getFlightplan() {
-            return flightplan;
-        }
-
-        public void setFlightplan(Flightplan flightplan) {
-            this.flightplan = flightplan;
-        }
-
-        public FlightImpl makeCopy() {
-            FlightImpl copy = new FlightImpl();
-            copy.status = status;
-            copy.firstSeen = firstSeen;
-            copy.origin = origin;
-            copy.destination = destination;
-            copy.lastSeen = lastSeen;
-            copy.flightplan = flightplan;
-            return copy;
         }
     }
 
