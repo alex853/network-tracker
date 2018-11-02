@@ -35,8 +35,7 @@ public class RecognizeFlights extends BaseTask {
 
     public RecognizeFlights(Properties properties) {
         super("ProcessFlights-" + properties.getProperty(ARG_NETWORK));
-        // todo properties reading
-        network = Network.VATSIM;
+        network = Network.valueOf(properties.getProperty(ARG_NETWORK));
     }
 
     @Override
@@ -96,7 +95,7 @@ public class RecognizeFlights extends BaseTask {
             marker.setString(lastReport.getReport());
 
             if (reportDatasource.loadNextReport(lastReport.getReport()) != null) {
-                setNextSleepTime(1000);
+                setNextSleepTime(100);
             }
 
         } catch (IOException e) {
