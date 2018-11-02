@@ -16,9 +16,22 @@ public class TrivialDBDatasource implements ReportDatasource {
     }
 
     public Report loadReport(long reportId) throws IOException {
-        BM.start("TrivialDBDatasource.loadReport");
+        BM.start("TrivialDBDatasource.loadReport(long)");
         try {
             return session.byId(Report.class).load(reportId);
+        } finally {
+            BM.stop();
+        }
+    }
+
+    public Report loadReport(String report) throws IOException {
+        BM.start("TrivialDBDatasource.loadReport(String)");
+        try {
+            //noinspection JpaQlInspection
+            return (Report) session
+                    .createQuery("select r from Report r where report = :report")
+                    .setString("report", report)
+                    .uniqueResult();
         } finally {
             BM.stop();
         }
@@ -27,12 +40,20 @@ public class TrivialDBDatasource implements ReportDatasource {
     public Report loadNextReport(String report) throws IOException {
         BM.start("TrivialDBDatasource.loadNextReport");
         try {
-            //noinspection JpaQlInspection
-            return (Report) session
-                    .createQuery("select r from Report r where r.report > :report and r.parsed = true order by r.report asc")
-                    .setString("report", report)
-                    .setMaxResults(1)
-                    .uniqueResult();
+            if (report == null) {
+                //noinspection JpaQlInspection
+                return (Report) session
+                        .createQuery("select r from Report r where r.parsed = true order by r.report asc")
+                        .setMaxResults(1)
+                        .uniqueResult();
+            } else {
+                //noinspection JpaQlInspection
+                return (Report) session
+                        .createQuery("select r from Report r where r.report > :report and r.parsed = true order by r.report asc")
+                        .setString("report", report)
+                        .setMaxResults(1)
+                        .uniqueResult();
+            }
         } finally {
             BM.stop();
         }
@@ -54,6 +75,15 @@ public class TrivialDBDatasource implements ReportDatasource {
 
     @Override
     public List<ReportPilotPosition> loadPilotPositions(long reportId) throws IOException {
-        throw new UnsupportedOperationException("TrivialDBDatasource.loadPilotPositions");
+        BM.start("TrivialDBDatasource.loadPilotPositions");
+        try {
+            //noinspection JpaQlInspection,unchecked
+            return (List<ReportPilotPosition>) session
+                    .createQuery("select p from ReportPilotPosition p where p.report.id = :reportId")
+                    .setLong("reportId", reportId)
+                    .list();
+        } finally {
+            BM.stop();
+        }
     }
 }

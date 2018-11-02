@@ -10,6 +10,8 @@ public interface ReportDatasource {
 
     Report loadReport(long reportId) throws IOException;
 
+    Report loadReport(String report) throws IOException;
+
     /**
      *
      * @param report timestamp of previous report, or null if we need to load "first" report from timeline

@@ -117,6 +117,11 @@ public class SinglePilotDBDatasource implements ReportDatasource {
     }
 
     @Override
+    public Report loadReport(String report) throws IOException {
+        return null;
+    }
+
+    @Override
     public Report loadNextReport(String report) throws IOException {
         if (report == null) {
             return !reports.isEmpty() ? reports.get(0) : null;

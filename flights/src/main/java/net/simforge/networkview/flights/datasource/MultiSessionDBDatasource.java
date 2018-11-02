@@ -20,6 +20,11 @@ public class MultiSessionDBDatasource implements ReportDatasource {
     }
 
     @Override
+    public Report loadReport(String report) throws IOException {
+        return null;
+    }
+
+    @Override
     public Report loadNextReport(String report) throws IOException {
         throw new UnsupportedOperationException("MultiSessionDBDatasource.loadNextReport");
     }

@@ -22,9 +22,19 @@ public class DBReportDatasource implements ReportDatasource2 {
 
     @Override
     public Report loadReport(long reportId) throws IOException {
-        BM.start("DBReportDatasource.loadReport");
+        BM.start("DBReportDatasource.loadReport(long)");
         try (Session session = sessionManager.getSession(network)) {
             return new TrivialDBDatasource(session).loadReport(reportId);
+        } finally {
+            BM.stop();
+        }
+    }
+
+    @Override
+    public Report loadReport(String report) throws IOException {
+        BM.start("DBReportDatasource.loadReport(String)");
+        try (Session session = sessionManager.getSession(network)) {
+            return new TrivialDBDatasource(session).loadReport(report);
         } finally {
             BM.stop();
         }

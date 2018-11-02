@@ -85,6 +85,11 @@ public class CsvDatasource implements ReportDatasource {
     }
 
     @Override
+    public Report loadReport(String report) throws IOException {
+        throw new UnsupportedOperationException("CsvDatasource.loadReport");
+    }
+
+    @Override
     public Report loadNextReport(String report) throws IOException {
         if (report == null) {
             return !reports.isEmpty() ? reports.get(0) : null;
