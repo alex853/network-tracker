@@ -1,5 +1,7 @@
 package net.simforge.networkview.flights2;
 
+import net.simforge.networkview.datafeeder.persistence.Report;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public class NoOpPersistenceLayer implements PersistenceLayer {
     }
 
     @Override
-    public PilotContext createContext(int pilotNumber) {
+    public PilotContext createContext(int pilotNumber, Report seenReport) {
         return new PilotContext(pilotNumber);
     }
 

@@ -1,5 +1,6 @@
 package net.simforge.networkview.flights2;
 
+import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.model.Flightplan;
@@ -47,8 +48,16 @@ public class PilotContext {
         return pilotNumber;
     }
 
-    public boolean isActive() {
-        return true; // todo think about it!
+    public boolean isActive(Report report) {
+        if (lastSeenPosition == null) {
+            return false;
+        }
+
+        if (lastSeenPosition.getDt().isBefore(ReportUtils.fromTimestampJava(report.getReport()).minusHours(RECENT_FLIGHTS_TIME_LIMIT_HOURS))) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -56,9 +65,14 @@ public class PilotContext {
      * The new context will have updated flights and some changes that have to be persisted.
      */
     public PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
-        if (currPosition != null
-                && report.getReport().compareTo(currPosition.getReport()) <= 0) {
-            throw new IllegalArgumentException(); // todo message
+        if (currPosition != null) {
+            int comparison = report.getReport().compareTo(currPosition.getReport());
+            if (comparison < 0) {
+                throw new IllegalArgumentException(); // todo message
+            } else if (comparison == 0) {
+                // todo logger.warn("The report {} is already processed for pilot {}", ....);
+                return this;
+            }
         }
 
         PilotContext newContext = this.makeCopy();

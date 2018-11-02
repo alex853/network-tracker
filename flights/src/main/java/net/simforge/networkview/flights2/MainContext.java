@@ -29,72 +29,100 @@ public class MainContext {
     }
 
     public void loadActivePilotContexts() throws IOException {
-        if (lastReport == null) {
-            return; // nothing to do
+        BM.start("MainContext.loadActivePilotContexts");
+        try {
+
+            if (lastReport == null) {
+                return; // nothing to do
+            }
+            List<PilotContext> loadedPilotContexts = persistenceLayer.loadActivePilotContexts(ReportUtils.fromTimestampJava(lastReport.getReport()));
+            loadedPilotContexts.stream().forEach(this::processMissingPositions);
+            pilotContexts = loadedPilotContexts.stream().collect(toMap(PilotContext::getPilotNumber, Function.identity()));
+
+        } finally {
+            BM.stop();
         }
-        List<PilotContext> loadedPilotContexts = persistenceLayer.loadActivePilotContexts(ReportUtils.fromTimestampJava(lastReport.getReport()));
-        loadedPilotContexts.stream().forEach(this::processMissingPositions);
-        pilotContexts = loadedPilotContexts.stream().collect(toMap(PilotContext::getPilotNumber, Function.identity()));
     }
 
-    public int processReports(int maxReports) throws IOException { // todo BM
-        int processedReports = 0;
-        while (processedReports < maxReports) {
-            Report report = reportDatasource.loadNextReport(lastReport != null ? lastReport.getReport() : null);
-            if (report == null) {
-                logger.info("Next report is not found");
-                break;
-            }
+    public int processReports(int maxReports) throws IOException {
+        BM.start("MainContext.processReports");
+        try {
 
-            logger.info("Processing report {} (id {})...", report.getReport(), report.getId());
+            int processedReports = 0;
+            while (processedReports < maxReports) {
+                Report report = reportDatasource.loadNextReport(lastReport != null ? lastReport.getReport() : null);
+                if (report == null) {
+                    logger.info("There is no any report to process");
+                    break;
+                }
 
-            List<ReportPilotPosition> pilotPositions = reportDatasource.loadPilotPositions(report.getId());
+                logger.info("Processing report {} (id {})...", report.getReport(), report.getId());
 
-            Map<Integer, PilotContext> newPilotContexts = new HashMap<>();
+                List<ReportPilotPosition> pilotPositions = reportDatasource.loadPilotPositions(report.getId());
 
-            for (ReportPilotPosition pilotPosition : pilotPositions) {
-                int pilotNumber = pilotPosition.getPilotNumber();
+                Map<Integer, PilotContext> newPilotContexts = new HashMap<>();
 
-                PilotContext pilotContext = pilotContexts.get(pilotNumber);
-                if (pilotContext == null) {
-                    pilotContext = persistenceLayer.loadContext(pilotNumber);
-                    if (pilotContext != null) {
-                        processMissingPositions(pilotContext);
-                    } else {
-                        pilotContext = persistenceLayer.createContext(pilotNumber);
+                BM.start("MainContext.processReports/online");
+                try {
+
+                    for (ReportPilotPosition pilotPosition : pilotPositions) {
+                        int pilotNumber = pilotPosition.getPilotNumber();
+
+                        PilotContext pilotContext = pilotContexts.get(pilotNumber);
+                        if (pilotContext == null) {
+                            pilotContext = persistenceLayer.loadContext(pilotNumber);
+                            if (pilotContext != null) {
+                                processMissingPositions(pilotContext);
+                            } else {
+                                pilotContext = persistenceLayer.createContext(pilotNumber, report);
+                            }
+                        }
+
+                        PilotContext dirtyPilotContext = pilotContext.processPosition(report, pilotPosition);
+                        PilotContext newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+
+                        if (newPilotContext.isActive(report)) {
+                            newPilotContexts.put(pilotNumber, newPilotContext);
+                        }
                     }
+
+                } finally {
+                    BM.stop();
                 }
 
-                PilotContext dirtyPilotContext = pilotContext.processPosition(report, pilotPosition);
-                PilotContext newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                BM.start("MainContext.processReports/offline");
+                try {
 
-                if (newPilotContext.isActive()) {
-                    newPilotContexts.put(pilotNumber, newPilotContext);
+                    Set<Integer> pilotNumbersWithoutPositions = new TreeSet<>(pilotContexts.keySet());
+                    pilotNumbersWithoutPositions.removeAll(newPilotContexts.keySet());
+
+                    for (Integer pilotNumber : pilotNumbersWithoutPositions) {
+                        PilotContext pilotContext = pilotContexts.get(pilotNumber);
+
+                        PilotContext dirtyPilotContext = pilotContext.processPosition(report, null);
+                        PilotContext newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+
+                        if (newPilotContext.isActive(report)) {
+                            newPilotContexts.put(pilotNumber, newPilotContext);
+                        }
+                    }
+
+                } finally {
+                    BM.stop();
                 }
+
+                pilotContexts = newPilotContexts;
+
+                processedReports++;
+
+                lastReport = report;
             }
 
-            Set<Integer> pilotNumbersWithoutPositions = new TreeSet<>(pilotContexts.keySet());
-            pilotNumbersWithoutPositions.removeAll(newPilotContexts.keySet());
+            return processedReports;
 
-            for (Integer pilotNumber : pilotNumbersWithoutPositions) {
-                PilotContext pilotContext = pilotContexts.get(pilotNumber);
-
-                PilotContext dirtyPilotContext = pilotContext.processPosition(report, null);
-                PilotContext newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
-
-                if (newPilotContext.isActive()) {
-                    newPilotContexts.put(pilotNumber, newPilotContext);
-                }
-            }
-
-            pilotContexts = newPilotContexts;
-
-            processedReports++;
-
-            lastReport = report;
+        } finally {
+            BM.stop();
         }
-
-        return processedReports;
     }
 
     private void processMissingPositions(PilotContext pilotContext) {
@@ -102,7 +130,7 @@ public class MainContext {
         try {
             Position lastProcessedPosition = pilotContext.getCurrPosition();
 
-            if (lastProcessedPosition.getReportId() == lastReport.getId()) {
+            if (lastReport == null || lastProcessedPosition.getReportId() >= lastReport.getId()) {
                 return;
             }
 

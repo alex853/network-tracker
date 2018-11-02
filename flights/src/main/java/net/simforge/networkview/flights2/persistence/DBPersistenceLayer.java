@@ -2,6 +2,8 @@ package net.simforge.networkview.flights2.persistence;
 
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
+import net.simforge.networkview.datafeeder.ReportUtils;
+import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights.model.Flightplan;
@@ -52,7 +54,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
     }
 
     @Override
-    public PilotContext createContext(int pilotNumber) {
+    public PilotContext createContext(int pilotNumber, Report report) {
         BM.start("DBPersistenceLayer.createContext");
         try (Session session = sessionFactory.openSession()) {
             DBPilotStatus dbPilotStatus = loadPilotStatus(session, pilotNumber);
@@ -63,6 +65,10 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
             dbPilotStatus = new DBPilotStatus();
             dbPilotStatus.setPilotNumber(pilotNumber);
+            dbPilotStatus.setLastSeenReportId(report.getId());
+            dbPilotStatus.setLastSeenDt(ReportUtils.fromTimestampJava(report.getReport()));
+            dbPilotStatus.setLastProcessedReportId(report.getId());
+            dbPilotStatus.setLastProcessedDt(ReportUtils.fromTimestampJava(report.getReport()));
 
             HibernateUtils.saveAndCommit(session, dbPilotStatus);
 
@@ -222,7 +228,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
             if (dbFlight.getArrivalReportId() != null) {
                 flight.setDestination(Position.create(reportDatasource.loadPilotPosition(dbFlight.getArrivalReportId(), pilotNumber)));
             }
-            Flightplan flightplan = new Flightplan(dbFlight.getAircraftType(), dbFlight.getPlannedOrigin(), dbFlight.getPlannedDestination());
+            Flightplan flightplan = new Flightplan(dbFlight.getAircraftType(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination());
             flight.setFlightplan(flightplan);
             return flight;
         } catch (IOException e) {
@@ -236,7 +242,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
     private void toDbFlight(DBFlight dbFlight, int pilotNumber, FlightDto flight) {
         BM.start("DBPersistenceLayer.toDbFlight");
         try {
-            dbFlight.setNetwork(null); // todo
+            //dbFlight.setNetwork(null);
             dbFlight.setPilotNumber(pilotNumber);
 
             dbFlight.setCallsign("TODO"); // todo AK
@@ -244,11 +250,11 @@ public class DBPersistenceLayer implements PersistenceLayer {
             Flightplan flightplan = flight.getFlightplan();
             if (flightplan != null) {
                 dbFlight.setAircraftType(flightplan.getAircraft());
-                dbFlight.setPlannedOrigin(flightplan.getOrigin());
+                dbFlight.setPlannedDeparture(flightplan.getOrigin());
                 dbFlight.setPlannedDestination(flightplan.getDestination());
             } else {
                 dbFlight.setAircraftType(null);
-                dbFlight.setPlannedOrigin(null);
+                dbFlight.setPlannedDeparture(null);
                 dbFlight.setPlannedDestination(null);
             }
 
@@ -303,11 +309,16 @@ public class DBPersistenceLayer implements PersistenceLayer {
         DBLoadedPilotContext pilotContext = new DBLoadedPilotContext(pilotNumber);
 
         Long lastSeenReportId = dbPilotStatus.getLastSeenReportId();
+        Long lastProcessedReportId = dbPilotStatus.getLastProcessedReportId();
+
+        if (lastSeenReportId == null || lastProcessedReportId == null) {
+            return pilotContext;
+        }
+
         ReportPilotPosition lastSeenReportPilotPosition = reportDatasource.loadPilotPosition(lastSeenReportId, pilotNumber);
         Position lastSeenPosition = Position.create(lastSeenReportPilotPosition);
         pilotContext.setLastSeenPosition(lastSeenPosition);
 
-        Long lastProcessedReportId = dbPilotStatus.getLastProcessedReportId();
         ReportPilotPosition lastProcessedPilotPosition = reportDatasource.loadPilotPosition(lastProcessedReportId, pilotNumber);
         Position lastProcessedPosition = lastProcessedPilotPosition != null ? Position.create(lastProcessedPilotPosition) : Position.createOfflinePosition(reportDatasource.loadReport(lastProcessedReportId));
         pilotContext.setCurrPosition(lastProcessedPosition);

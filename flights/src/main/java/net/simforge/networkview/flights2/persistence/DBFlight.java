@@ -24,7 +24,7 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     @Column(name = "modify_dt")
     private LocalDateTime modifyDt;
 
-    private Integer network;
+//    private Integer network;
     @Column(name = "pilot_number")
     private Integer pilotNumber;
 
@@ -33,8 +33,8 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     private String aircraftType;
     @Column(name = "reg_no")
     private String regNo;
-    @Column(name = "planned_origin")
-    private String plannedOrigin;
+    @Column(name = "planned_departure")
+    private String plannedDeparture;
     @Column(name = "planned_destination")
     private String plannedDestination;
 
@@ -116,7 +116,7 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
         return modifyDt;
     }
 
-    public Network getNetwork() {
+/*    public Network getNetwork() {
         switch (network) {
             case 1: return Network.VATSIM;
             case 2: return Network.IVAO;
@@ -130,7 +130,7 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
         } else {
             this.network = null;
         }
-    }
+    }*/
 
     public Integer getPilotNumber() {
         return pilotNumber;
@@ -164,12 +164,12 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
         this.aircraftType = aircraftType;
     }
 
-    public String getPlannedOrigin() {
-        return plannedOrigin;
+    public String getPlannedDeparture() {
+        return plannedDeparture;
     }
 
-    public void setPlannedOrigin(String plannedOrigin) {
-        this.plannedOrigin = plannedOrigin;
+    public void setPlannedDeparture(String plannedDeparture) {
+        this.plannedDeparture = plannedDeparture;
     }
 
     public String getPlannedDestination() {

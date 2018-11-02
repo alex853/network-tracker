@@ -2,6 +2,7 @@ package net.simforge.networkview.flights2;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Str;
+import net.simforge.networkview.datafeeder.ParsingLogics;
 import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
@@ -64,11 +65,21 @@ public class Position {
                 && nearestAirport.isWithinBoundary(result.coords);
         result.airportIcao = result.inAirport ? nearestAirport.getIcao() : null;
 
-        result.fpAircraftType = reportPilotPosition.getFpAircraft();
-        result.fpOrigin = reportPilotPosition.getFpOrigin();
-        result.fpDestination = reportPilotPosition.getFpDestination();
+        result.fpAircraftType = limit10(ParsingLogics.parseAircraftType(reportPilotPosition.getFpAircraft()));
+        result.fpOrigin = limit10(reportPilotPosition.getFpOrigin());
+        result.fpDestination = limit10(reportPilotPosition.getFpDestination());
 
         return result;
+    }
+
+    private static String limit10(String s) {
+        if (s == null) {
+            return null;
+        }
+        if (s.length() <= 10) {
+            return s;
+        }
+        return s.substring(0, 10);
     }
 
 /*    public static Position createOfflinePosition() {

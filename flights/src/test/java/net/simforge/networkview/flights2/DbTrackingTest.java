@@ -149,6 +149,7 @@ public class DbTrackingTest {
 
     private void checkFlightsCount(int expectedCount) {
         try (Session session = flightsSessionFactory.openSession()) {
+            //noinspection JpaQlInspection
             Long actualCount = (Long) session
                     .createQuery("select count(f) from Flight f where pilotNumber = :pilotNumber")
                     .setInteger("pilotNumber", pilotNumber)
