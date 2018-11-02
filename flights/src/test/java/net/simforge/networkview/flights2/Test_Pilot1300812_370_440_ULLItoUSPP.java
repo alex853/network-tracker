@@ -26,7 +26,7 @@ public class Test_Pilot1300812_370_440_ULLItoUSPP extends TrackingTest {
 
     public void report_375() {
         checkFlightFlightplanEvent();
-        checkFlightFlightplanData("A320/G", "ULLI", "USPP");
+        checkFlightFlightplanData("A320", "ULLI", "USPP");
     }
 
     public void report_380() {
