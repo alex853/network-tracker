@@ -35,9 +35,26 @@ public class MainContext {
             if (lastReport == null) {
                 return; // nothing to do
             }
+
+            logger.info("Loading pilot contexts...");
             List<PilotContext> loadedPilotContexts = persistenceLayer.loadActivePilotContexts(ReportUtils.fromTimestampJava(lastReport.getReport()));
-            loadedPilotContexts.stream().forEach(this::processMissingPositions);
-            pilotContexts = loadedPilotContexts.stream().collect(toMap(PilotContext::getPilotNumber, Function.identity()));
+            logger.info("Loaded {} pilot contexts, processing missing positions.....", loadedPilotContexts.size());
+
+            long lastDt = System.currentTimeMillis();
+            int done = 0;
+            for (PilotContext loadedPilotContext : loadedPilotContexts) {
+                PilotContext pilotContext = processMissingPositions(loadedPilotContext);
+                pilotContexts.put(pilotContext.getPilotNumber(), pilotContext);
+                done++;
+
+                long now = System.currentTimeMillis();
+                if (now - lastDt > 10000) {
+                    logger.info("    {} % done", Math.round((100.0 * done) / loadedPilotContexts.size()));
+                    lastDt = now;
+                }
+            }
+
+            logger.info("All done");
 
         } finally {
             BM.stop();
@@ -72,14 +89,20 @@ public class MainContext {
                         if (pilotContext == null) {
                             pilotContext = persistenceLayer.loadContext(pilotNumber);
                             if (pilotContext != null) {
-                                processMissingPositions(pilotContext);
+                                pilotContext = processMissingPositions(pilotContext);
                             } else {
                                 pilotContext = persistenceLayer.createContext(pilotNumber, report);
                             }
                         }
 
                         PilotContext dirtyPilotContext = pilotContext.processPosition(report, pilotPosition);
-                        PilotContext newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+
+                        PilotContext newPilotContext;
+                        if (dirtyPilotContext.isDirty()) {
+                            newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                        } else {
+                            newPilotContext = dirtyPilotContext;
+                        }
 
                         if (newPilotContext.isActive(report)) {
                             newPilotContexts.put(pilotNumber, newPilotContext);
@@ -100,7 +123,13 @@ public class MainContext {
                         PilotContext pilotContext = pilotContexts.get(pilotNumber);
 
                         PilotContext dirtyPilotContext = pilotContext.processPosition(report, null);
-                        PilotContext newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+
+                        PilotContext newPilotContext;
+                        if (dirtyPilotContext.isDirty() || !dirtyPilotContext.isActive(report) || Math.random() < 0.02) { // todo Math.random() < ... has to be replaced by counter in PilotContext
+                            newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                        } else {
+                            newPilotContext = dirtyPilotContext;
+                        }
 
                         if (newPilotContext.isActive(report)) {
                             newPilotContexts.put(pilotNumber, newPilotContext);
@@ -125,13 +154,13 @@ public class MainContext {
         }
     }
 
-    private void processMissingPositions(PilotContext pilotContext) {
+    private PilotContext processMissingPositions(PilotContext pilotContext) {
         BM.start("MainContext.processMissingPositions");
         try {
             Position lastProcessedPosition = pilotContext.getCurrPosition();
 
             if (lastReport == null || lastProcessedPosition.getReportId() >= lastReport.getId()) {
-                return;
+                return pilotContext;
             }
 
             Report currReport = reportDatasource.loadReport(lastProcessedPosition.getReportId());
@@ -143,11 +172,20 @@ public class MainContext {
                 }
 
                 ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(currReport.getId(), pilotContext.getPilotNumber());
-                pilotContext.processPosition(currReport, reportPilotPosition);
 
-                if (currReport.getId().equals(lastReport.getId())) {
+                PilotContext dirtyPilotContext = pilotContext.processPosition(currReport, reportPilotPosition);
+
+                boolean stopNow = currReport.getId().equals(lastReport.getId());
+
+                if (dirtyPilotContext.isDirty() || stopNow) {
+                    pilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                } else {
+                    pilotContext = dirtyPilotContext;
+                }
+
+                if (stopNow) {
                     // yeah, we've done!
-                    return;
+                    break;
                 }
             }
         } catch (IOException e) {
@@ -155,6 +193,8 @@ public class MainContext {
         } finally {
             BM.stop();
         }
+
+        return pilotContext;
     }
 
     public Report getLastReport() {

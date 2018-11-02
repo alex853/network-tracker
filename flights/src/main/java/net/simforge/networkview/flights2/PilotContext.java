@@ -34,11 +34,7 @@ public class PilotContext {
     protected List<FlightDto> recentFlights = new ArrayList<>();
     protected FlightDto currFlight; // if any, can be null
 
-
-
-
-    private List<Object> changes; // changes to persist
-
+    private boolean dirty = false;
 
     public PilotContext(int pilotNumber) {
         this.pilotNumber = pilotNumber;
@@ -81,10 +77,13 @@ public class PilotContext {
         if (reportPilotPosition != null) {
             position = Position.create(reportPilotPosition);
             newContext.lastSeenPosition = position;
+            newContext.currPosition = position;
+            newContext.dirty = true;
         } else {
             position = Position.createOfflinePosition(report);
+            newContext.currPosition = position;
+            // we do not mark it as dirty! it allows to skip unnecessary DB updates
         }
-        newContext.currPosition = position;
 
         TrackingEvent event;
         if (reportPilotPosition != null) {
@@ -118,6 +117,10 @@ public class PilotContext {
 
     public List<TrackingEvent> getRecentEvents() {
         return Collections.unmodifiableList(recentEvents);
+    }
+
+    public boolean isDirty() {
+        return dirty;
     }
 
     public PilotContext makeCopy() {
@@ -179,6 +182,8 @@ public class PilotContext {
 
             // we do not add it to recentFlights list
             currFlight = flight;
+
+            dirty = true;
         }
 
         public void continueFlight(Flight _flight) {
@@ -197,6 +202,8 @@ public class PilotContext {
             // todo processCriteria(flight, position);
 
             collectFlightplan(flight);
+
+            dirty = true;
         }
 
         public void finishFlight(Flight _flight) {
@@ -208,6 +215,8 @@ public class PilotContext {
 
             recentFlights.add(currFlight);
             currFlight = null;
+
+            dirty = true;
         }
 
         public void terminateFlight(Flight _flight) {
@@ -219,6 +228,8 @@ public class PilotContext {
 
             recentFlights.add(currFlight);
             currFlight = null;
+
+            dirty = true;
         }
 
         public void lostFlight(Flight _flight) {
@@ -227,6 +238,8 @@ public class PilotContext {
             flight.setStatus(FlightStatus.Lost);
 
             putMovementStatusEvent(flight);
+
+            dirty = true;
         }
 
         public void takeoff(Flight _flight) {
@@ -242,6 +255,8 @@ public class PilotContext {
             collectFlightplan(flight);
 
             putMovementStatusEvent(flight);
+
+            dirty = true;
         }
 
         public void landing(Flight _flight) {
@@ -258,6 +273,8 @@ public class PilotContext {
             collectFlightplan(flight);
 
             putMovementStatusEvent(flight);
+
+            dirty = true;
         }
 
         private void collectFlightplan(FlightDto flight) {

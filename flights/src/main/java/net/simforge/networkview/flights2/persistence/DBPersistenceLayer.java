@@ -1,5 +1,6 @@
 package net.simforge.networkview.flights2.persistence;
 
+import com.google.common.base.Preconditions;
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
 import net.simforge.networkview.datafeeder.ReportUtils;
@@ -323,13 +324,13 @@ public class DBPersistenceLayer implements PersistenceLayer {
         Position lastProcessedPosition = lastProcessedPilotPosition != null ? Position.create(lastProcessedPilotPosition) : Position.createOfflinePosition(reportDatasource.loadReport(lastProcessedReportId));
         pilotContext.setCurrPosition(lastProcessedPosition);
 
-        List<DBFlight> dbFlights = loadRecentPilotFlights(session, pilotNumber, lastSeenPosition.getDt());
+        List<DBFlight> dbFlights = loadRecentPilotFlights(session, pilotNumber, lastSeenPosition.getDt()); // todo set lastProcessedPosition
         List<FlightDto> flights = dbFlights.stream().map(this::fromDbFlight).collect(toList());
 
         DBFlight dbCurrFlight = dbPilotStatus.getCurrFlight();
         if (dbCurrFlight != null) {
             FlightDto lastFlight = flights.get(flights.size() - 1);
-            // todo Preconditions.checkArgument(lastFlight.getId() == dbCurrFlight.getId());
+            Preconditions.checkArgument(lastFlight.getFirstSeen().getReportId() == dbCurrFlight.getFirstSeenReportId());
             flights.remove(flights.size() - 1);
             pilotContext.setCurrFlight(lastFlight);
         }
