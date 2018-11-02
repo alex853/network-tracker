@@ -48,7 +48,7 @@ public class ProcessFlights extends BaseTask {
         setBaseSleepTime(interval * 1000L);
 
         mainContext = new MainContext(null, null); // todo
-        mainContext.loadActivePilotContexts();
+        // todo mainContext.loadActivePilotContexts();
     }
 
     @Override

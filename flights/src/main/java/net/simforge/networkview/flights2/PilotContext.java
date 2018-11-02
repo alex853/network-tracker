@@ -111,6 +111,7 @@ public class PilotContext {
 
         newContext.eventsQueue.addAll(eventsQueue);
         newContext.currPosition = currPosition;
+        newContext.lastSeenPosition = lastSeenPosition;
 
         newContext.recentFlights = recentFlights.stream().map(FlightDto::makeCopy).collect(Collectors.toList());
         if (currFlight != null) {

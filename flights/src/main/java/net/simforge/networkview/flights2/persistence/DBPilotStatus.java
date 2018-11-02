@@ -31,6 +31,11 @@ public class DBPilotStatus implements BaseEntity, Auditable {
     @Column(name = "last_seen_dt")
     private LocalDateTime lastSeenDt;
 
+    @Column(name = "last_processed_report_id")
+    private Long lastProcessedReportId;
+    @Column(name = "last_processed_dt")
+    private LocalDateTime lastProcessedDt;
+
     @ManyToOne
     @JoinColumn(name = "curr_flight_id")
     private DBFlight currFlight;
@@ -87,6 +92,22 @@ public class DBPilotStatus implements BaseEntity, Auditable {
 
     public void setLastSeenDt(LocalDateTime lastSeenDt) {
         this.lastSeenDt = lastSeenDt;
+    }
+
+    public Long getLastProcessedReportId() {
+        return lastProcessedReportId;
+    }
+
+    public void setLastProcessedReportId(Long lastProcessedReportId) {
+        this.lastProcessedReportId = lastProcessedReportId;
+    }
+
+    public LocalDateTime getLastProcessedDt() {
+        return lastProcessedDt;
+    }
+
+    public void setLastProcessedDt(LocalDateTime lastProcessedDt) {
+        this.lastProcessedDt = lastProcessedDt;
     }
 
     public DBFlight getCurrFlight() {

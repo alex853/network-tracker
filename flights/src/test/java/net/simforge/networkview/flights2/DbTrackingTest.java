@@ -49,6 +49,8 @@ public class DbTrackingTest {
             MainContext mainContext = new MainContext(reportDatasource, persistenceLayer);
 
             mainContext.setLastReport(report);
+            mainContext.loadActivePilotContexts();
+
             mainContext.processReports(1);
             report = mainContext.getLastReport();
 
@@ -122,11 +124,24 @@ public class DbTrackingTest {
         checkCurrFlightRoute("EKCH", null);
     }
 
-    public void report_19() throws IOException {
+    public void report_19_37() throws IOException {
         checkFlightsCount(1);
         checkCurrFlightStatus(FlightStatus.Flying);
         checkCurrFlightRoute("EKCH", null);
     }
+
+    public void report_37() throws IOException {
+        checkFlightsCount(1);
+    }
+
+    public void report_38_60() throws IOException {
+        checkFlightsCount(1);
+        checkCurrFlightStatus(FlightStatus.Lost);
+        checkCurrFlightRoute("EKCH", null);
+    }
+
+
+
 
     private void checkNoPilotContext() throws IOException {
         assertNull(persistenceLayer.loadContext(pilotNumber));

@@ -2,8 +2,6 @@ package net.simforge.networkview.flights2.persistence;
 
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
-import net.simforge.commons.misc.JavaTime;
-import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights.model.Flightplan;
@@ -17,9 +15,7 @@ import org.hibernate.SessionFactory;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -32,6 +28,27 @@ public class DBPersistenceLayer implements PersistenceLayer {
     public DBPersistenceLayer(SessionFactory sessionFactory, ReportDatasource reportDatasource) {
         this.sessionFactory = sessionFactory;
         this.reportDatasource = reportDatasource;
+    }
+
+    @Override
+    public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) throws IOException {
+        BM.start("DBPersistenceLayer.loadActivePilotContexts");
+        try (Session session = sessionFactory.openSession()) {
+            //noinspection unchecked,JpaQlInspection
+            List<DBPilotStatus> dbPilotStatuses = session
+                    .createQuery("select ps from PilotStatus ps where lastSeenDt >= :threshold")
+                    .setParameter("threshold", lastProcessedReportDt.minusHours(PilotContext.RECENT_FLIGHTS_TIME_LIMIT_HOURS))
+                    .list();
+
+            List<PilotContext> pilotContexts = new ArrayList<>();
+            for (DBPilotStatus dbPilotStatus : dbPilotStatuses) {
+                pilotContexts.add(toPilotContext(session, dbPilotStatus.getPilotNumber(), dbPilotStatus));
+            }
+
+            return pilotContexts;
+        } finally {
+            BM.stop();
+        }
     }
 
     @Override
@@ -65,26 +82,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 return null;
             }
 
-            Long lastSeenReportId = dbPilotStatus.getLastSeenReportId();
-            ReportPilotPosition lastSeenReportPilotPosition = reportDatasource.loadPilotPosition(lastSeenReportId, pilotNumber);
-            Position lastSeenPosition = Position.create(lastSeenReportPilotPosition);
-
-            DBLoadedPilotContext pilotContext = new DBLoadedPilotContext(pilotNumber);
-            pilotContext.setLastSeenPosition(lastSeenPosition);
-
-            List<DBFlight> dbFlights = loadRecentPilotFlights(session, pilotNumber, lastSeenPosition.getDt());
-            List<FlightDto> flights = dbFlights.stream().map(this::fromDbFlight).collect(toList());
-
-            DBFlight dbCurrFlight = dbPilotStatus.getCurrFlight();
-            if (dbCurrFlight != null) {
-                FlightDto lastFlight = flights.get(flights.size() - 1);
-                // todo Preconditions.checkArgument(lastFlight.getId() == dbCurrFlight.getId());
-                flights.remove(flights.size() - 1);
-                pilotContext.setCurrFlight(lastFlight);
-            }
-            pilotContext.setRecentFlights(flights);
-
-            return pilotContext;
+            return toPilotContext(session, pilotNumber, dbPilotStatus);
         } finally {
             BM.stop();
         }
@@ -102,16 +100,25 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
                 List<FlightDto> dirtyFlightsList = recentFlights.stream().filter(FlightDto::isDirty).collect(toList());
                 FlightDto currFlight = (FlightDto) pilotContext.getCurrFlight();
-                if (currFlight != null && currFlight.isDirty()) {
+                if (currFlight != null) {
                     dirtyFlightsList.add(currFlight);
                 }
 
-                List<DBFlight> loadedDbFlights = loadDbFlightsByFirstSeenReportId(session, pilotContext.getPilotNumber(), dirtyFlightsList);
+                List<DBFlight> loadedDbFlights = !dirtyFlightsList.isEmpty()
+                        ? loadDbFlightsByFirstSeenReportId(session, pilotContext.getPilotNumber(), dirtyFlightsList)
+                        : Collections.EMPTY_LIST;
                 Map<Long, DBFlight> loadedDbFlightsMap = loadedDbFlights.stream().collect(Collectors.toMap(DBFlight::getFirstSeenReportId, Function.identity()));
 
                 Iterator<FlightDto> it = dirtyFlightsList.iterator();
                 while (it.hasNext()) {
                     FlightDto flightDto = it.next();
+
+                    if (!flightDto.isDirty()) {
+                        // we put currFlight to dirty list but if the currFlight is not changed there is no need to update it
+                        it.remove();
+                        continue;
+                    }
+
                     DBFlight dbFlight = loadedDbFlightsMap.get(flightDto.getFirstSeen().getReportId());
                     if (dbFlight == null) {
                         continue; // it seems we have new flight
@@ -137,6 +144,9 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 Position lastSeenPosition = pilotContext.getLastSeenPosition();
                 dbPilotStatus.setLastSeenReportId(lastSeenPosition.getReportId());
                 dbPilotStatus.setLastSeenDt(lastSeenPosition.getDt());
+                Position lastProcessedPosition = pilotContext.getCurrPosition();
+                dbPilotStatus.setLastProcessedReportId(lastProcessedPosition.getReportId());
+                dbPilotStatus.setLastProcessedDt(lastProcessedPosition.getDt());
 
                 if (currFlight != null) {
                     DBFlight currDbFlight = loadedDbFlightsMap.get(currFlight.getFirstSeen().getReportId());
@@ -289,6 +299,34 @@ public class DBPersistenceLayer implements PersistenceLayer {
         }
     }
 
+    private DBLoadedPilotContext toPilotContext(Session session, int pilotNumber, DBPilotStatus dbPilotStatus) throws IOException {
+        DBLoadedPilotContext pilotContext = new DBLoadedPilotContext(pilotNumber);
+
+        Long lastSeenReportId = dbPilotStatus.getLastSeenReportId();
+        ReportPilotPosition lastSeenReportPilotPosition = reportDatasource.loadPilotPosition(lastSeenReportId, pilotNumber);
+        Position lastSeenPosition = Position.create(lastSeenReportPilotPosition);
+        pilotContext.setLastSeenPosition(lastSeenPosition);
+
+        Long lastProcessedReportId = dbPilotStatus.getLastProcessedReportId();
+        ReportPilotPosition lastProcessedPilotPosition = reportDatasource.loadPilotPosition(lastProcessedReportId, pilotNumber);
+        Position lastProcessedPosition = lastProcessedPilotPosition != null ? Position.create(lastProcessedPilotPosition) : Position.createOfflinePosition(reportDatasource.loadReport(lastProcessedReportId));
+        pilotContext.setCurrPosition(lastProcessedPosition);
+
+        List<DBFlight> dbFlights = loadRecentPilotFlights(session, pilotNumber, lastSeenPosition.getDt());
+        List<FlightDto> flights = dbFlights.stream().map(this::fromDbFlight).collect(toList());
+
+        DBFlight dbCurrFlight = dbPilotStatus.getCurrFlight();
+        if (dbCurrFlight != null) {
+            FlightDto lastFlight = flights.get(flights.size() - 1);
+            // todo Preconditions.checkArgument(lastFlight.getId() == dbCurrFlight.getId());
+            flights.remove(flights.size() - 1);
+            pilotContext.setCurrFlight(lastFlight);
+        }
+        pilotContext.setRecentFlights(flights);
+
+        return pilotContext;
+    }
+
     private class DBLoadedPilotContext extends PilotContext {
         public DBLoadedPilotContext(int pilotNumber) {
             super(pilotNumber);
@@ -297,6 +335,10 @@ public class DBPersistenceLayer implements PersistenceLayer {
         public void setLastSeenPosition(Position lastSeenPosition) {
             this.lastSeenPosition = lastSeenPosition;
             this.currPosition = lastSeenPosition;
+        }
+
+        public void setCurrPosition(Position currPosition) {
+            this.currPosition = currPosition;
         }
 
         public void setCurrFlight(FlightDto currFlight) {
