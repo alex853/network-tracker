@@ -13,7 +13,7 @@ public class FlightDto implements Flight {
 
     private Flightplan flightplan;
 
-    private boolean isDirty;
+    private boolean dirty;
 
     @Override
     public FlightStatus getStatus() {
@@ -76,11 +76,11 @@ public class FlightDto implements Flight {
     }
 
     public boolean isDirty() {
-        return isDirty;
+        return dirty;
     }
 
     private void setDirty() {
-        isDirty = true;
+        dirty = true;
     }
 
     public FlightDto makeCopy() {
@@ -91,7 +91,7 @@ public class FlightDto implements Flight {
         copy.destination = destination;
         copy.lastSeen = lastSeen;
         copy.flightplan = flightplan;
-        copy.isDirty = false;
+        copy.dirty = false;
         return copy;
     }
 }
