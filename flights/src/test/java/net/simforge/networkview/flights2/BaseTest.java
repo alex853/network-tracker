@@ -1,8 +1,10 @@
 package net.simforge.networkview.flights2;
 
-import junit.framework.TestCase;
+import net.simforge.commons.io.Csv;
+import net.simforge.commons.io.IOHelper;
 import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.flights.datasource.CsvDatasource;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights.model.Flightplan;
 import net.simforge.networkview.flights2.events.FlightStatusEvent;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -23,55 +26,70 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public abstract class TrackingTest extends TestCase {
+import static junit.framework.TestCase.assertFalse;
+import static org.junit.Assert.*;
 
-    private static final Logger logger = LoggerFactory.getLogger(TrackingTest.class.getName());
+public abstract class BaseTest {
 
-    private int pilotNumber;
-    private int fromReportId;
-    private int toReportId;
+    private static final Logger logger = LoggerFactory.getLogger(BaseTest.class.getName());
 
     private ReportDatasource reportDatasource;
+    private PersistenceLayer persistenceLayer;
+    private MainContext mainContext;
 
-    protected PilotContext pilotContext;
-    private Map<Long, List<TrackingEvent>> pilotEventHistory = new HashMap<>();
+    private int pilotNumber;
 
-    protected Report report;
-    //    protected ReportPilotPosition position;
-    protected Flight flight;
+    private boolean needReset = false;
 
-    protected void setDatasource(ReportDatasource reportDatasource) {
-        this.reportDatasource = reportDatasource;
-    }
+    private Report report;
+    private PilotContext pilotContext;
+    private Flight flight;
 
-    protected void init(int pilotNumber, int fromReportId, int toReportId) {
+    private Map<Long, List<TrackingEvent>> eventHistory = new HashMap<>();
+
+    private int checksDone;
+
+
+    protected void doTest(int pilotNumber, int fromReportId, int toReportId) throws IOException {
         this.pilotNumber = pilotNumber;
-        this.fromReportId = fromReportId;
-        this.toReportId = toReportId;
-    }
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void testTracking() throws IOException {
-        Report fromReport = reportDatasource.loadReport(fromReportId);
+        report = reportDatasource.loadReport(fromReportId);
+        pilotContext = null;
+        flight = null;
 
-        MainContext mainContext = new MainContext(reportDatasource, new NoOpPersistenceLayer());
-        mainContext.setLastReport(fromReport);
+        needReset = true;
+
+        checksDone = 0;
 
         int reportsToProcess = toReportId - fromReportId + 1;
 
         for (int i = 0; i < reportsToProcess; i++) {
+            if (needReset) {
+                mainContext = new MainContext(reportDatasource, persistenceLayer);
+                mainContext.setLastReport(report);
+                mainContext.loadActivePilotContexts();
+                needReset = false;
+            }
+
             mainContext.processReports(1);
 
-            this.report = mainContext.getLastReport();
-
+            report = mainContext.getLastReport();
             pilotContext = mainContext.getPilotContext(pilotNumber);
             if (pilotContext != null) {
                 flight = pilotContext.getCurrFlight();
-                pilotEventHistory.put(this.report.getId(), pilotContext.getRecentEvents());
+                eventHistory.put(this.report.getId(), pilotContext.getRecentEvents());
+            } else {
+                flight = null;
             }
 
             invokeSingleReportCheckMethod();
             invokeRangeReportCheckMethods();
+        }
+
+        if (checksDone == 0) {
+            fail("No any check method invoked");
+        } else {
+            logger.info("Test finished: {} checks done", checksDone);
         }
     }
 
@@ -124,8 +142,24 @@ public abstract class TrackingTest extends TestCase {
         }
     }
 
-    private List<TrackingEvent> pilotContext_getEvents(long reportId) {
-        List<TrackingEvent> events = pilotEventHistory.get(reportId);
+    protected void initCsvSnapshot(String filename) throws IOException {
+        InputStream is = Class.class.getResourceAsStream(filename);
+        String csvContent = IOHelper.readInputStream(is);
+        reportDatasource = new CsvDatasource(Csv.fromContent(csvContent));
+    }
+
+    protected void initNoOpPersistence() {
+        persistenceLayer = new NoOpPersistenceLayer();
+    }
+
+    private void countCheckMethod() {
+        checksDone++;
+    }
+
+    // === Event checks ================================================================================================
+
+    private List<TrackingEvent> _getEvents(long reportId) {
+        List<TrackingEvent> events = eventHistory.get(reportId);
         if (events == null) {
             return Collections.emptyList();
         }
@@ -136,8 +170,8 @@ public abstract class TrackingTest extends TestCase {
         ).collect(Collectors.toList());
     }
 
-    protected void checkEvent(String eventType) {
-        List<TrackingEvent> events = pilotContext_getEvents(report.getId());
+    private void checkEvent(String eventType) {
+        List<TrackingEvent> events = _getEvents(report.getId());
         for (TrackingEvent event : events) {
             if (eventType.equals(event.getType())) {
                 logger.info(String.format("\tOK Event '%s'", eventType));
@@ -148,7 +182,9 @@ public abstract class TrackingTest extends TestCase {
     }
 
     protected void checkNoEvents() {
-        List<TrackingEvent> events = pilotContext_getEvents(report.getId());
+        countCheckMethod();
+
+        List<TrackingEvent> events = _getEvents(report.getId());
         if (events.isEmpty()) {
             logger.info("\tOK No events");
         } else {
@@ -157,89 +193,125 @@ public abstract class TrackingTest extends TestCase {
     }
 
     protected void checkNoPilotContext() {
+        countCheckMethod();
+
         assertNull(pilotContext);
         logger.info("\tOK No Pilot Context");
     }
 
     protected void checkPositionKnown() {
+        countCheckMethod();
+
         assertTrue(pilotContext.getCurrPosition().isPositionKnown());
         logger.info("\tOK Position Known");
     }
 
     protected void checkPositionUnknown() {
+        countCheckMethod();
+
         assertFalse(pilotContext.getCurrPosition().isPositionKnown());
         logger.info("\tOK Position Unknown");
     }
 
     protected void checkOnGround() {
+        countCheckMethod();
+
         assertTrue(pilotContext.getCurrPosition().isOnGround());
         logger.info("\tOK On Ground");
     }
 
     protected void checkFlying() {
+        countCheckMethod();
+
         assertTrue(!pilotContext.getCurrPosition().isOnGround());
         logger.info("\tOK Flying");
     }
 
     protected void checkOnlineEvent() {
+        countCheckMethod();
+
         checkEvent("pilot/online");
     }
 
     protected void checkOfflineEvent() {
+        countCheckMethod();
+
         checkEvent("pilot/offline");
     }
 
     protected void checkTakeoffEvent() {
+        countCheckMethod();
+
         checkEvent("pilot/takeoff");
     }
 
     protected void checkLandingEvent() {
+        countCheckMethod();
+
         checkEvent("pilot/landing");
     }
 
     // === Flight checks ===============================================================================================
     protected void checkFlight() {
+        countCheckMethod();
+
         assertNotNull(flight);
         logger.info("\tOK Flight");
     }
 
     protected void checkNoFlight() {
+        countCheckMethod();
+
         assertNull(flight);
         logger.info("\tOK No flight");
     }
 
     protected void checkFlightStatus(FlightStatus status) {
+        countCheckMethod();
+
         checkFlight();
         assertEquals(status, flight.getStatus());
         logger.info(String.format("\tOK Flight status: %s", status));
     }
 
     protected void checkFlightRoute(String origin, String destination) {
+        countCheckMethod();
+
         checkFlight();
         checkFlightRoute(flight, origin, destination);
     }
 
     protected void checkFlightRoute(Flight flight, String origin, String destination) {
+        countCheckMethod();
+
         assertEquals(origin, flight.getOrigin() != null ? flight.getOrigin().getAirportIcao() : null);
         assertEquals(destination, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
         logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(origin, "[--]"), Misc.mn(destination, "[--]")));
     }
 
-    protected void checkFlightFlightplanEvent() {
-        checkEvent("flight/flightplan");
-    }
-
     protected void checkFlightStatusEvent(FlightStatus status) {
+        countCheckMethod();
+
         String eventType = "flight/status/" + status.toString();
         checkEvent(eventType);
     }
 
-    protected void checkFlightFlightplanData(String fpAircraft, String fpDep, String fpDest) {
-        checkFlight();
-        checkFlightFlightplanData(flight, fpAircraft, fpDep, fpDest);
+    protected void checkFlightplanEvent() {
+        countCheckMethod();
+
+        checkEvent("flight/flightplan");
     }
 
-    protected void checkFlightFlightplanData(Flight flight, String fpAircraft, String fpDep, String fpDest) {
+    protected void checkFlightplanData(String fpAircraft, String fpDep, String fpDest) {
+        countCheckMethod();
+
+        checkFlight();
+        checkFlightplanData(flight, fpAircraft, fpDep, fpDest);
+    }
+
+    protected void checkFlightplanData(Flight flight, String fpAircraft, String fpDep, String fpDest) {
+        countCheckMethod();
+
         Flightplan flightplan = flight.getFlightplan();
         assertNotNull(flightplan);
         assertEquals(fpAircraft, flightplan.getAircraft());
@@ -248,8 +320,8 @@ public abstract class TrackingTest extends TestCase {
         logger.info(String.format("\tOK Flightplan: %s, %s-%s", fpAircraft, fpDep, fpDest));
     }
 
-    protected Flight getFlightFromStatusEvent(FlightStatus status) {
-        List<TrackingEvent> events = pilotContext_getEvents(report.getId());
+    private Flight getFlightFromStatusEvent(FlightStatus status) {
+        List<TrackingEvent> events = _getEvents(report.getId());
         String eventType = "flight/status/" + status.toString();
         FlightStatusEvent foundEvent = null;
         for (TrackingEvent event : events) {

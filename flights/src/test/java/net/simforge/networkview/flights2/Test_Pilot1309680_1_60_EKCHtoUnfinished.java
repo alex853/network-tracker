@@ -1,20 +1,17 @@
 package net.simforge.networkview.flights2;
 
-import net.simforge.commons.io.Csv;
-import net.simforge.commons.io.IOHelper;
-import net.simforge.networkview.flights.datasource.CsvDatasource;
 import net.simforge.networkview.flights2.flight.FlightStatus;
+import org.junit.Test;
 
-import java.io.InputStream;
+import java.io.IOException;
 
-public class Test_Pilot1309680_1_60_EKCHtoUnfinished extends TrackingTest {
-    @Override
-    protected void setUp() throws Exception {
-        InputStream is = Class.class.getResourceAsStream("/snapshots/pilot-1309680_from-1_amount-60.csv");
-        String csvContent = IOHelper.readInputStream(is);
+public class Test_Pilot1309680_1_60_EKCHtoUnfinished extends BaseTest {
 
-        setDatasource(new CsvDatasource(Csv.fromContent(csvContent)));
-        init(1309680, 1, 60);
+    @Test
+    public void test() throws IOException {
+        initCsvSnapshot("/snapshots/pilot-1309680_from-1_amount-60.csv");
+        initNoOpPersistence();
+        doTest(1309680, 1, 60);
     }
 
     public void report_1_6() {

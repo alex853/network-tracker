@@ -180,5 +180,4 @@ public class DbTrackingTest {
             assertNull(currFlight.getDestination());
         }
     }
-
 }

@@ -3,12 +3,13 @@ package net.simforge.networkview.flights2;
 import net.simforge.networkview.datafeeder.persistence.Report;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 public class NoOpPersistenceLayer implements PersistenceLayer {
     @Override
     public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) {
-        throw new UnsupportedOperationException("NoOpPersistenceLayer.loadActivePilotContexts");
+        return Collections.EMPTY_LIST;
     }
 
     @Override
