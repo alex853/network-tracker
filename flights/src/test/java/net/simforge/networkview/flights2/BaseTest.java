@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,11 +34,11 @@ public abstract class BaseTest {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseTest.class.getName());
 
-    private ReportDatasource reportDatasource;
-    private PersistenceLayer persistenceLayer;
+    protected ReportDatasource reportDatasource;
+    protected PersistenceLayer persistenceLayer;
     private MainContext mainContext;
 
-    private int pilotNumber;
+    protected int pilotNumber;
 
     private boolean needReset = false;
 
@@ -149,10 +150,30 @@ public abstract class BaseTest {
     }
 
     protected void initNoOpPersistence() {
-        persistenceLayer = new NoOpPersistenceLayer();
+        persistenceLayer = new PersistenceLayer() {
+            @Override
+            public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) {
+                return Collections.EMPTY_LIST;
+            }
+
+            @Override
+            public PilotContext createContext(int pilotNumber, Report seenReport) {
+                return new PilotContext(pilotNumber);
+            }
+
+            @Override
+            public PilotContext loadContext(int pilotNumber) {
+                return null; // we do not save flights and we do not load contexts because of that
+            }
+
+            @Override
+            public PilotContext saveChanges(PilotContext pilotContext) {
+                return pilotContext; // we do not save anything
+            }
+        };
     }
 
-    private void countCheckMethod() {
+    protected void countCheckMethod() {
         checksDone++;
     }
 
@@ -281,12 +302,12 @@ public abstract class BaseTest {
         checkFlightRoute(flight, origin, destination);
     }
 
-    protected void checkFlightRoute(Flight flight, String origin, String destination) {
+    protected void checkFlightRoute(Flight flight, String expectedDeparture, String expectedDestination) {
         countCheckMethod();
 
-        assertEquals(origin, flight.getOrigin() != null ? flight.getOrigin().getAirportIcao() : null);
-        assertEquals(destination, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
-        logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(origin, "[--]"), Misc.mn(destination, "[--]")));
+        assertEquals(expectedDeparture, flight.getOrigin() != null ? flight.getOrigin().getAirportIcao() : null);
+        assertEquals(expectedDestination, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
+        logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(expectedDeparture, "[--]"), Misc.mn(expectedDestination, "[--]")));
     }
 
     protected void checkFlightStatusEvent(FlightStatus status) {
