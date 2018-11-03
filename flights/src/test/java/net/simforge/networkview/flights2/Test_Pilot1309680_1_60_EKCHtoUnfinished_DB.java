@@ -28,6 +28,7 @@ public class Test_Pilot1309680_1_60_EKCHtoUnfinished_DB extends DbBaseTest {
         checkDBFlightsCount(1);
         checkDBCurrFlightStatus(FlightStatus.Flying);
         checkDBCurrFlightRoute("EKCH", null);
+        checkDBCurrFlightCallsign("DAL21");
     }
 
     public void report_37() throws IOException {

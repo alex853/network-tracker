@@ -6,13 +6,13 @@ import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.flights.datasource.CsvDatasource;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
-import net.simforge.networkview.flights.model.Flightplan;
 import net.simforge.networkview.flights2.events.FlightStatusEvent;
 import net.simforge.networkview.flights2.events.PilotKnownPositionEvent;
 import net.simforge.networkview.flights2.events.PilotUnknownPositionEvent;
 import net.simforge.networkview.flights2.events.TrackingEvent;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
+import net.simforge.networkview.flights2.flight.Flightplan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -330,15 +330,24 @@ public abstract class BaseTest {
         checkFlightplanData(flight, fpAircraft, fpDep, fpDest);
     }
 
-    protected void checkFlightplanData(Flight flight, String fpAircraft, String fpDep, String fpDest) {
+    protected void checkFlightplanData(Flight flight, String fpAircraftType, String fpDeparture, String fpDestination) {
         countCheckMethod();
 
         Flightplan flightplan = flight.getFlightplan();
         assertNotNull(flightplan);
-        assertEquals(fpAircraft, flightplan.getAircraft());
-        assertEquals(fpDep, flightplan.getOrigin());
-        assertEquals(fpDest, flightplan.getDestination());
-        logger.info(String.format("\tOK Flightplan: %s, %s-%s", fpAircraft, fpDep, fpDest));
+        assertEquals(fpAircraftType, flightplan.getAircraftType());
+        assertEquals(fpDeparture, flightplan.getDeparture());
+        assertEquals(fpDestination, flightplan.getDestination());
+        logger.info(String.format("\tOK Flightplan: %s, %s-%s", fpAircraftType, fpDeparture, fpDestination));
+    }
+
+    protected void checkCallsign(String callsign) {
+        countCheckMethod();
+
+        Flightplan flightplan = flight.getFlightplan();
+        assertNotNull(flightplan);
+        assertEquals(callsign, flightplan.getCallsign());
+        logger.info("\tOK Callsign");
     }
 
     private Flight getFlightFromStatusEvent(FlightStatus status) {

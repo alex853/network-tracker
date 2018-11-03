@@ -31,7 +31,7 @@ CREATE TABLE flt_flight (
     --network smallint NOT NULL,
     pilot_number integer NOT NULL,
 
-    callsign character varying(10) NOT NULL,
+    callsign character varying(10),
     aircraft_type character varying(10),
     reg_no character varying(10),
     planned_departure character varying(10),

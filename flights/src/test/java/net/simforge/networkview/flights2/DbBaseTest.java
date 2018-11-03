@@ -4,6 +4,7 @@ import net.simforge.commons.hibernate.SessionFactoryBuilder;
 import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
+import net.simforge.networkview.flights2.flight.Flightplan;
 import net.simforge.networkview.flights2.persistence.DBFlight;
 import net.simforge.networkview.flights2.persistence.DBPersistenceLayer;
 import net.simforge.networkview.flights2.persistence.DBPilotStatus;
@@ -90,5 +91,16 @@ public abstract class DbBaseTest extends BaseTest {
         }
 
         logger.info(String.format("\tOK:DB Flight Route: %s-%s", Misc.mn(expectedDeparture, "[--]"), Misc.mn(expectedDestination, "[--]")));
+    }
+
+    protected void checkDBCurrFlightCallsign(String callsign) throws IOException {
+        countCheckMethod();
+
+        PilotContext pilotContext = persistenceLayer.loadContext(pilotNumber);
+        Flight currFlight = pilotContext.getCurrFlight();
+        assertNotNull(currFlight);
+
+        assertEquals(callsign, currFlight.getFlightplan().getCallsign());
+        logger.info("\tOK:DB Callsign");
     }
 }

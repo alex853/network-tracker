@@ -27,8 +27,10 @@ public class Position {
     private boolean inAirport;
     private String airportIcao;
 
+    private String callsign;
+    private String regNo;
     private String fpAircraftType;
-    private String fpOrigin;
+    private String fpDeparture;
     private String fpDestination;
 
     private Position() {
@@ -65,8 +67,10 @@ public class Position {
                 && nearestAirport.isWithinBoundary(result.coords);
         result.airportIcao = result.inAirport ? nearestAirport.getIcao() : null;
 
+        result.callsign = limit10(reportPilotPosition.getCallsign());
+        result.regNo = limit10(reportPilotPosition.getParsedRegNo());
         result.fpAircraftType = limit10(ParsingLogics.parseAircraftType(reportPilotPosition.getFpAircraft()));
-        result.fpOrigin = limit10(reportPilotPosition.getFpOrigin());
+        result.fpDeparture = limit10(reportPilotPosition.getFpOrigin());
         result.fpDestination = limit10(reportPilotPosition.getFpDestination());
 
         return result;
@@ -164,15 +168,23 @@ public class Position {
     }
 
     public boolean hasFlightplan() {
-        return !Str.isEmpty(fpAircraftType) || !Str.isEmpty(fpOrigin) || !Str.isEmpty(fpDestination);
+        return !Str.isEmpty(fpAircraftType) || !Str.isEmpty(fpDeparture) || !Str.isEmpty(fpDestination);
+    }
+
+    public String getCallsign() {
+        return callsign;
+    }
+
+    public String getRegNo() {
+        return regNo;
     }
 
     public String getFpAircraftType() {
         return fpAircraftType;
     }
 
-    public String getFpOrigin() {
-        return fpOrigin;
+    public String getFpDeparture() {
+        return fpDeparture;
     }
 
     public String getFpDestination() {

@@ -7,12 +7,12 @@ import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
-import net.simforge.networkview.flights.model.Flightplan;
 import net.simforge.networkview.flights2.PersistenceLayer;
 import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.Position;
 import net.simforge.networkview.flights2.flight.FlightDto;
 import net.simforge.networkview.flights2.flight.FlightStatus;
+import net.simforge.networkview.flights2.flight.Flightplan;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -229,7 +229,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
             if (dbFlight.getArrivalReportId() != null) {
                 flight.setDestination(Position.create(reportDatasource.loadPilotPosition(dbFlight.getArrivalReportId(), pilotNumber)));
             }
-            Flightplan flightplan = new Flightplan(dbFlight.getAircraftType(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination());
+            Flightplan flightplan = new Flightplan(dbFlight.getCallsign(), dbFlight.getAircraftType(), dbFlight.getRegNo(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination());
             flight.setFlightplan(flightplan);
             return flight;
         } catch (IOException e) {
@@ -246,15 +246,17 @@ public class DBPersistenceLayer implements PersistenceLayer {
             //dbFlight.setNetwork(null);
             dbFlight.setPilotNumber(pilotNumber);
 
-            dbFlight.setCallsign("TODO"); // todo AK
-            dbFlight.setRegNo("TODO"); // todo AK
             Flightplan flightplan = flight.getFlightplan();
             if (flightplan != null) {
-                dbFlight.setAircraftType(flightplan.getAircraft());
-                dbFlight.setPlannedDeparture(flightplan.getOrigin());
+                dbFlight.setCallsign(flightplan.getCallsign());
+                dbFlight.setAircraftType(flightplan.getAircraftType());
+                dbFlight.setRegNo(flightplan.getRegNo());
+                dbFlight.setPlannedDeparture(flightplan.getDeparture());
                 dbFlight.setPlannedDestination(flightplan.getDestination());
             } else {
+                dbFlight.setCallsign(null);
                 dbFlight.setAircraftType(null);
+                dbFlight.setRegNo(null);
                 dbFlight.setPlannedDeparture(null);
                 dbFlight.setPlannedDestination(null);
             }
