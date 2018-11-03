@@ -16,32 +16,32 @@ public class Test_Pilot1045435_RJAAtoVHHH extends BaseTest {
 
     public void report_2015179165() {
         checkOnlineEvent();
-        checkMovement();
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("RJAA", null);
-        checkMovementFlightplanData("B77W", "RJAA", "VHHH");
+        checkFlight();
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("RJAA", null);
+        checkFlightplanData("B77W", "RJAA", "VHHH");
     }
 
     // this failed without corrected Circle boundary for RJAA
     public void report_2015179169() {
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("RJAA", null);
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("RJAA", null);
     }
 
     public void report_2015179170() {
         checkTakeoffEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("RJAA", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("RJAA", null);
     }
 
     public void report_2015179289() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("RJAA", "VHHH");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("RJAA", "VHHH");
     }
 
     public void report_2015179293() {
         checkOfflineEvent();
-        checkNoMovement();
+        checkNoFlight();
     }
 }

@@ -350,7 +350,7 @@ public abstract class BaseTest {
         logger.info("\tOK Callsign");
     }
 
-    private Flight getFlightFromStatusEvent(FlightStatus status) {
+    protected Flight getFlightFromStatusEvent(FlightStatus status) {
         List<TrackingEvent> events = _getEvents(report.getId());
         String eventType = "flight/status/" + status.toString();
         FlightStatusEvent foundEvent = null;
@@ -364,57 +364,4 @@ public abstract class BaseTest {
         assertNotNull(foundEvent);
         return foundEvent.getFlight();
     }
-
-    // === Old check methods ===========================================================================================
-
-    @Deprecated
-    protected void checkMovement() {
-        checkFlight();
-    }
-
-    @Deprecated
-    protected void checkNoMovement() {
-        checkNoFlight();
-    }
-
-    @Deprecated
-    protected void checkMovementStatus(FlightStatus status) {
-        checkFlightStatus(status);
-    }
-
-    @Deprecated
-    protected void checkMovementRoute(String departure, String destination) {
-        checkFlightRoute(departure, destination);
-    }
-
-    @Deprecated
-    protected void checkMovementRoute(Flight flight, String departure, String destination) {
-        checkFlightRoute(flight, departure, destination);
-    }
-
-    @Deprecated
-    protected void checkMovementFlightplanEvent() {
-        checkFlightplanEvent();
-    }
-
-    @Deprecated
-    protected void checkMovementStatusEvent(FlightStatus status) {
-        checkFlightStatusEvent(status);
-    }
-
-    @Deprecated
-    protected void checkMovementFlightplanData(String fpAircraft, String fpDeparture, String fpDestination) {
-        checkFlightplanData(fpAircraft, fpDeparture, fpDestination);
-    }
-
-    @Deprecated
-    protected void checkMovementFlightplanData(Flight flight, String fpAircraft, String fpDeparture, String fpDestination) {
-        checkFlightplanData(flight, fpAircraft, fpDeparture, fpDestination);
-    }
-
-    @Deprecated
-    protected Flight getMovementFromStatusEvent(FlightStatus status) {
-        return getFlightFromStatusEvent(status);
-    }
-
 }

@@ -18,33 +18,33 @@ public class Test_Pilot1283157_F14overOcean extends BaseTest {
         checkOnlineEvent();
         checkOnGround();
 
-        checkMovement();
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute(null, null);
+        checkFlight();
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute(null, null);
     }
 
     public void report_2015182770() {
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute(null, null);
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute(null, null);
     }
 
     public void report_2015182771() {
         checkTakeoffEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute(null, null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute(null, null);
     }
 
     public void report_2015182777() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute(null, null);
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute(null, null);
     }
 
     public void report_2015182783() {
-        checkMovementStatusEvent(FlightStatus.Finished);
+        checkFlightStatusEvent(FlightStatus.Finished);
 
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementFlightplanData("F14", "CV69", "CV69");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightplanData("F14", "CV69", "CV69");
     }
 
     public void report_2015182784() {
@@ -56,13 +56,13 @@ public class Test_Pilot1283157_F14overOcean extends BaseTest {
     }
 
     public void report_2015182793() {
-        checkMovementStatusEvent(FlightStatus.Finished);
+        checkFlightStatusEvent(FlightStatus.Finished);
 
-        checkMovementStatusEvent(FlightStatus.Departure);
+        checkFlightStatusEvent(FlightStatus.Departure);
         checkTakeoffEvent();
-        checkMovementStatusEvent(FlightStatus.Flying);
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementFlightplanData("F14", "CV69", "CV69");
+        checkFlightStatusEvent(FlightStatus.Flying);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightplanData("F14", "CV69", "CV69");
     }
 
     public void report_2015182808() {
@@ -70,10 +70,10 @@ public class Test_Pilot1283157_F14overOcean extends BaseTest {
     }
 
     public void report_2015182813() {
-        checkMovementStatusEvent(FlightStatus.Finished);
+        checkFlightStatusEvent(FlightStatus.Finished);
 
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementFlightplanData("F14", "CV69", "CV69");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightplanData("F14", "CV69", "CV69");
     }
 
     public void report_2015182815() {
@@ -85,10 +85,10 @@ public class Test_Pilot1283157_F14overOcean extends BaseTest {
     }
 
     public void report_2015182826() {
-        checkMovementStatusEvent(FlightStatus.Finished);
+        checkFlightStatusEvent(FlightStatus.Finished);
 
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementFlightplanData("F14", "CV69", "CV69");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightplanData("F14", "CV69", "CV69");
     }
 
     public void report_2015182835() {
@@ -100,14 +100,14 @@ public class Test_Pilot1283157_F14overOcean extends BaseTest {
     }
 
     public void report_2015182847() {
-        checkMovementStatusEvent(FlightStatus.Finished);
+        checkFlightStatusEvent(FlightStatus.Finished);
 
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementFlightplanData("F14", "CV69", "CV69");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightplanData("F14", "CV69", "CV69");
     }
 
     public void report_2015182856() {
         checkOfflineEvent();
-        checkMovementStatusEvent(FlightStatus.Terminated);
+        checkFlightStatusEvent(FlightStatus.Terminated);
     }
 }

@@ -26,8 +26,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_670457() {
         checkPositionKnown();
         checkOnlineEvent();
-        checkMovement();
-        checkMovementStatus(FlightStatus.Departure);
+        checkFlight();
+        checkFlightStatus(FlightStatus.Departure);
     }
 
     public void report_670458() {
@@ -36,7 +36,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_670458_670461() {
         checkPositionUnknown();
-        checkNoMovement();
+        checkNoFlight();
     }
 
 
@@ -48,14 +48,14 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_670462_670473() {
         checkPositionKnown();
-        checkMovement();
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("EPWA", null);
+        checkFlight();
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("EPWA", null);
     }
 
     public void report_670471() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "EPWA", "GMMX");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "EPWA", "GMMX");
     }
 
 
@@ -63,48 +63,48 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 670491 EPWA-.... Non-finished flight
     public void report_670491() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("EPWA", null);
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "EPWA", "GMMX");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("EPWA", null);
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "EPWA", "GMMX");
     }
 
     public void report_670493() {
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("EPWA", null);
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "EPWA", "LEAM");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("EPWA", null);
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "EPWA", "LEAM");
     }
 
     public void report_670497() {
         checkTakeoffEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("EPWA", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("EPWA", null);
     }
 
     public void report_670519() {
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("EPWA", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("EPWA", null);
     }
 
     public void report_670524() {
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("EPWA", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("EPWA", null);
     }
 
     public void report_670531() {
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("EPWA", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("EPWA", null);
     }
 
     public void report_670539() {
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("EPWA", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("EPWA", null);
     }
 
     public void report_670571() {
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("EPWA", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("EPWA", null);
     }
 
 
@@ -112,21 +112,21 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 670573 ULLI-.... Short connection
     public void report_670573() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("ULLI", null);
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "EPWA", "LEAM");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("ULLI", null);
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "EPWA", "LEAM");
     }
 
     public void report_670581() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "ULLI", "USRR");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "ULLI", "USRR");
     }
 
     public void report_670589() {
-        Flight movement = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(movement, "ULLI", null);
-        checkMovementFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(movement, "ULLI", null);
+        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
     }
 
 
@@ -134,46 +134,46 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 670591 ULLI-USRR
     public void report_670591() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("ULLI", null);
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "ULLI", "USRR");
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("ULLI", null);
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "ULLI", "USRR");
     }
 
     public void report_670595() {
         checkTakeoffEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("ULLI", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("ULLI", null);
     }
 
     public void report_670674() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("ULLI", "USRR");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("ULLI", "USRR");
     }
 
     public void report_670679() {
-        Flight movement = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(movement, "ULLI", "USRR");
-        checkMovementFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        Flight movement = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(movement, "ULLI", "USRR");
+        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
     }
 
 
 
     // 670702 UKBB-.... Short connection
     public void report_670705() {
-        Flight movement = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(movement, "UKBB", null);
-        checkMovementFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(movement, "UKBB", null);
+        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
     }
 
 
 
     // 670706 UUDD-.... Short connection
     public void report_670717() {
-        Flight movement = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(movement, "UUDD", null);
-        checkMovementFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(movement, "UUDD", null);
+        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
     }
 
 
@@ -181,12 +181,12 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 673328 EKYT-LDDU with disconnect
     public void report_673328() {
         checkOnlineEvent();
-        checkMovementRoute("EKYT", null);
+        checkFlightRoute("EKYT", null);
     }
 
     public void report_673338() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "EKYT", "LDDU");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "EKYT", "LDDU");
     }
 
     public void report_673364() {
@@ -195,26 +195,26 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_673405() {
         checkOfflineEvent();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("EKYT", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("EKYT", null);
     }
 
     public void report_673408() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("EKYT", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("EKYT", null);
     }
 
     public void report_673431() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("EKYT", "LDDU");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("EKYT", "LDDU");
     }
 
     public void report_673436() {
         checkOfflineEvent();
-        checkMovementStatusEvent(FlightStatus.Finished);
-        checkNoMovement();
+        checkFlightStatusEvent(FlightStatus.Finished);
+        checkNoFlight();
     }
 
 
@@ -222,12 +222,12 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 673464 URKK-UTAA with disconnect
     public void report_673464() {
         checkOnlineEvent();
-        checkMovementRoute("URKK", null);
+        checkFlightRoute("URKK", null);
     }
 
     public void report_673490() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "URKK", "UTAA");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "URKK", "UTAA");
     }
 
     public void report_673493() {
@@ -236,35 +236,35 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_673511() {
         checkOfflineEvent();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("URKK", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("URKK", null);
     }
 
     public void report_673512() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("URKK", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("URKK", null);
     }
 
     public void report_673562() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("URKK", "UTAA");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("URKK", "UTAA");
     }
 
     public void report_673563() {
         checkOfflineEvent();
-        checkMovementStatusEvent(FlightStatus.Finished);
-        checkNoMovement();
+        checkFlightStatusEvent(FlightStatus.Finished);
+        checkNoFlight();
     }
 
 
 
     // 673566 UKFF-.... Short connection
     public void report_673568() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UKFF", null);
-        checkMovementFlightplanData(terminated, "B/T154/G", "URKK", "UTAA");
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UKFF", null);
+        checkFlightplanData(terminated, "B/T154/G", "URKK", "UTAA");
     }
 
 
@@ -272,45 +272,45 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 674024 CYVR-.... with very long disconnect (about 2 hours), flight without landing
     public void report_674024() {
         checkOnlineEvent();
-        checkMovement();
-        checkMovementRoute("CYVR", null);
+        checkFlight();
+        checkFlightRoute("CYVR", null);
     }
 
     public void report_674064() {
-        checkMovementRoute("CYVR", null);
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "CYVR", "MMMX");
+        checkFlightRoute("CYVR", null);
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "CYVR", "MMMX");
     }
 
     public void report_674116() {
         checkTakeoffEvent();
-        checkMovementStatusEvent(FlightStatus.Flying);
-        checkMovementRoute("CYVR", null);
+        checkFlightStatusEvent(FlightStatus.Flying);
+        checkFlightRoute("CYVR", null);
     }
 
     public void report_674124() {
         checkOfflineEvent();
-        checkMovementStatusEvent(FlightStatus.Lost);
-        checkMovementRoute("CYVR", null);
+        checkFlightStatusEvent(FlightStatus.Lost);
+        checkFlightRoute("CYVR", null);
     }
 
     public void report_674195() {
         checkOnlineEvent();
-        checkMovementStatusEvent(FlightStatus.Flying);
-        checkMovementRoute("CYVR", null);
+        checkFlightStatusEvent(FlightStatus.Flying);
+        checkFlightRoute("CYVR", null);
     }
 
     public void report_674198() {
         checkOfflineEvent();
-        checkMovementStatusEvent(FlightStatus.Lost);
-        checkMovementRoute("CYVR", null);
+        checkFlightStatusEvent(FlightStatus.Lost);
+        checkFlightRoute("CYVR", null);
     }
 
     public void report_674314() {
         checkPositionUnknown();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("CYVR", null);
-        checkMovementFlightplanData("B/T154/G", "CYVR", "MMMX");
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("CYVR", null);
+        checkFlightplanData("B/T154/G", "CYVR", "MMMX");
     }
 
 
@@ -318,20 +318,20 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 674315 UKHH-LGSA
     public void report_674315() {
         checkOnlineEvent();
-        checkMovement();
-        checkMovementStatusEvent(FlightStatus.Departure); // postponed departure.preparing
+        checkFlight();
+        checkFlightStatusEvent(FlightStatus.Departure);
     }
 
     public void report_674315_674325() {
         checkPositionKnown();
         checkOnGround();
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("UKHH", null);
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("UKHH", null);
     }
 
     public void report_674320() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "UKHH", "LGSA");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "UKHH", "LGSA");
     }
 
     public void report_674324() {
@@ -340,33 +340,33 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_674326() {
         checkTakeoffEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementStatusEvent(FlightStatus.Flying);
-        checkMovementFlightplanData("B/T154/G", "UKHH", "LGSA");
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightStatusEvent(FlightStatus.Flying);
+        checkFlightplanData("B/T154/G", "UKHH", "LGSA");
     }
 
     public void report_674326_674394() {
         checkFlying();
-        checkMovementFlightplanData("B/T154/G", "UKHH", "LGSA");
-        checkMovementStatus(FlightStatus.Flying);
+        checkFlightplanData("B/T154/G", "UKHH", "LGSA");
+        checkFlightStatus(FlightStatus.Flying);
     }
 
     public void report_674395() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("UKHH", "LGSA");
-        checkMovementStatusEvent(FlightStatus.Arrival); // postponed arrival.landing
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("UKHH", "LGSA");
+        checkFlightStatusEvent(FlightStatus.Arrival);
     }
 
     public void report_674398() {
         checkOfflineEvent();
-        checkMovementStatusEvent(FlightStatus.Finished);
-        checkNoMovement();
+        checkFlightStatusEvent(FlightStatus.Finished);
+        checkNoFlight();
     }
 
     public void report_674400_674804() {
         checkPositionUnknown();
-        checkNoMovement();
+        checkNoFlight();
         checkNoEvents();
     }
 
@@ -374,8 +374,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     // 674805 UHMA-.... Short connection
     public void report_674811() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UHMA", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UHMA", null);
     }
 
 
@@ -383,12 +383,12 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 674817 UHMA-.... Non-finished flight
     public void report_674817() {
         checkOnlineEvent();
-        checkMovementRoute("UHMA", null);
+        checkFlightRoute("UHMA", null);
     }
 
     public void report_674829() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "UHMA", "PAOT");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "UHMA", "PAOT");
     }
 
     public void report_674837() {
@@ -396,8 +396,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_674843() {
-        Flight movement = getMovementFromStatusEvent(FlightStatus.Lost);
-        checkMovementRoute(movement, "UHMA", null);
+        Flight movement = getFlightFromStatusEvent(FlightStatus.Lost);
+        checkFlightRoute(movement, "UHMA", null);
     }
 
 
@@ -405,12 +405,12 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 674846 UUDD-UTTT Takeoff, several disconnections and reconnections, landing
     public void report_674846() {
         checkOnlineEvent();
-        checkMovementRoute("UUDD", null);
+        checkFlightRoute("UUDD", null);
     }
 
     public void report_674860() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
     }
 
     public void report_674862() {
@@ -419,92 +419,92 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_674863() {
         checkOfflineEvent();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("UUDD", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("UUDD", null);
     }
 
     public void report_674898() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("UUDD", null);
-        checkMovementFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("UUDD", null);
+        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
     }
 
     public void report_674907() {
         checkOfflineEvent();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("UUDD", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("UUDD", null);
     }
 
     public void report_674911() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("UUDD", null);
-        checkMovementFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("UUDD", null);
+        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
     }
 
     public void report_674953() {
         checkOfflineEvent();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("UUDD", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("UUDD", null);
     }
 
     public void report_674978() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("UUDD", null);
-        checkMovementFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("UUDD", null);
+        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
     }
 
     public void report_674981() {
         checkOfflineEvent();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("UUDD", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("UUDD", null);
     }
 
     public void report_674982() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("UUDD", null);
-        checkMovementFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("UUDD", null);
+        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
     }
 
     public void report_674997() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("UUDD", "UTTT");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("UUDD", "UTTT");
     }
 
     public void report_675002() {
         checkOfflineEvent();
-        checkMovementStatusEvent(FlightStatus.Finished);
-        checkNoMovement();
+        checkFlightStatusEvent(FlightStatus.Finished);
+        checkNoFlight();
     }
 
 
 
     // 675003 UUDD-.... Short connection
     public void report_675003_675008() {
-        checkMovementRoute("UUDD", null);
+        checkFlightRoute("UUDD", null);
     }
 
     // 675009 Jump to UWWW, UWWW-.... Short connection
     public void report_675009() {
-        Flight terminatedMovement = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminatedMovement, "UUDD", null);
+        Flight terminatedMovement = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminatedMovement, "UUDD", null);
 
-        Flight departureMovement = getMovementFromStatusEvent(FlightStatus.Departure);
-        checkMovementRoute(departureMovement, "UWWW", null);
+        Flight departureMovement = getFlightFromStatusEvent(FlightStatus.Departure);
+        checkFlightRoute(departureMovement, "UWWW", null);
     }
 
     public void report_675035() {
-        Flight movement = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(movement, "UWWW", null);
+        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(movement, "UWWW", null);
     }
 
     public void report_675036_675477() {
         checkPositionUnknown();
-        checkNoMovement();
+        checkNoFlight();
         checkNoEvents();
     }
 
@@ -513,12 +513,12 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 675478 UWWW-.... Lost flight
     public void report_675478() {
         checkOnlineEvent();
-        checkMovementRoute("UWWW", null);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_675492() {
-        checkMovementFlightplanEvent();
-        checkMovementFlightplanData("B/T154/G", "UWWW", "EDDF");
+        checkFlightplanEvent();
+        checkFlightplanData("B/T154/G", "UWWW", "EDDF");
     }
 
     public void report_675495() {
@@ -526,33 +526,33 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_675517() {
-        Flight lost = getMovementFromStatusEvent(FlightStatus.Lost);
-        checkMovementRoute(lost, "UWWW", null);
+        Flight lost = getFlightFromStatusEvent(FlightStatus.Lost);
+        checkFlightRoute(lost, "UWWW", null);
     }
 
 
 
     // 675527 UWWW-.... Short connection
     public void report_675534() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UWWW", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UWWW", null);
     }
 
 
 
     // 675553 UUDD-.... Short connection
     public void report_675560() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UUDD", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UUDD", null);
     }
 
 
 
     // 675563 UUDD-.... Short connection
     public void report_675578() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UUDD", null);
-        checkMovementFlightplanData(terminated, "B/T154/G", "UWWW", "EDDF");
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UUDD", null);
+        checkFlightplanData(terminated, "B/T154/G", "UWWW", "EDDF");
     }
 
 
@@ -561,98 +561,98 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // postponed 675595 can be rejoined with 675578, however I'm not sure that we need to try to join it
     public void report_675595() {
         checkOnlineEvent();
-        checkMovement();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute(null, null);
-        checkMovementFlightplanData("B/T154/G", "UUDD", "EDDF");
+        checkFlight();
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute(null, null);
+        checkFlightplanData("B/T154/G", "UUDD", "EDDF");
     }
 
     public void report_675654() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute(null, "EDDF");
-        checkMovementFlightplanData("B/T154/G", "UUDD", "EDDF");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute(null, "EDDF");
+        checkFlightplanData("B/T154/G", "UUDD", "EDDF");
     }
 
     public void report_675660() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, null, "EDDF");
-        checkMovementFlightplanData(finished, "B/T154/G", "UUDD", "EDDF");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, null, "EDDF");
+        checkFlightplanData(finished, "B/T154/G", "UUDD", "EDDF");
     }
 
 
 
     // 675659 EDDF-.... Short connection
     public void report_675666() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "EDDF", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "EDDF", null);
     }
 
 
 
     // 675669 UWWW-UWWW Local flight with disconnect
     public void report_675669_675680() {
-        checkMovementStatus(FlightStatus.Departure);
-        checkMovementRoute("UWWW", null);
+        checkFlightStatus(FlightStatus.Departure);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_675681() {
         checkTakeoffEvent();
-        checkMovementRoute("UWWW", null);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_675683() {
         checkOfflineEvent();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("UWWW", null);
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_675698() {
         checkOnlineEvent();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("UWWW", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_675707() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("UWWW", "UWWW");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("UWWW", "UWWW");
     }
 
 
 
     // 675712 Another one UWWW-UWWW Local flight
     public void report_675713() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "UWWW", "UWWW");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "UWWW", "UWWW");
 
-        Flight departing = getMovementFromStatusEvent(FlightStatus.Departure);
-        checkMovementRoute(departing, "UWWW", null);
+        Flight departing = getFlightFromStatusEvent(FlightStatus.Departure);
+        checkFlightRoute(departing, "UWWW", null);
     }
 
     public void report_675723() {
         checkTakeoffEvent();
-        checkMovementRoute("UWWW", null);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_675735() {
         checkLandingEvent();
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("UWWW", "UWWW");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("UWWW", "UWWW");
     }
 
 
 
     // 675736 Touch&Go! And another UWWW-UWWW local flight
     public void report_675736() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "UWWW", "UWWW");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "UWWW", "UWWW");
 
-        Flight departed = getMovementFromStatusEvent(FlightStatus.Departure);
-        checkMovementRoute(departed, "UWWW", null);
+        Flight departed = getFlightFromStatusEvent(FlightStatus.Departure);
+        checkFlightRoute(departed, "UWWW", null);
 
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("UWWW", null);
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_675760() {
@@ -660,8 +660,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_675763() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "UWWW", "UWWW");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "UWWW", "UWWW");
     }
 
 
@@ -669,59 +669,59 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 677682 UWWW-LUKK filled ad UWWW-LIRN
     public void report_677767() {
         checkLandingEvent();
-        checkMovementRoute("UWWW", "LUKK");
-        checkMovementFlightplanData("B/T154/G", "UWWW", "LIRN");
+        checkFlightRoute("UWWW", "LUKK");
+        checkFlightplanData("B/T154/G", "UWWW", "LIRN");
     }
 
 
 
     // 677772 LUKK-LIRN second part of UWWW-LIRN sequence
     public void report_677773() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "UWWW", "LUKK");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "UWWW", "LUKK");
 
-        Flight departed = getMovementFromStatusEvent(FlightStatus.Departure);
-        checkMovementRoute(departed, "LUKK", null);
-        checkMovementFlightplanData(departed, "B/T154/G", "UWWW", "LIRN");
+        Flight departed = getFlightFromStatusEvent(FlightStatus.Departure);
+        checkFlightRoute(departed, "LUKK", null);
+        checkFlightplanData(departed, "B/T154/G", "UWWW", "LIRN");
     }
 
     public void report_677837() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "LUKK", "LIRN");
-        checkMovementFlightplanData(finished, "B/T154/G", "UWWW", "LIRN");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "LUKK", "LIRN");
+        checkFlightplanData(finished, "B/T154/G", "UWWW", "LIRN");
     }
 
 
 
     // 677842 UUWW-.... Short connection
     public void report_677893() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UUWW", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UUWW", null);
     }
 
 
 
     // 678347 LFRS-UWWW
     public void report_678572() {
-        checkMovementStatus(FlightStatus.Arrival);
-        checkMovementRoute("LFRS", "UWWW");
-        checkMovementFlightplanData("B/T154/G", "LFRS", "UWWW");
+        checkFlightStatus(FlightStatus.Arrival);
+        checkFlightRoute("LFRS", "UWWW");
+        checkFlightplanData("B/T154/G", "LFRS", "UWWW");
     }
 
 
 
     // 678573 UWWW-.... Short connection
     public void report_678573() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "LFRS", "UWWW");
-        checkMovementFlightplanData(finished, "B/T154/G", "LFRS", "UWWW");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "LFRS", "UWWW");
+        checkFlightplanData(finished, "B/T154/G", "LFRS", "UWWW");
 
-        checkMovementRoute("UWWW", null);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_678582() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UWWW", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UWWW", null);
     }
 
 
@@ -729,17 +729,17 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 678585 LTCG-URSS Non-finished flight which was terminated due to time endurance
     public void report_678621() {
         checkOfflineEvent();
-        checkMovement();
-        checkMovementStatus(FlightStatus.Lost);
-        checkMovementRoute("LTCG", null);
-        checkMovementFlightplanData("B/T154/G", "LTCG", "URSS");
+        checkFlight();
+        checkFlightStatus(FlightStatus.Lost);
+        checkFlightRoute("LTCG", null);
+        checkFlightplanData("B/T154/G", "LTCG", "URSS");
     }
 
     // this conditions may fail after changing of aircraft endurance code or report time difference calculation
     public void report_678806() {
-        checkMovementStatusEvent(FlightStatus.Terminated);
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "LTCG", null);
+        checkFlightStatusEvent(FlightStatus.Terminated);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "LTCG", null);
     }
 
 
@@ -747,39 +747,39 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 679081 LCLK-UWWW
     public void report_679224() {
         checkLandingEvent();
-        checkMovementRoute("LCLK", "UWWW");
-        checkMovementFlightplanData("B/T154/G", "LCLK", "UWWW");
+        checkFlightRoute("LCLK", "UWWW");
+        checkFlightplanData("B/T154/G", "LCLK", "UWWW");
     }
 
     // 679229 UWWW-.... Short connection
     public void report_679230() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "LCLK", "UWWW");
-        checkMovementFlightplanData(finished, "B/T154/G", "LCLK", "UWWW");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "LCLK", "UWWW");
+        checkFlightplanData(finished, "B/T154/G", "LCLK", "UWWW");
 
-        checkMovementRoute("UWWW", null);
+        checkFlightRoute("UWWW", null);
     }
 
     public void report_679232() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "UWWW", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "UWWW", null);
     }
 
 
 
     // 679261 OPRN-.... Non-finished flight
     public void report_679316() {
-        Flight lost = getMovementFromStatusEvent(FlightStatus.Lost);
-        checkMovementRoute(lost, "OPRN", null);
-        checkMovementFlightplanData(lost, "B/T154/G", "OPRN", "UWWW");
+        Flight lost = getFlightFromStatusEvent(FlightStatus.Lost);
+        checkFlightRoute(lost, "OPRN", null);
+        checkFlightplanData(lost, "B/T154/G", "OPRN", "UWWW");
     }
 
 
 
     // 679320 ULLI-.... Short connection
     public void report_679348() {
-        Flight terminated = getMovementFromStatusEvent(FlightStatus.Terminated);
-        checkMovementRoute(terminated, "ULLI", null);
+        Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminated, "ULLI", null);
     }
 
 
@@ -787,23 +787,23 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 679817 ULMM-UWWW
     public void report_679903() {
         checkLandingEvent();
-        checkMovementRoute("ULMM", "UWWW");
-        checkMovementFlightplanData("B/T154/G", "ULMM", "UWWW");
+        checkFlightRoute("ULMM", "UWWW");
+        checkFlightplanData("B/T154/G", "ULMM", "UWWW");
     }
 
     public void report_679909() {
-        Flight finished = getMovementFromStatusEvent(FlightStatus.Finished);
-        checkMovementRoute(finished, "ULMM", "UWWW");
-        checkMovementFlightplanData(finished, "B/T154/G", "ULMM", "UWWW");
+        Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(finished, "ULMM", "UWWW");
+        checkFlightplanData(finished, "B/T154/G", "ULMM", "UWWW");
     }
 
 
 
     // 679912 DTTA-.... Non-finished flight (end of file)
     public void report_679999() {
-        checkMovement();
-        checkMovementStatus(FlightStatus.Flying);
-        checkMovementRoute("DTTA", null);
-        checkMovementFlightplanData("B/T154/G", "DTTA", "UWWW");
+        checkFlight();
+        checkFlightStatus(FlightStatus.Flying);
+        checkFlightRoute("DTTA", null);
+        checkFlightplanData("B/T154/G", "DTTA", "UWWW");
     }
 }
