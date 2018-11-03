@@ -305,7 +305,7 @@ public abstract class BaseTest {
     protected void checkFlightRoute(Flight flight, String expectedDeparture, String expectedDestination) {
         countCheckMethod();
 
-        assertEquals(expectedDeparture, flight.getOrigin() != null ? flight.getOrigin().getAirportIcao() : null);
+        assertEquals(expectedDeparture, flight.getDeparture() != null ? flight.getDeparture().getAirportIcao() : null);
         assertEquals(expectedDestination, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
         logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(expectedDeparture, "[--]"), Misc.mn(expectedDestination, "[--]")));
     }

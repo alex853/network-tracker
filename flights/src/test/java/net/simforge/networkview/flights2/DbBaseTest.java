@@ -80,7 +80,7 @@ public abstract class DbBaseTest extends BaseTest {
         assertNotNull(currFlight);
 
         if (expectedDeparture != null) {
-            assertEquals(expectedDeparture, currFlight.getOrigin().getAirportIcao());
+            assertEquals(expectedDeparture, currFlight.getDeparture().getAirportIcao());
         }
 
         if (expectedDestination != null) {

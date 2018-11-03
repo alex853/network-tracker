@@ -171,7 +171,7 @@ public class PilotContext {
 
             flight.setStatus(firstSeenPosition.isOnGround() ? FlightStatus.Departure : FlightStatus.Flying);
             flight.setFirstSeen(firstSeenPosition);
-            flight.setOrigin(firstSeenPosition);
+            flight.setDeparture(firstSeenPosition);
             flight.setLastSeen(firstSeenPosition);
 
             // todo processCriteria(flight, firstSeenPosition);
@@ -196,7 +196,7 @@ public class PilotContext {
             if (flight.getStatus().is(FlightStatus.Departure)
                     && position.isPositionKnown()
                     && position.isOnGround()) {
-                flight.setOrigin(position);
+                flight.setDeparture(position);
             }
 
             // todo processCriteria(flight, position);

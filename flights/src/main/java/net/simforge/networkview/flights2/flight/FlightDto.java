@@ -7,7 +7,7 @@ public class FlightDto implements Flight {
     private FlightStatus status;
 
     private Position firstSeen;
-    private Position origin;
+    private Position departure;
     private Position destination;
     private Position lastSeen;
 
@@ -36,13 +36,13 @@ public class FlightDto implements Flight {
     }
 
     @Override
-    public Position getOrigin() {
-        return origin;
+    public Position getDeparture() {
+        return departure;
     }
 
-    public void setOrigin(Position origin) {
+    public void setDeparture(Position departure) {
         setDirty();
-        this.origin = origin;
+        this.departure = departure;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class FlightDto implements Flight {
         FlightDto copy = new FlightDto();
         copy.status = status;
         copy.firstSeen = firstSeen;
-        copy.origin = origin;
+        copy.departure = departure;
         copy.destination = destination;
         copy.lastSeen = lastSeen;
         copy.flightplan = flightplan;

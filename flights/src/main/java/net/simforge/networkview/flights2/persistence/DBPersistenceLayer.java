@@ -224,7 +224,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
             flight.setFirstSeen(Position.create(reportDatasource.loadPilotPosition(dbFlight.getFirstSeenReportId(), pilotNumber)));
             flight.setLastSeen(Position.create(reportDatasource.loadPilotPosition(dbFlight.getLastSeenReportId(), pilotNumber)));
             if (dbFlight.getDepartureReportId() != null) {
-                flight.setOrigin(Position.create(reportDatasource.loadPilotPosition(dbFlight.getDepartureReportId(), pilotNumber)));
+                flight.setDeparture(Position.create(reportDatasource.loadPilotPosition(dbFlight.getDepartureReportId(), pilotNumber)));
             }
             if (dbFlight.getArrivalReportId() != null) {
                 flight.setDestination(Position.create(reportDatasource.loadPilotPosition(dbFlight.getArrivalReportId(), pilotNumber)));
@@ -267,13 +267,13 @@ public class DBPersistenceLayer implements PersistenceLayer {
             dbFlight.setLastSeenReportId(flight.getLastSeen().getReportId());
             dbFlight.setLastSeenDt(flight.getLastSeen().getDt());
 
-            if (flight.getOrigin() != null) {
-                dbFlight.setDepartureReportId(flight.getOrigin().getReportId());
-                dbFlight.setDepartureDt(flight.getOrigin().getDt());
-                dbFlight.setDepartureLatitude(flight.getOrigin().getCoords().getLat());
-                dbFlight.setDepartureLongitude(flight.getOrigin().getCoords().getLon());
+            if (flight.getDeparture() != null) {
+                dbFlight.setDepartureReportId(flight.getDeparture().getReportId());
+                dbFlight.setDepartureDt(flight.getDeparture().getDt());
+                dbFlight.setDepartureLatitude(flight.getDeparture().getCoords().getLat());
+                dbFlight.setDepartureLongitude(flight.getDeparture().getCoords().getLon());
                 // todo AK dbFlight.setOriginType(null);
-                dbFlight.setDepartureIcao(flight.getOrigin().getAirportIcao());
+                dbFlight.setDepartureIcao(flight.getDeparture().getAirportIcao());
             } else {
                 dbFlight.setDepartureReportId(null);
                 dbFlight.setDepartureDt(null);

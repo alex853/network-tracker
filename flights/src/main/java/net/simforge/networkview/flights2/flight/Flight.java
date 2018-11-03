@@ -9,7 +9,7 @@ public interface Flight {
 
     Position getFirstSeen();
 
-    Position getOrigin();
+    Position getDeparture();
 
     Position getDestination();
 
