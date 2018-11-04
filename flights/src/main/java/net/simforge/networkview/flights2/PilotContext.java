@@ -177,7 +177,7 @@ public class PilotContext {
 
             collectFlightplan(flight);
 
-            putMovementStatusEvent(flight);
+            putFlightStatusEvent(flight);
 
             // we do not add it to recentFlights list
             currFlight = flight;
@@ -204,7 +204,7 @@ public class PilotContext {
 
             flight.setStatus(FlightStatus.Finished);
 
-            putMovementStatusEvent(flight);
+            putFlightStatusEvent(flight);
 
             recentFlights.add(currFlight);
             currFlight = null;
@@ -217,7 +217,7 @@ public class PilotContext {
 
             flight.setStatus(FlightStatus.Terminated);
 
-            putMovementStatusEvent(flight);
+            putFlightStatusEvent(flight);
 
             recentFlights.add(currFlight);
             currFlight = null;
@@ -230,7 +230,7 @@ public class PilotContext {
 
             flight.setStatus(FlightStatus.Lost);
 
-            putMovementStatusEvent(flight);
+            putFlightStatusEvent(flight);
 
             dirty = true;
         }
@@ -247,7 +247,7 @@ public class PilotContext {
 
             collectFlightplan(flight);
 
-            putMovementStatusEvent(flight);
+            putFlightStatusEvent(flight);
 
             dirty = true;
         }
@@ -265,7 +265,7 @@ public class PilotContext {
 
             collectFlightplan(flight);
 
-            putMovementStatusEvent(flight);
+            putFlightStatusEvent(flight);
 
             dirty = true;
         }
@@ -283,7 +283,7 @@ public class PilotContext {
 
             collectFlightplan(flight);
 
-            putMovementStatusEvent(flight);
+            putFlightStatusEvent(flight);
 
             dirty = true;
         }
@@ -300,7 +300,7 @@ public class PilotContext {
             }
         }
 
-        private void putMovementStatusEvent(Flight flight) {
+        private void putFlightStatusEvent(Flight flight) {
             enqueueEvent(new FlightStatusEvent(getPilotContext(), flight));
         }
     }

@@ -16,7 +16,7 @@ public class PilotOnlineEvent extends PilotEvent {
             PilotContext pilotContext = delegate.getPilotContext();
             Position position = pilotContext.getCurrPosition();
 
-            // check if previous movement can be continued
+            // check if previous flight can be continued
             boolean createNew = true;
             Flight flight = pilotContext.getCurrFlight();
             if (flight != null) {

@@ -128,9 +128,9 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_670589() {
-        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(movement, "ULLI", null);
-        checkFlightplanData(movement, "T154", "ULLI", "USRR");
+        Flight flight = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(flight, "ULLI", null);
+        checkFlightplanData(flight, "T154", "ULLI", "USRR");
     }
 
 
@@ -157,27 +157,27 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_670679() {
-        Flight movement = getFlightFromStatusEvent(FlightStatus.Finished);
-        checkFlightRoute(movement, "ULLI", "USRR");
-        checkFlightplanData(movement, "T154", "ULLI", "USRR");
+        Flight flight = getFlightFromStatusEvent(FlightStatus.Finished);
+        checkFlightRoute(flight, "ULLI", "USRR");
+        checkFlightplanData(flight, "T154", "ULLI", "USRR");
     }
 
 
 
     // 670702 UKBB-.... Short connection
     public void report_670705() {
-        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(movement, "UKBB", null);
-        checkFlightplanData(movement, "T154", "ULLI", "USRR");
+        Flight flight = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(flight, "UKBB", null);
+        checkFlightplanData(flight, "T154", "ULLI", "USRR");
     }
 
 
 
     // 670706 UUDD-.... Short connection
     public void report_670717() {
-        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(movement, "UUDD", null);
-        checkFlightplanData(movement, "T154", "ULLI", "USRR");
+        Flight flight = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(flight, "UUDD", null);
+        checkFlightplanData(flight, "T154", "ULLI", "USRR");
     }
 
 
@@ -339,7 +339,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_674324() {
-        //checkMovementStatusEvent("departure.departing"); // postponed departure.departing
+        //checkflightStatusEvent("departure.departing"); // postponed departure.departing
     }
 
     public void report_674326() {
@@ -400,8 +400,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_674843() {
-        Flight movement = getFlightFromStatusEvent(FlightStatus.Lost);
-        checkFlightRoute(movement, "UHMA", null);
+        Flight flight = getFlightFromStatusEvent(FlightStatus.Lost);
+        checkFlightRoute(flight, "UHMA", null);
     }
 
 
@@ -494,16 +494,16 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     // 675009 Jump to UWWW, UWWW-.... Short connection
     public void report_675009() {
-        Flight terminatedMovement = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(terminatedMovement, "UUDD", null);
+        Flight terminatedflight = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(terminatedflight, "UUDD", null);
 
-        Flight departureMovement = getFlightFromStatusEvent(FlightStatus.Departure);
-        checkFlightRoute(departureMovement, "UWWW", null);
+        Flight departureflight = getFlightFromStatusEvent(FlightStatus.Departure);
+        checkFlightRoute(departureflight, "UWWW", null);
     }
 
     public void report_675035() {
-        Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(movement, "UWWW", null);
+        Flight flight = getFlightFromStatusEvent(FlightStatus.Terminated);
+        checkFlightRoute(flight, "UWWW", null);
     }
 
     public void report_675036_675477() {
