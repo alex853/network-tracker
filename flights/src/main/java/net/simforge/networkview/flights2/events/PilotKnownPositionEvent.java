@@ -26,7 +26,7 @@ public class PilotKnownPositionEvent extends PilotEvent {
                 hasEvents = true;
             } else {
                 if (prevPosition.isOnGround() && !nextPosition.isOnGround()) {
-                    delegate.enqueueEvent(new PilotTakeoffEvent(pilotContext.getPilotNumber(), nextPosition.getReport()));
+                    delegate.enqueueEvent(new PilotTakeoffEvent(pilotContext.getPilotNumber(), nextPosition.getReport(), prevPosition));
                     hasEvents = true;
                 } else if (!prevPosition.isOnGround() && nextPosition.isOnGround()) {
                     delegate.enqueueEvent(new PilotLandingEvent(pilotContext.getPilotNumber(), nextPosition.getReport()));

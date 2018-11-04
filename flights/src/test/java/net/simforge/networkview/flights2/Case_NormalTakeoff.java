@@ -28,7 +28,7 @@ public class Case_NormalTakeoff extends BaseTest {
         checkOnlineEvent();
     }
 
-    public void report_670491_670497() {
+    public void report_670491_670496() {
         checkFlight();
         checkFlightStatus(FlightStatus.Departure);
         checkFlightRoute(null, null);

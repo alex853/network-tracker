@@ -171,7 +171,6 @@ public class PilotContext {
 
             flight.setStatus(firstSeenPosition.isOnGround() ? FlightStatus.Departure : FlightStatus.Flying);
             flight.setFirstSeen(firstSeenPosition);
-            flight.setDeparture(firstSeenPosition);
             flight.setLastSeen(firstSeenPosition);
 
             // todo processCriteria(flight, firstSeenPosition);
@@ -192,12 +191,6 @@ public class PilotContext {
             Position position = getPilotContext().getCurrPosition();
 
             flight.setLastSeen(position);
-
-            if (flight.getStatus().is(FlightStatus.Departure)
-                    && position.isPositionKnown()
-                    && position.isOnGround()) {
-                flight.setDeparture(position);
-            }
 
             // todo processCriteria(flight, position);
 
@@ -242,12 +235,13 @@ public class PilotContext {
             dirty = true;
         }
 
-        public void takeoff(Flight _flight) {
+        public void takeoff(Flight _flight, Position onGroundPositionBeforeTakeoff) {
             FlightDto flight = (FlightDto) _flight;
 
             Position position = getPilotContext().getCurrPosition();
 
             flight.setStatus(FlightStatus.Flying);
+            flight.setDeparture(onGroundPositionBeforeTakeoff);
             flight.setLastSeen(position);
 
             // todo processCriteria(flight, position);

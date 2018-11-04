@@ -1,12 +1,16 @@
 package net.simforge.networkview.flights2.events;
 
+import net.simforge.networkview.flights2.Position;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
 public class PilotTakeoffEvent extends PilotEvent {
-    public PilotTakeoffEvent(int pilotNumber, String report) {
+    private Position onGroundPositionBeforeTakeoff;
+
+    public PilotTakeoffEvent(int pilotNumber, String report, Position onGroundPositionBeforeTakeoff) {
         super(pilotNumber, report, "pilot/takeoff");
+        this.onGroundPositionBeforeTakeoff = onGroundPositionBeforeTakeoff;
     }
 
     static {
@@ -24,7 +28,7 @@ public class PilotTakeoffEvent extends PilotEvent {
                 throw new IllegalStateException("Takeoff is not suitable for flight in '" + flight.getStatus() + "' status");
             }
 
-            delegate.takeoff(flight);
+            delegate.takeoff(flight, event.onGroundPositionBeforeTakeoff);
         });
     }
 }
