@@ -51,13 +51,16 @@ public class PilotKnownPositionEvent extends PilotEvent {
                     } else*/ {
                         // if flight is already for some time in Arrival status then finish the flight
                         if (flight.getStatus().is(FlightStatus.Arrival)) {
-                            /* todo double timeBetween = pilotContext.getMainContext().getTimeBetween(flight.getDestination().getReportId(), nextPosition.getReportId());
-                            // todo increase time?
-                            if (timeBetween >= TrackerUtil.duration(10, TrackerUtil.Minute)) {
-                                FlightOps.finish(pilotContext, flight);
+                            // todo callsign or flightplan change ? --> finish/start
 
-                                flight = FlightOps.create(pilotContext);
-                            }*/
+                            // todo increase time?
+                            if (flight.getDestination().getDt().isBefore(nextPosition.getDt().minusMinutes(10))) {
+                                // todo add event 'finish/start due to time after arrival'
+                                delegate.finishFlight(flight);
+
+                                delegate.startFlight(nextPosition);
+                                flight = pilotContext.getCurrFlight();
+                            }
                         }
 
                         delegate.continueFlight(flight);

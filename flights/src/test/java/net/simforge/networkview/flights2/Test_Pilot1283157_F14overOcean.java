@@ -40,6 +40,10 @@ public class Test_Pilot1283157_F14overOcean extends BaseTest {
         checkFlightRoute(null, null);
     }
 
+    public void report_2015182782() {
+        System.out.println();
+    }
+
     public void report_2015182783() {
         checkFlightStatusEvent(FlightStatus.Finished);
 

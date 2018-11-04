@@ -17,7 +17,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_670000_670456() {
-        checkPositionUnknown();
+        checkNoPilotContext();
     }
 
 
@@ -55,7 +55,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_670471() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "EPWA", "GMMX");
+        checkFlightplanData("T154", "EPWA", "GMMX");
     }
 
 
@@ -66,14 +66,14 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlightStatus(FlightStatus.Departure);
         checkFlightRoute("EPWA", null);
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "EPWA", "GMMX");
+        checkFlightplanData("T154", "EPWA", "GMMX");
     }
 
     public void report_670493() {
         checkFlightStatus(FlightStatus.Departure);
         checkFlightRoute("EPWA", null);
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "EPWA", "LEAM");
+        checkFlightplanData("T154", "EPWA", "LEAM");
     }
 
     public void report_670497() {
@@ -82,21 +82,25 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlightRoute("EPWA", null);
     }
 
+    // Short disconnect at 670518
     public void report_670519() {
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
     }
 
+    // Short disconnect at 670523
     public void report_670524() {
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
     }
 
+    // Short disconnect at 670530
     public void report_670531() {
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
     }
 
+    // Short disconnect at 670537-670538
     public void report_670539() {
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
@@ -115,18 +119,18 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlightStatus(FlightStatus.Departure);
         checkFlightRoute("ULLI", null);
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "EPWA", "LEAM");
+        checkFlightplanData("T154", "EPWA", "LEAM");
     }
 
     public void report_670581() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "ULLI", "USRR");
+        checkFlightplanData("T154", "ULLI", "USRR");
     }
 
     public void report_670589() {
         Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
         checkFlightRoute(movement, "ULLI", null);
-        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        checkFlightplanData(movement, "T154", "ULLI", "USRR");
     }
 
 
@@ -137,7 +141,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlightStatus(FlightStatus.Departure);
         checkFlightRoute("ULLI", null);
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "ULLI", "USRR");
+        checkFlightplanData("T154", "ULLI", "USRR");
     }
 
     public void report_670595() {
@@ -155,7 +159,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_670679() {
         Flight movement = getFlightFromStatusEvent(FlightStatus.Finished);
         checkFlightRoute(movement, "ULLI", "USRR");
-        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        checkFlightplanData(movement, "T154", "ULLI", "USRR");
     }
 
 
@@ -164,7 +168,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_670705() {
         Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
         checkFlightRoute(movement, "UKBB", null);
-        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        checkFlightplanData(movement, "T154", "ULLI", "USRR");
     }
 
 
@@ -173,7 +177,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_670717() {
         Flight movement = getFlightFromStatusEvent(FlightStatus.Terminated);
         checkFlightRoute(movement, "UUDD", null);
-        checkFlightplanData(movement, "B/T154/G", "ULLI", "USRR");
+        checkFlightplanData(movement, "T154", "ULLI", "USRR");
     }
 
 
@@ -186,7 +190,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_673338() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "EKYT", "LDDU");
+        checkFlightplanData("T154", "EKYT", "LDDU");
     }
 
     public void report_673364() {
@@ -227,7 +231,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_673490() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "URKK", "UTAA");
+        checkFlightplanData("T154", "URKK", "UTAA");
     }
 
     public void report_673493() {
@@ -264,7 +268,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_673568() {
         Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
         checkFlightRoute(terminated, "UKFF", null);
-        checkFlightplanData(terminated, "B/T154/G", "URKK", "UTAA");
+        checkFlightplanData(terminated, "T154", "URKK", "UTAA");
     }
 
 
@@ -279,7 +283,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_674064() {
         checkFlightRoute("CYVR", null);
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "CYVR", "MMMX");
+        checkFlightplanData("T154", "CYVR", "MMMX");
     }
 
     public void report_674116() {
@@ -310,7 +314,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkPositionUnknown();
         checkFlightStatus(FlightStatus.Lost);
         checkFlightRoute("CYVR", null);
-        checkFlightplanData("B/T154/G", "CYVR", "MMMX");
+        checkFlightplanData("T154", "CYVR", "MMMX");
     }
 
 
@@ -331,7 +335,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_674320() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "UKHH", "LGSA");
+        checkFlightplanData("T154", "UKHH", "LGSA");
     }
 
     public void report_674324() {
@@ -342,12 +346,12 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkTakeoffEvent();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightStatusEvent(FlightStatus.Flying);
-        checkFlightplanData("B/T154/G", "UKHH", "LGSA");
+        checkFlightplanData("T154", "UKHH", "LGSA");
     }
 
     public void report_674326_674394() {
         checkFlying();
-        checkFlightplanData("B/T154/G", "UKHH", "LGSA");
+        checkFlightplanData("T154", "UKHH", "LGSA");
         checkFlightStatus(FlightStatus.Flying);
     }
 
@@ -388,7 +392,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_674829() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "UHMA", "PAOT");
+        checkFlightplanData("T154", "UHMA", "PAOT");
     }
 
     public void report_674837() {
@@ -410,7 +414,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_674860() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightplanData("T154", "UUDD", "UTTT");
     }
 
     public void report_674862() {
@@ -427,7 +431,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("UUDD", null);
-        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightplanData("T154", "UUDD", "UTTT");
     }
 
     public void report_674907() {
@@ -440,7 +444,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("UUDD", null);
-        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightplanData("T154", "UUDD", "UTTT");
     }
 
     public void report_674953() {
@@ -453,7 +457,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("UUDD", null);
-        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightplanData("T154", "UUDD", "UTTT");
     }
 
     public void report_674981() {
@@ -466,7 +470,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("UUDD", null);
-        checkFlightplanData("B/T154/G", "UUDD", "UTTT");
+        checkFlightplanData("T154", "UUDD", "UTTT");
     }
 
     public void report_674997() {
@@ -518,7 +522,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_675492() {
         checkFlightplanEvent();
-        checkFlightplanData("B/T154/G", "UWWW", "EDDF");
+        checkFlightplanData("T154", "UWWW", "EDDF");
     }
 
     public void report_675495() {
@@ -552,7 +556,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_675578() {
         Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
         checkFlightRoute(terminated, "UUDD", null);
-        checkFlightplanData(terminated, "B/T154/G", "UWWW", "EDDF");
+        checkFlightplanData(terminated, "T154", "UWWW", "EDDF");
     }
 
 
@@ -564,20 +568,20 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlight();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute(null, null);
-        checkFlightplanData("B/T154/G", "UUDD", "EDDF");
+        checkFlightplanData("T154", "UUDD", "EDDF");
     }
 
     public void report_675654() {
         checkLandingEvent();
         checkFlightStatus(FlightStatus.Arrival);
         checkFlightRoute(null, "EDDF");
-        checkFlightplanData("B/T154/G", "UUDD", "EDDF");
+        checkFlightplanData("T154", "UUDD", "EDDF");
     }
 
     public void report_675660() {
         Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
         checkFlightRoute(finished, null, "EDDF");
-        checkFlightplanData(finished, "B/T154/G", "UUDD", "EDDF");
+        checkFlightplanData(finished, "T154", "UUDD", "EDDF");
     }
 
 
@@ -670,7 +674,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_677767() {
         checkLandingEvent();
         checkFlightRoute("UWWW", "LUKK");
-        checkFlightplanData("B/T154/G", "UWWW", "LIRN");
+        checkFlightplanData("T154", "UWWW", "LIRN");
     }
 
 
@@ -682,13 +686,13 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
         Flight departed = getFlightFromStatusEvent(FlightStatus.Departure);
         checkFlightRoute(departed, "LUKK", null);
-        checkFlightplanData(departed, "B/T154/G", "UWWW", "LIRN");
+        checkFlightplanData(departed, "T154", "UWWW", "LIRN");
     }
 
     public void report_677837() {
         Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
         checkFlightRoute(finished, "LUKK", "LIRN");
-        checkFlightplanData(finished, "B/T154/G", "UWWW", "LIRN");
+        checkFlightplanData(finished, "T154", "UWWW", "LIRN");
     }
 
 
@@ -705,7 +709,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_678572() {
         checkFlightStatus(FlightStatus.Arrival);
         checkFlightRoute("LFRS", "UWWW");
-        checkFlightplanData("B/T154/G", "LFRS", "UWWW");
+        checkFlightplanData("T154", "LFRS", "UWWW");
     }
 
 
@@ -714,7 +718,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_678573() {
         Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
         checkFlightRoute(finished, "LFRS", "UWWW");
-        checkFlightplanData(finished, "B/T154/G", "LFRS", "UWWW");
+        checkFlightplanData(finished, "T154", "LFRS", "UWWW");
 
         checkFlightRoute("UWWW", null);
     }
@@ -732,7 +736,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlight();
         checkFlightStatus(FlightStatus.Lost);
         checkFlightRoute("LTCG", null);
-        checkFlightplanData("B/T154/G", "LTCG", "URSS");
+        checkFlightplanData("T154", "LTCG", "URSS");
     }
 
     // this conditions may fail after changing of aircraft endurance code or report time difference calculation
@@ -748,14 +752,14 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_679224() {
         checkLandingEvent();
         checkFlightRoute("LCLK", "UWWW");
-        checkFlightplanData("B/T154/G", "LCLK", "UWWW");
+        checkFlightplanData("T154", "LCLK", "UWWW");
     }
 
     // 679229 UWWW-.... Short connection
     public void report_679230() {
         Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
         checkFlightRoute(finished, "LCLK", "UWWW");
-        checkFlightplanData(finished, "B/T154/G", "LCLK", "UWWW");
+        checkFlightplanData(finished, "T154", "LCLK", "UWWW");
 
         checkFlightRoute("UWWW", null);
     }
@@ -771,7 +775,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_679316() {
         Flight lost = getFlightFromStatusEvent(FlightStatus.Lost);
         checkFlightRoute(lost, "OPRN", null);
-        checkFlightplanData(lost, "B/T154/G", "OPRN", "UWWW");
+        checkFlightplanData(lost, "T154", "OPRN", "UWWW");
     }
 
 
@@ -788,13 +792,13 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_679903() {
         checkLandingEvent();
         checkFlightRoute("ULMM", "UWWW");
-        checkFlightplanData("B/T154/G", "ULMM", "UWWW");
+        checkFlightplanData("T154", "ULMM", "UWWW");
     }
 
     public void report_679909() {
         Flight finished = getFlightFromStatusEvent(FlightStatus.Finished);
         checkFlightRoute(finished, "ULMM", "UWWW");
-        checkFlightplanData(finished, "B/T154/G", "ULMM", "UWWW");
+        checkFlightplanData(finished, "T154", "ULMM", "UWWW");
     }
 
 
@@ -804,6 +808,6 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlight();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("DTTA", null);
-        checkFlightplanData("B/T154/G", "DTTA", "UWWW");
+        checkFlightplanData("T154", "DTTA", "UWWW");
     }
 }
