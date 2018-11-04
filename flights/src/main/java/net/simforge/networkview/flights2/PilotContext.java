@@ -3,6 +3,7 @@ package net.simforge.networkview.flights2;
 import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.flights2.criteria.TrackTrailCriterion;
 import net.simforge.networkview.flights2.events.FlightStatusEvent;
 import net.simforge.networkview.flights2.events.FlightplanEvent;
 import net.simforge.networkview.flights2.events.PilotKnownPositionEvent;
@@ -33,6 +34,7 @@ public class PilotContext {
     // this list does NOT contain currFlight
     protected List<FlightDto> recentFlights = new ArrayList<>();
     protected FlightDto currFlight; // if any, can be null
+    protected TrackTrailCriterion currFlightTrackTrailCriterion;
 
     private boolean dirty = false;
 
@@ -111,6 +113,10 @@ public class PilotContext {
         return currFlight;
     }
 
+    public TrackTrailCriterion getCurrFlightTrackTrailCriterion() {
+        return currFlightTrackTrailCriterion;
+    }
+
     public List<Flight> getRecentFlights() {
         return Collections.unmodifiableList(recentFlights);
     }
@@ -133,6 +139,7 @@ public class PilotContext {
         newContext.recentFlights = recentFlights.stream().map(FlightDto::makeCopy).collect(Collectors.toList());
         if (currFlight != null) {
             newContext.currFlight = currFlight.makeCopy();
+            newContext.currFlightTrackTrailCriterion = currFlightTrackTrailCriterion.makeCopy();
         }
 
         return newContext;
@@ -173,14 +180,14 @@ public class PilotContext {
             flight.setFirstSeen(firstSeenPosition);
             flight.setLastSeen(firstSeenPosition);
 
-            // todo processCriteria(flight, firstSeenPosition);
-
             collectFlightplan(flight);
 
             putFlightStatusEvent(flight);
 
             // we do not add it to recentFlights list
             currFlight = flight;
+            currFlightTrackTrailCriterion = new TrackTrailCriterion(flight);
+            currFlightTrackTrailCriterion.add(firstSeenPosition);
 
             dirty = true;
         }
@@ -192,9 +199,9 @@ public class PilotContext {
 
             flight.setLastSeen(position);
 
-            // todo processCriteria(flight, position);
-
             collectFlightplan(flight);
+
+            currFlightTrackTrailCriterion.add(position);
 
             dirty = true;
         }
@@ -208,6 +215,7 @@ public class PilotContext {
 
             recentFlights.add(currFlight);
             currFlight = null;
+            currFlightTrackTrailCriterion = null;
 
             dirty = true;
         }
@@ -221,6 +229,7 @@ public class PilotContext {
 
             recentFlights.add(currFlight);
             currFlight = null;
+            currFlightTrackTrailCriterion = null;
 
             dirty = true;
         }
@@ -243,11 +252,11 @@ public class PilotContext {
             flight.setStatus(FlightStatus.Flying);
             flight.setLastSeen(position);
 
-            // todo processCriteria(flight, position);
-
             collectFlightplan(flight);
 
             putFlightStatusEvent(flight);
+
+            currFlightTrackTrailCriterion.add(position);
 
             dirty = true;
         }
@@ -261,11 +270,11 @@ public class PilotContext {
             flight.setDeparture(onGroundPositionBeforeTakeoff);
             flight.setLastSeen(position);
 
-            // todo processCriteria(flight, position);
-
             collectFlightplan(flight);
 
             putFlightStatusEvent(flight);
+
+            currFlightTrackTrailCriterion.add(position);
 
             dirty = true;
         }
@@ -279,11 +288,11 @@ public class PilotContext {
             flight.setDestination(position);
             flight.setLastSeen(position);
 
-            // todo processCriteria(flight, position);
-
             collectFlightplan(flight);
 
             putFlightStatusEvent(flight);
+
+            currFlightTrackTrailCriterion.add(position);
 
             dirty = true;
         }

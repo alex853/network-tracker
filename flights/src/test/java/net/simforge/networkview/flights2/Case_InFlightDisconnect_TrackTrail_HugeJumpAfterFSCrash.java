@@ -24,13 +24,13 @@ public class Case_InFlightDisconnect_TrackTrail_HugeJumpAfterFSCrash extends Bas
     }
 
     // Pilot is cruising
-    public void report_670550_670538() {
+    public void report_670550_670570() {
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute(null, null); // flight route is null-null because the previous flight is not fully tracked in this scenario
     }
 
     // Pilot disappears
-    public void report_670571() {
+    public void report_670571_670572() {
         checkFlightStatus(FlightStatus.Lost);
         checkFlightRoute(null, null); // flight route is null-null because the previous flight is not fully tracked in this scenario
     }
@@ -42,7 +42,8 @@ public class Case_InFlightDisconnect_TrackTrail_HugeJumpAfterFSCrash extends Bas
 
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("ULLI", null);
+        checkFlightLastSeenIcao("ULLI");
+        checkFlightRoute(null, null);
         checkFlightplanEvent();
         checkFlightplanData("T154", "EPWA", "LEAM");
     }

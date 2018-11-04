@@ -17,12 +17,10 @@ public class PilotOfflineEvent extends PilotEvent {
             if (flight != null) {
                 if (flight.getStatus() == FlightStatus.Arrival) {
                     delegate.finishFlight(flight);
+                } else if (flight.getStatus() == FlightStatus.Flying) {
+                    delegate.lostFlight(flight);
                 } else {
-                    if (flight.getStatus() == FlightStatus.Flying) {
-                        delegate.lostFlight(flight);
-                    } else {
-                        delegate.terminateFlight(flight);
-                    }
+                    delegate.terminateFlight(flight);
                 }
             }
         });

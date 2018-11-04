@@ -15,14 +15,12 @@ public class EllipseCriterion implements Criterion {
     }
 
     @Override
-    public void process(Position position) {
-        // no/op
-    }
-
-    @Override
     public boolean meets(Position position) {
-        Position originPosition = flight.getDeparture();
-        if (!originPosition.isInAirport()) {
+        Position takeoffPosition = flight.getDeparture();
+        if (takeoffPosition == null) {
+            return false;
+        }
+        if (!takeoffPosition.isInAirport()) {
             return false;
         }
 
@@ -39,18 +37,18 @@ public class EllipseCriterion implements Criterion {
             return false;
         }
 
-        Geo.Coords originCoords = originPosition.getCoords();
+        Geo.Coords takeoffCoords = takeoffPosition.getCoords();
         Geo.Coords destinationCoords = destinationAirport.getCoords();
         Geo.Coords positionCoords = position.getCoords();
 
-        double dist = Geo.distance(originCoords, destinationCoords);
+        double dist = Geo.distance(takeoffCoords, destinationCoords);
 
         // https://ru.wikipedia.org/wiki/%D0%AD%D0%BB%D0%BB%D0%B8%D0%BF%D1%81
         double c = dist / 2;
         double a = c + 100; // 100 nm
         double b = Math.sqrt( a*a - c*c );
 
-        double summedDist = Geo.distance(originCoords, positionCoords) + Geo.distance(positionCoords, destinationCoords);
+        double summedDist = Geo.distance(takeoffCoords, positionCoords) + Geo.distance(positionCoords, destinationCoords);
 
         return summedDist <= 2 * a;
     }

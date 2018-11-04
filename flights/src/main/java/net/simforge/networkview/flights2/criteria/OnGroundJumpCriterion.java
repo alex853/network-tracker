@@ -13,11 +13,6 @@ public class OnGroundJumpCriterion implements Criterion {
     }
 
     @Override
-    public void process(Position position) {
-        // no/op
-    }
-
-    @Override
     public boolean meets(Position position) {
         Position lastSeen = flight.getLastSeen();
 

@@ -335,6 +335,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
             Preconditions.checkArgument(lastFlight.getFirstSeen().getReportId() == dbCurrFlight.getFirstSeenReportId());
             flights.remove(flights.size() - 1);
             pilotContext.setCurrFlight(lastFlight);
+            // todo load curr flight track trail positions!!1
         }
         pilotContext.setRecentFlights(flights);
 

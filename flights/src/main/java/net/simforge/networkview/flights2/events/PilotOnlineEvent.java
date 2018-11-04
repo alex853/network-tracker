@@ -2,6 +2,7 @@ package net.simforge.networkview.flights2.events;
 
 import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights2.criteria.Criterion;
 import net.simforge.networkview.flights2.criteria.EllipseCriterion;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
@@ -21,14 +22,28 @@ public class PilotOnlineEvent extends PilotEvent {
             Flight flight = pilotContext.getCurrFlight();
             if (flight != null) {
                 if (flight.getStatus() == FlightStatus.Lost) {
-                    // todo Criterion trackTrailCriterion = flight.getTrackTrailCriterion();
+                    Criterion trackTrailCriterion = pilotContext.getCurrFlightTrackTrailCriterion();
+                    boolean trackTrailCriterionOk = trackTrailCriterion.meets(position);
+                    boolean ellipseCriterionOk = EllipseCriterion.get(flight).meets(position);
 
-                    if (!position.isOnGround()
-                            && (/*todo trackTrailCriterion.meets(position) ||*/ EllipseCriterion.get(flight).meets(position))) {
-                        delegate.resumeLostFlight(flight);
-                        // todo add event 'flight resumed because of ellipse or track trail criterion'
+                    if (flight.getLastSeen().isOnGround() && !position.isOnGround()) {
+                        // check for takeoff
+                        throw new UnsupportedOperationException("PilotOnlineEvent#check for takeoff");
+                    } else if (!flight.getLastSeen().isOnGround() && position.isOnGround()) {
+                        if (trackTrailCriterionOk || ellipseCriterionOk) {
+                            // todo add event 'flight resumed because of ellipse or track trail criterion'
+                            delegate.landing(flight);
 
-                        createNew = false;
+                            createNew = false;
+                        }
+                    } else {
+
+                        if (!position.isOnGround() && (trackTrailCriterionOk || ellipseCriterionOk)) {
+                            delegate.resumeLostFlight(flight);
+                            // todo add event 'flight resumed because of ellipse or track trail criterion'
+
+                            createNew = false;
+                        }
                     }
                 }
             }
