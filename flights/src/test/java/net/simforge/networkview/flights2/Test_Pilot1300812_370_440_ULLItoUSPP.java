@@ -18,7 +18,8 @@ public class Test_Pilot1300812_370_440_ULLItoUSPP extends BaseTest {
         checkOnlineEvent();
         checkFlight();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("ULLI", null);
+        checkFlightLastSeenIcao("ULLI");
+        checkFlightRoute(null, null);
     }
 
     public void report_375() {
@@ -29,6 +30,7 @@ public class Test_Pilot1300812_370_440_ULLItoUSPP extends BaseTest {
     public void report_380() {
         checkTakeoffEvent();
         checkFlightStatus(FlightStatus.Flying);
+        checkFlightLastSeenIcao(null);
         checkFlightRoute("ULLI", null);
     }
 

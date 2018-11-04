@@ -103,4 +103,15 @@ public abstract class DbBaseTest extends BaseTest {
         assertEquals(callsign, currFlight.getFlightplan().getCallsign());
         logger.info("\tOK:DB Callsign");
     }
+
+    protected void checkDBCurrFlightLastSeen(String expectedLastSeenIcao) throws IOException {
+        countCheckMethod();
+
+        PilotContext pilotContext = persistenceLayer.loadContext(pilotNumber);
+        Flight currFlight = pilotContext.getCurrFlight();
+        assertNotNull(currFlight);
+
+        assertEquals(expectedLastSeenIcao, currFlight.getLastSeen().getAirportIcao());
+        logger.info("\tOK:DB Callsign");
+    }
 }

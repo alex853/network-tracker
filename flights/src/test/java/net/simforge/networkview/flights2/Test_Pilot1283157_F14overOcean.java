@@ -31,17 +31,13 @@ public class Test_Pilot1283157_F14overOcean extends BaseTest {
     public void report_2015182771() {
         checkTakeoffEvent();
         checkFlightStatus(FlightStatus.Flying);
-        checkFlightRoute(null, null);
+        checkFlightRoute(ON_GROUND, null);
     }
 
     public void report_2015182777() {
         checkLandingEvent();
         checkFlightStatus(FlightStatus.Arrival);
-        checkFlightRoute(null, null);
-    }
-
-    public void report_2015182782() {
-        System.out.println();
+        checkFlightRoute(ON_GROUND, ON_GROUND);
     }
 
     public void report_2015182783() {

@@ -1,12 +1,14 @@
 package net.simforge.networkview.flights2;
 
 import net.simforge.networkview.flights2.flight.FlightStatus;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.junit.Assert.fail;
 
+@Ignore
 public class Test_Pilot1096198_1000000_3227 extends BaseTest {
 
     @Test

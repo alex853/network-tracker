@@ -23,14 +23,16 @@ public class Test_Pilot1309680_1_60_EKCHtoUnfinished extends BaseTest {
         checkOnGround();
         checkFlight();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("EKCH", null);
+        checkFlightLastSeenIcao("EKCH");
+        checkFlightRoute(null, null);
     }
 
     public void report_8_18() {
         checkOnGround();
         checkFlight();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("EKCH", null);
+        checkFlightLastSeenIcao("EKCH");
+        checkFlightRoute(null, null);
     }
 
     public void report_19() {

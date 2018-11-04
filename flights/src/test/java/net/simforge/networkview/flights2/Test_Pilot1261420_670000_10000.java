@@ -50,7 +50,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkPositionKnown();
         checkFlight();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("EPWA", null);
+        checkFlightLastSeenIcao("EPWA");
+        checkFlightRoute(null, null);
     }
 
     public void report_670471() {
@@ -64,7 +65,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_670491() {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("EPWA", null);
+        checkFlightLastSeenIcao("EPWA");
+        checkFlightRoute(null, null);
         checkFlightplanEvent();
         checkFlightplanData("T154", "EPWA", "GMMX");
     }

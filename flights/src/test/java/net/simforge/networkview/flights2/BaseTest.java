@@ -32,6 +32,8 @@ import static org.junit.Assert.*;
 
 public abstract class BaseTest {
 
+    protected static final String ON_GROUND = "[ON_GROUND]";
+
     private static final Logger logger = LoggerFactory.getLogger(BaseTest.class.getName());
 
     protected ReportDatasource reportDatasource;
@@ -305,12 +307,16 @@ public abstract class BaseTest {
     protected void checkFlightRoute(Flight flight, String expectedTakeoff, String expectedLanding) {
         countCheckMethod();
 
-        if (expectedTakeoff != null) {
+        if (expectedTakeoff == ON_GROUND) {
+            assertNotNull(flight.getDeparture());
+        } else if (expectedTakeoff != null) {
             assertEquals(expectedTakeoff, flight.getDeparture() != null ? flight.getDeparture().getAirportIcao() : null);
         } else {
             assertNull(flight.getDeparture());
         }
-        if (expectedLanding != null) {
+        if (expectedLanding == ON_GROUND) {
+            assertNotNull(flight.getDestination());
+        } else if (expectedLanding != null) {
             assertEquals(expectedLanding, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
         } else {
             assertNull(flight.getDestination());
