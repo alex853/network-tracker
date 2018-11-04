@@ -302,12 +302,20 @@ public abstract class BaseTest {
         checkFlightRoute(flight, origin, destination);
     }
 
-    protected void checkFlightRoute(Flight flight, String expectedDeparture, String expectedDestination) {
+    protected void checkFlightRoute(Flight flight, String expectedTakeoff, String expectedLanding) {
         countCheckMethod();
 
-        assertEquals(expectedDeparture, flight.getDeparture() != null ? flight.getDeparture().getAirportIcao() : null);
-        assertEquals(expectedDestination, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
-        logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(expectedDeparture, "[--]"), Misc.mn(expectedDestination, "[--]")));
+        if (expectedTakeoff != null) {
+            assertEquals(expectedTakeoff, flight.getDeparture() != null ? flight.getDeparture().getAirportIcao() : null);
+        } else {
+            assertNull(flight.getDeparture());
+        }
+        if (expectedLanding != null) {
+            assertEquals(expectedLanding, flight.getDestination() != null ? flight.getDestination().getAirportIcao() : null);
+        } else {
+            assertNull(flight.getDestination());
+        }
+        logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(expectedTakeoff, "[--]"), Misc.mn(expectedLanding, "[--]")));
     }
 
     protected void checkFlightStatusEvent(FlightStatus status) {
