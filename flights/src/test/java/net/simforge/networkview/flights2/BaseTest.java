@@ -384,4 +384,8 @@ public abstract class BaseTest {
         assertNotNull(foundEvent);
         return foundEvent.getFlight();
     }
+
+    protected void checkRecentFlightCount(int expectedFlightCount) {
+        assertEquals(expectedFlightCount, pilotContext.getRecentFlights().size());
+    }
 }

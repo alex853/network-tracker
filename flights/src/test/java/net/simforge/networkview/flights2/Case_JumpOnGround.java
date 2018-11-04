@@ -6,6 +6,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+/**
+ * Pilot changes aircraft position from one airport to another while he is connected to network.
+ * It looks like instant jump "on ground".
+ *
+ * Expected behaviour:
+ *   1) Finish or terminate the first flight.
+ *   2) Start the second flight.
+ */
 public class Case_JumpOnGround extends BaseTest {
 
     @Test

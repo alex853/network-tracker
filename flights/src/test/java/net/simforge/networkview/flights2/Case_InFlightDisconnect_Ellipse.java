@@ -11,7 +11,7 @@ import java.io.IOException;
  * Expected behaviour:
  *   1) Flight resumes after each disconnection.
  */
-public class Case_ShortInFlightDisconnects extends BaseTest {
+public class Case_InFlightDisconnect_Ellipse extends BaseTest {
 
     @Test
     public void test() throws IOException {
@@ -24,14 +24,16 @@ public class Case_ShortInFlightDisconnects extends BaseTest {
     public void report_670491() {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("EPWA", null);
+        checkFlightRoute(null, null);
+        checkFlightLastSeenIcao("EPWA");
         checkFlightplanEvent();
         checkFlightplanData("T154", "EPWA", "GMMX");
     }
 
     public void report_670493() {
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("EPWA", null);
+        checkFlightRoute(null, null);
+        checkFlightLastSeenIcao("EPWA");
         checkFlightplanEvent();
         checkFlightplanData("T154", "EPWA", "LEAM");
     }
@@ -44,29 +46,34 @@ public class Case_ShortInFlightDisconnects extends BaseTest {
 
     // Short disconnect at 670518
     public void report_670519() {
+        checkRecentFlightCount(0);
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
     }
 
     // Short disconnect at 670523
     public void report_670524() {
+        checkRecentFlightCount(0);
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
     }
 
     // Short disconnect at 670530
     public void report_670531() {
+        checkRecentFlightCount(0);
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
     }
 
     // Short disconnect at 670537-670538
     public void report_670539() {
+        checkRecentFlightCount(0);
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EPWA", null);
     }
 
     public void report_670571() {
+        checkRecentFlightCount(0);
         checkFlightStatus(FlightStatus.Lost);
         checkFlightRoute("EPWA", null);
     }

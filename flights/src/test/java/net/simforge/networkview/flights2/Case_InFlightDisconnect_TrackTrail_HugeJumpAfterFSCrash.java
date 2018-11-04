@@ -14,7 +14,7 @@ import java.io.IOException;
  *   1) The first flight is finished.
  *   2) The second "on ground" flight is started.
  */
-public class Case_HugeJumpAfterFSCrash extends BaseTest {
+public class Case_InFlightDisconnect_TrackTrail_HugeJumpAfterFSCrash extends BaseTest {
 
     @Test
     public void test() throws IOException {

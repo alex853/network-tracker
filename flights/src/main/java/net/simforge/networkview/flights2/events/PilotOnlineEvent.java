@@ -2,6 +2,7 @@ package net.simforge.networkview.flights2.events;
 
 import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights2.criteria.EllipseCriterion;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
@@ -20,14 +21,15 @@ public class PilotOnlineEvent extends PilotEvent {
             Flight flight = pilotContext.getCurrFlight();
             if (flight != null) {
                 if (flight.getStatus() == FlightStatus.Lost) {
-                    /* todo Criterion trackTrailCriterion = flight.getTrackTrailCriterion();
+                    // todo Criterion trackTrailCriterion = flight.getTrackTrailCriterion();
 
                     if (!position.isOnGround()
-                            && (trackTrailCriterion.meets(position) || EllipseCriterion.get(flight).meets(position))) {
-                        FlightOps.resumeLostFlight(pilotContext, flight);
+                            && (/*todo trackTrailCriterion.meets(position) ||*/ EllipseCriterion.get(flight).meets(position))) {
+                        delegate.resumeLostFlight(flight);
+                        // todo add event 'flight resumed because of ellipse or track trail criterion'
 
                         createNew = false;
-                    }*/
+                    }
                 }
             }
 

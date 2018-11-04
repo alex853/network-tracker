@@ -235,6 +235,23 @@ public class PilotContext {
             dirty = true;
         }
 
+        public void resumeLostFlight(Flight _flight) {
+            FlightDto flight = (FlightDto) _flight;
+
+            Position position = getPilotContext().getCurrPosition();
+
+            flight.setStatus(FlightStatus.Flying);
+            flight.setLastSeen(position);
+
+            // todo processCriteria(flight, position);
+
+            collectFlightplan(flight);
+
+            putMovementStatusEvent(flight);
+
+            dirty = true;
+        }
+
         public void takeoff(Flight _flight, Position onGroundPositionBeforeTakeoff) {
             FlightDto flight = (FlightDto) _flight;
 
