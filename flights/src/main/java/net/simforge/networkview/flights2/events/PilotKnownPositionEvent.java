@@ -2,6 +2,7 @@ package net.simforge.networkview.flights2.events;
 
 import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights2.criteria.OnGroundJumpCriterion;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
@@ -37,18 +38,19 @@ public class PilotKnownPositionEvent extends PilotEvent {
             if (!hasEvents) {
                 Flight flight = pilotContext.getCurrFlight();
                 if (flight != null) {
-                    /* todo if (OnGroundJumpCriterion.get(flight).meets(nextPosition)) {
+                    if (OnGroundJumpCriterion.get(flight).meets(nextPosition)) {
                         // stop current flight
                         // start new flight
 
+                        // todo add event 'jump found!!!'
                         if (flight.getStatus().is(FlightStatus.Arrival)) {
-                            FlightOps.finish(pilotContext, flight);
+                            delegate.finishFlight(flight);
                         } else {
-                            FlightOps.terminate(pilotContext, flight);
+                            delegate.terminateFlight(flight);
                         }
 
-                        FlightOps.create(pilotContext);
-                    } else*/ {
+                        delegate.startFlight(nextPosition);
+                    } else {
                         // if flight is already for some time in Arrival status then finish the flight
                         if (flight.getStatus().is(FlightStatus.Arrival)) {
                             // todo callsign or flightplan change ? --> finish/start

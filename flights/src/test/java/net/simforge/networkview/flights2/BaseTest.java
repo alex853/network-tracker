@@ -295,11 +295,11 @@ public abstract class BaseTest {
         logger.info(String.format("\tOK Flight status: %s", status));
     }
 
-    protected void checkFlightRoute(String origin, String destination) {
+    protected void checkFlightRoute(String expectedTakeoff, String expectedLanding) {
         countCheckMethod();
 
         checkFlight();
-        checkFlightRoute(flight, origin, destination);
+        checkFlightRoute(flight, expectedTakeoff, expectedLanding);
     }
 
     protected void checkFlightRoute(Flight flight, String expectedTakeoff, String expectedLanding) {
@@ -316,6 +316,18 @@ public abstract class BaseTest {
             assertNull(flight.getDestination());
         }
         logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(expectedTakeoff, "[--]"), Misc.mn(expectedLanding, "[--]")));
+    }
+
+    protected void checkFlightLastSeenIcao(String expectedLastSeenIcao) {
+        countCheckMethod();
+
+        checkFlightLastSeenIcao(flight, expectedLastSeenIcao);
+    }
+
+    protected void checkFlightLastSeenIcao(Flight flight, String expectedLastSeenIcao) {
+        countCheckMethod();
+
+        assertEquals(expectedLastSeenIcao, flight.getLastSeen().getAirportIcao());
     }
 
     protected void checkFlightStatusEvent(FlightStatus status) {
@@ -349,7 +361,7 @@ public abstract class BaseTest {
         logger.info(String.format("\tOK Flightplan: %s, %s-%s", fpAircraftType, fpDeparture, fpDestination));
     }
 
-    protected void checkCallsign(String callsign) {
+    protected void checkFlightCallsign(String callsign) {
         countCheckMethod();
 
         Flightplan flightplan = flight.getFlightplan();

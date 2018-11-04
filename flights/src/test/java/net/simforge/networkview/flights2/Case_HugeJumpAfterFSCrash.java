@@ -6,10 +6,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 /**
  * Pilot was cruising previous flight and then disappeared. After that he reconnected in few mins in absolutely
  * different point of the world. It seems FS crashed and pilot decided to start a different flight.
