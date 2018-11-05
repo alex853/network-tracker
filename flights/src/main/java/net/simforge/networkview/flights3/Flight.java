@@ -5,11 +5,13 @@ import net.simforge.networkview.flights2.flight.FlightStatus;
 import net.simforge.networkview.flights2.flight.Flightplan;
 import net.simforge.networkview.flights3.criteria.EllipseCriterion;
 import net.simforge.networkview.flights3.criteria.OnGroundJumpCriterion;
+import net.simforge.networkview.flights3.criteria.TrackTrailCriterion;
 import net.simforge.networkview.flights3.events.FlightStatusEvent;
 import net.simforge.networkview.flights3.events.FlightplanEvent;
 import net.simforge.networkview.flights3.events.PilotLandingEvent;
 import net.simforge.networkview.flights3.events.PilotTakeoffEvent;
 
+import java.util.Collections;
 import java.util.LinkedList;
 
 public class Flight {
@@ -41,13 +43,13 @@ public class Flight {
 
         boolean aircraftTypeEnduranceExceeded = false; // todo
         boolean trackTrailCorrupted = true; // todo
-//        boolean ellipseOK = EllipseCriterion.get(this).meets(position);
 
         switch (status) {
             case Departure:
             case Preparing:
             case Departing:
-                if (OnGroundJumpCriterion.get(this).meets(position)) {
+                if (OnGroundJumpCriterion.get(this).meets(position)
+                        || !TrackTrailCriterion.meetsOrInapplicable(this, position)) {
                     finishOrTerminateFlight();
                     return false;
                 }
@@ -72,7 +74,8 @@ public class Flight {
                     return true;
                 }
 
-                if (/*trackTrailCorrupted &&*/ !EllipseCriterion.get(this).meets(position)) {
+                if (!TrackTrailCriterion.meetsOrInapplicable(this, position)
+                        && !EllipseCriterion.get(this).meets(position)) {
                     terminateFlight();
                     return false;
                 }
@@ -118,7 +121,8 @@ public class Flight {
                 }
 
                 if (wentOnline) {
-                    if (/*!trackTrailCorrupted ||*/ EllipseCriterion.get(this).meets(position)) {
+                    if (TrackTrailCriterion.meetsOrInapplicable(this, position)
+                            && EllipseCriterion.get(this).meets(position)) {
                         resumeLostFlight(position);
                         collectFlightplan();
                         return true;
@@ -272,5 +276,10 @@ public class Flight {
 
     public Flightplan getFlightplan() {
         return flightplan;
+    }
+
+    // todo hide it from public interface
+    public LinkedList<Position> getTrack() {
+        return track;
     }
 }
