@@ -11,7 +11,6 @@ import net.simforge.networkview.flights3.events.FlightplanEvent;
 import net.simforge.networkview.flights3.events.PilotLandingEvent;
 import net.simforge.networkview.flights3.events.PilotTakeoffEvent;
 
-import java.util.Collections;
 import java.util.LinkedList;
 
 public class Flight {
