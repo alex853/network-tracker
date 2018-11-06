@@ -23,6 +23,8 @@ public class Test_Pilot1309680_1_60_EKCHtoUnfinished_DB extends DbBaseTest {
         checkDBCurrFlightStatus(FlightStatus.Departure);
         checkDBCurrFlightLastSeen("EKCH");
         checkDBCurrFlightRoute(null, null);
+
+        doReset();
     }
 
     public void report_19_37() throws IOException {
@@ -31,6 +33,8 @@ public class Test_Pilot1309680_1_60_EKCHtoUnfinished_DB extends DbBaseTest {
         checkDBCurrFlightLastSeen(null);
         checkDBCurrFlightRoute("EKCH", null);
         checkDBCurrFlightCallsign("DAL21");
+
+        doReset();
     }
 
     public void report_37() throws IOException {
@@ -41,5 +45,7 @@ public class Test_Pilot1309680_1_60_EKCHtoUnfinished_DB extends DbBaseTest {
         checkDBFlightsCount(1);
         checkDBCurrFlightStatus(FlightStatus.Lost);
         checkDBCurrFlightRoute("EKCH", null);
+
+        doReset();
     }
 }

@@ -184,6 +184,10 @@ public class BaseTest {
         checksDone++;
     }
 
+    protected void doReset() {
+        needReset = true;
+    }
+
     // === Event checks ================================================================================================
 
     private List<TrackingEvent> _getEvents(long reportId) {

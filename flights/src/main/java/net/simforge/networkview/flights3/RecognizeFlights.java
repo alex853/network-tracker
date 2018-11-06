@@ -9,6 +9,7 @@ import net.simforge.networkview.Network;
 import net.simforge.networkview.datafeeder.SessionManager;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
+import net.simforge.networkview.flights2.persistence.DBPilotStatus;
 import net.simforge.networkview.flights2.persistence.DBReportDatasource;
 import net.simforge.networkview.flights3.persistence.DBFlight;
 import net.simforge.networkview.flights3.persistence.DBPersistenceLayer;
@@ -60,7 +61,7 @@ public class RecognizeFlights extends BaseTask {
 
             SessionFactory flightsSessionFactory = SessionFactoryBuilder
                     .forDatabase("flights." + network.name()) // todo move it to separate class
-                    .entities(new Class[]{DBFlight.class})
+                    .entities(new Class[]{DBPilotStatus.class, DBFlight.class})
                     .build();
             persistenceLayer = new DBPersistenceLayer(flightsSessionFactory, reportDatasource);
 

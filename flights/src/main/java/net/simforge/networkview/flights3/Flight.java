@@ -147,7 +147,8 @@ public class Flight {
     public static Flight load(int pilotNumber, FlightStatus status, String callsign,
                               Position firstSeen, Position lastSeen,
                               Position takeoff, Position landing,
-                              Flightplan flightplan) {
+                              Flightplan flightplan,
+                              List<Position> track) {
         Flight flight = new Flight(pilotNumber);
         flight.status = status;
         flight.callsign = callsign;
@@ -156,6 +157,7 @@ public class Flight {
         flight.takeoff = takeoff;
         flight.landing = landing;
         flight.flightplan = flightplan;
+        flight.track.addAll(track);
         return flight;
     }
 

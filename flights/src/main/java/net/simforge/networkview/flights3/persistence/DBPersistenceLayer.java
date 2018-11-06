@@ -188,30 +188,65 @@ public class DBPersistenceLayer implements PersistenceLayer {
     }
 
     private DBLoadedPilotContext toPilotContext(Session session, int pilotNumber, DBPilotStatus dbPilotStatus) throws IOException {
-        DBLoadedPilotContext pilotContext = new DBLoadedPilotContext(pilotNumber);
+        BM.start("DBPersistenceLayer.toPilotContext");
+        try {
 
-        Long lastProcessedReportId = dbPilotStatus.getLastProcessedReportId();
-        if (lastProcessedReportId != null) {
-            ReportPilotPosition lastProcessedReportPilotPosition = reportDatasource.loadPilotPosition(lastProcessedReportId, pilotNumber);
-            Position lastProcessedPosition = lastProcessedReportPilotPosition != null
-                    ? Position.create(lastProcessedReportPilotPosition)
-                    : Position.createOfflinePosition(reportDatasource.loadReport(lastProcessedReportId));
-            pilotContext.setLastProcessedPosition(lastProcessedPosition);
+            DBLoadedPilotContext pilotContext = new DBLoadedPilotContext(pilotNumber);
+
+            Long lastProcessedReportId = dbPilotStatus.getLastProcessedReportId();
+            Report lastProcessedReport = null;
+            if (lastProcessedReportId != null) {
+                ReportPilotPosition lastProcessedReportPilotPosition = reportDatasource.loadPilotPosition(lastProcessedReportId, pilotNumber);
+                lastProcessedReport = reportDatasource.loadReport(lastProcessedReportId);
+                Position lastProcessedPosition = lastProcessedReportPilotPosition != null
+                        ? Position.create(lastProcessedReportPilotPosition)
+                        : Position.createOfflinePosition(lastProcessedReport);
+                pilotContext.setLastProcessedPosition(lastProcessedPosition);
+            }
+
+            DBFlight dbCurrFlight = dbPilotStatus.getCurrFlight();
+            if (dbCurrFlight != null) {
+                Flight currFlight = fromDbFlight(dbCurrFlight, lastProcessedReport);
+                pilotContext.setCurrFlight(currFlight);
+            }
+
+            return pilotContext;
+
+        } finally {
+            BM.stop();
         }
-
-        DBFlight dbCurrFlight = dbPilotStatus.getCurrFlight();
-        if (dbCurrFlight != null) {
-            Flight currFlight = fromDbFlight(dbCurrFlight);
-            pilotContext.setCurrFlight(currFlight);
-        }
-
-        return pilotContext;
     }
 
-    private Flight fromDbFlight(DBFlight dbFlight) {
+    private Flight fromDbFlight(DBFlight dbFlight, Report lastProcessedReport) {
         BM.start("DBPersistenceLayer.fromDbFlight");
         try {
             int pilotNumber = dbFlight.getPilotNumber();
+
+            List<Position> track = new LinkedList<>();
+            Report firstSeenReport = reportDatasource.loadReport(dbFlight.getFirstSeenReportId());
+            Report lastSeenReport = reportDatasource.loadReport(dbFlight.getLastSeenReportId());
+            Report loadTillReport = lastProcessedReport.getReport().compareTo(lastSeenReport.getReport()) > 0
+                    ? lastProcessedReport
+                    : lastSeenReport;
+            Report currReport = firstSeenReport;
+
+            while (true) {
+                ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(currReport.getId(), pilotNumber);
+                Position position = reportPilotPosition != null
+                        ? Position.create(reportPilotPosition)
+                        : Position.createOfflinePosition(currReport);
+                track.add(position);
+
+                if (currReport.getReport().equals(loadTillReport.getReport())) {
+                    break;
+                }
+
+                currReport = reportDatasource.loadNextReport(currReport.getReport());
+                if (currReport == null) {
+                    throw new IllegalStateException(); // todo message
+                }
+
+            }
 
             Flight flight = Flight.load(
                     pilotNumber,
@@ -221,9 +256,9 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     Position.create(reportDatasource.loadPilotPosition(dbFlight.getLastSeenReportId(), pilotNumber)),
                     dbFlight.getTakeoffReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getTakeoffReportId(), pilotNumber)) : null,
                     dbFlight.getLandingReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getLandingReportId(), pilotNumber)) : null,
-                    new Flightplan(dbFlight.getCallsign(), dbFlight.getAircraftType(), dbFlight.getRegNo(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination())
+                    new Flightplan(dbFlight.getCallsign(), dbFlight.getAircraftType(), dbFlight.getRegNo(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination()),
+                    track
             );
-            // todo !!!!!!!!!!!! load curr flight track trail positions!!1
 
             return flight;
         } catch (IOException e) {
@@ -268,7 +303,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 dbFlight.setTakeoffDt(flight.getTakeoff().getDt());
                 dbFlight.setTakeoffLatitude(flight.getTakeoff().getCoords().getLat());
                 dbFlight.setTakeoffLongitude(flight.getTakeoff().getCoords().getLon());
-                // todo AK dbFlight.setOriginType(null);
+                //dbFlight.setTakeoffType(null);
                 dbFlight.setTakeoffIcao(flight.getTakeoff().getAirportIcao());
             } else {
                 dbFlight.setTakeoffReportId(null);
@@ -284,7 +319,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 dbFlight.setLandingDt(flight.getLanding().getDt());
                 dbFlight.setLandingLatitude(flight.getLanding().getCoords().getLat());
                 dbFlight.setLandingLongitude(flight.getLanding().getCoords().getLon());
-                // todo AK dbFlight.setDestinationType(null);
+                //dbFlight.setLandingType(null);
                 dbFlight.setLandingIcao(flight.getLanding().getAirportIcao());
             } else {
                 dbFlight.setLandingReportId(null);
@@ -295,8 +330,8 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 dbFlight.setLandingIcao(null);
             }
 
-            // todo AK dbFlight.setDistanceFlown(null);
-            // todo AK dbFlight.setFlightTime(flight.getFlightTime().toMillis() / 3600000.0);
+            // todo dbFlight.setDistanceFlown(null);
+            // todo dbFlight.setFlightTime(flight.getFlightTime().toMillis() / 3600000.0);
         } finally {
             BM.stop();
         }
