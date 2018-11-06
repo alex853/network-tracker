@@ -1,0 +1,15 @@
+pilot search by number:
+    pilot page
+
+pilot page shows:
+    list of pilot flights
+
+active flights page:
+    shows list of all active flights
+
+flight page:
+    shows info about flight
+    map
+    event log
+    positions
+    link to pilot page

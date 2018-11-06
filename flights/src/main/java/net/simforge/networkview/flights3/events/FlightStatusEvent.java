@@ -1,19 +1,16 @@
 package net.simforge.networkview.flights3.events;
 
+import net.simforge.networkview.flights2.flight.FlightStatus;
 import net.simforge.networkview.flights3.Flight;
-import net.simforge.networkview.flights3.PilotContext;
 
 public class FlightStatusEvent extends BaseEvent {
 
-    private Flight flight;
-
-    public FlightStatusEvent(PilotContext pilotContext, Flight flight) {
-        super(pilotContext.getPilotNumber(), pilotContext.getCurrPosition().getReport(), "flight/status/" + flight.getStatus().toString());
-        this.flight = flight;
+    public FlightStatusEvent(int pilotNumber, String report, FlightStatus status) {
+        super(pilotNumber, report, "flight/status/" + status.toString());
     }
 
     public Flight getFlight() {
-        return flight;
+        throw new UnsupportedOperationException("FlightStatusEvent.getFlight");
     }
 
 }

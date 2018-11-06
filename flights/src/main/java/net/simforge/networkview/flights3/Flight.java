@@ -1,6 +1,7 @@
 package net.simforge.networkview.flights3;
 
 import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights2.events.*;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 import net.simforge.networkview.flights2.flight.Flightplan;
 import net.simforge.networkview.flights3.criteria.EllipseCriterion;
@@ -10,10 +11,14 @@ import net.simforge.networkview.flights3.events.FlightStatusEvent;
 import net.simforge.networkview.flights3.events.FlightplanEvent;
 import net.simforge.networkview.flights3.events.PilotLandingEvent;
 import net.simforge.networkview.flights3.events.PilotTakeoffEvent;
+import net.simforge.networkview.flights3.events.TrackingEvent;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Flight {
+    private final int pilotNumber;
     private FlightStatus status;
     private String callsign;
     private Position firstSeen;
@@ -24,10 +29,11 @@ public class Flight {
 
     private LinkedList<Position> track = new LinkedList<>();
 
-    private PilotContext pilotContext;
+    private List<TrackingEvent> recentEvents = new LinkedList<>();
     private boolean dirty;
 
-    private Flight() {
+    private Flight(int pilotNumber) {
+        this.pilotNumber = pilotNumber;
     }
 
     public boolean offerPosition(Position position) {
@@ -49,7 +55,7 @@ public class Flight {
             case Departing:
                 if (OnGroundJumpCriterion.get(this).meets(position)
                         || !TrackTrailCriterion.meetsOrInapplicable(this, position)) {
-                    finishOrTerminateFlight();
+                    finishOrTerminateFlight(position);
                     return false;
                 }
 
@@ -59,7 +65,7 @@ public class Flight {
                     collectFlightplan();
                     return true;
                 } else if (moving && (status == FlightStatus.Departure || status == FlightStatus.Preparing)) {
-                    setStatus(FlightStatus.Departing);
+                    setStatus(FlightStatus.Departing, position.getReport());
                 }
 
                 continueFlight(position);
@@ -75,7 +81,7 @@ public class Flight {
 
                 if (!TrackTrailCriterion.meetsOrInapplicable(this, position)
                         && !EllipseCriterion.get(this).meets(position)) {
-                    terminateFlight();
+                    terminateFlight(position);
                     return false;
                 }
 
@@ -101,13 +107,13 @@ public class Flight {
                         || callsignChanged
                         || flightplanChanged
                         || tooMuchTimeSinceLanding) {
-                    finishFlight();
+                    finishFlight(position);
                     return false;
                 }
 
                 boolean stoppedForSomeTime = false; // todo
                 if (stoppedForSomeTime && (status == FlightStatus.Arrival || status == FlightStatus.Arriving)) {
-                    setStatus(FlightStatus.Arrived);
+                    setStatus(FlightStatus.Arrived, position.getReport());
                     continueFlight(position);
                 }
 
@@ -115,7 +121,7 @@ public class Flight {
 
             case Lost:
                 if (aircraftTypeEnduranceExceeded) {
-                    finishOrTerminateFlight();
+                    finishOrTerminateFlight(position);
                     return false;
                 }
 
@@ -126,7 +132,7 @@ public class Flight {
                         collectFlightplan();
                         return true;
                     } else {
-                        terminateFlight();
+                        terminateFlight(position);
                         return false;
                     }
                 }
@@ -138,10 +144,23 @@ public class Flight {
         }
     }
 
-    static Flight start(PilotContext pilotContext, Position firstSeen) {
-        Flight flight = new Flight();
+    public static Flight load(int pilotNumber, FlightStatus status, String callsign,
+                              Position firstSeen, Position lastSeen,
+                              Position takeoff, Position landing,
+                              Flightplan flightplan) {
+        Flight flight = new Flight(pilotNumber);
+        flight.status = status;
+        flight.callsign = callsign;
+        flight.firstSeen = firstSeen;
+        flight.lastSeen = lastSeen;
+        flight.takeoff = takeoff;
+        flight.landing = landing;
+        flight.flightplan = flightplan;
+        return flight;
+    }
 
-        flight.pilotContext = pilotContext;
+    static Flight start(int pilotNumber, Position firstSeen) {
+        Flight flight = new Flight(pilotNumber);
 
         flight.callsign = firstSeen.getCallsign();
 
@@ -149,9 +168,9 @@ public class Flight {
         flight.lastSeen = firstSeen;
 
         if (firstSeen.isOnGround()) {
-            flight.setStatus(FlightStatus.Departure); // todo which status?
+            flight.setStatus(FlightStatus.Departure, firstSeen.getReport()); // todo which status?
         } else {
-            flight.setStatus(FlightStatus.Flying);
+            flight.setStatus(FlightStatus.Flying, firstSeen.getReport());
         }
 
         flight.track.add(firstSeen);
@@ -171,30 +190,30 @@ public class Flight {
         dirty = true;
     }
 
-    private void finishOrTerminateFlight() {
+    private void finishOrTerminateFlight(Position position) {
         if (status.is(FlightStatus.Arrival)) {
-            finishFlight();
+            finishFlight(position);
         } else if (status.is(FlightStatus.Flying) || status.is(FlightStatus.Departure)) {
-            terminateFlight();
+            terminateFlight(position);
         } else {
             throw new IllegalStateException(); // todo message
         }
     }
 
-    private void terminateFlight() {
-        setStatus(FlightStatus.Terminated);
+    private void terminateFlight(Position position) {
+        setStatus(FlightStatus.Terminated, position.getReport());
 
         dirty = true;
     }
 
-    private void finishFlight() {
-        setStatus(FlightStatus.Finished);
+    private void finishFlight(Position position) {
+        setStatus(FlightStatus.Finished, position.getReport());
 
         dirty = true;
     }
 
     private void lostFlight(Position position) {
-        setStatus(FlightStatus.Lost);
+        setStatus(FlightStatus.Lost, position.getReport());
 
         track.add(position);
 
@@ -202,7 +221,7 @@ public class Flight {
     }
 
     private void resumeLostFlight(Position position) {
-        setStatus(FlightStatus.Flying);
+        setStatus(FlightStatus.Flying, position.getReport());
 
         lastSeen = position;
 
@@ -212,9 +231,9 @@ public class Flight {
     }
 
     private void takeoffFlight(Position position, Position prevPosition) {
-        pilotContext.addEvent(new PilotTakeoffEvent(pilotContext.getPilotNumber(), position.getReport()));
+        addEvent(new PilotTakeoffEvent(pilotNumber, position.getReport()));
 
-        setStatus(FlightStatus.Flying);
+        setStatus(FlightStatus.Flying, position.getReport());
 
         takeoff = prevPosition;
         lastSeen = position;
@@ -225,9 +244,9 @@ public class Flight {
     }
 
     private void landFlight(Position position) {
-        pilotContext.addEvent(new PilotLandingEvent(pilotContext.getPilotNumber(), position.getReport()));
+        addEvent(new PilotLandingEvent(pilotNumber, position.getReport()));
 
-        setStatus(FlightStatus.Arrival);
+        setStatus(FlightStatus.Arrival, position.getReport());
 
         landing = position;
         lastSeen = position;
@@ -243,18 +262,26 @@ public class Flight {
         if (flightplan != null) {
             if (!flightplan.equals(this.flightplan)) {
                 this.flightplan = flightplan;
-                pilotContext.addEvent(new FlightplanEvent(pilotContext));
+                addEvent(new FlightplanEvent(pilotNumber, position.getReport()));
             }
         }
     }
 
-    private void setStatus(FlightStatus status) {
+    private void setStatus(FlightStatus status, String report) {
         this.status = status;
-        pilotContext.addEvent(new FlightStatusEvent(pilotContext, this));
+        addEvent(new FlightStatusEvent(pilotNumber, report, this.getStatus()));
+    }
+
+    private void addEvent(TrackingEvent event) {
+        recentEvents.add(event);
     }
 
     public FlightStatus getStatus() {
         return status;
+    }
+
+    public String getCallsign() {
+        return callsign;
     }
 
     public Position getFirstSeen() {
@@ -281,4 +308,27 @@ public class Flight {
     public LinkedList<Position> getTrack() {
         return track;
     }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public List<TrackingEvent> getRecentEvents() {
+        return Collections.unmodifiableList(recentEvents);
+    }
+
+    public Flight makeCopy() {
+        Flight copy = new Flight(pilotNumber);
+        copy.status = status;
+        copy.callsign = callsign;
+        copy.firstSeen = firstSeen;
+        copy.lastSeen = lastSeen;
+        copy.takeoff = takeoff;
+        copy.landing = landing;
+        copy.flightplan = flightplan;
+        copy.track.addAll(track);
+        copy.dirty = false;
+        return copy;
+    }
+
 }

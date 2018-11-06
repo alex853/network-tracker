@@ -10,7 +10,7 @@ public enum FlightStatus {
       Arriving(310, Arrival),
       Arrived(370, Arrival),
     Finished(400, null),
-    Terminated(900, null);
+    Terminated(450, null);
 
     private int code;
     private FlightStatus parent;
@@ -56,5 +56,14 @@ public enum FlightStatus {
         }
 
         return s;
+    }
+
+    public boolean in(FlightStatus... statuses) {
+        for (FlightStatus status : statuses) {
+            if (this.is(status)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -9,7 +9,6 @@ import net.simforge.networkview.flights.datasource.CsvDatasource;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 import net.simforge.networkview.flights2.flight.Flightplan;
-import net.simforge.networkview.flights3.events.FlightStatusEvent;
 import net.simforge.networkview.flights3.events.TrackingEvent;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -18,11 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -33,8 +29,8 @@ public class BaseTest {
     private static final Logger logger = LoggerFactory.getLogger(BaseTest.class.getName());
 
     protected ReportDatasource reportDatasource;
-//    protected PersistenceLayer persistenceLayer;
-//    private MainContext mainContext;
+    protected PersistenceLayer persistenceLayer;
+    private RecognitionContext mainContext;
 
     protected int pilotNumber;
 
@@ -64,24 +60,32 @@ public class BaseTest {
 
         for (int i = 0; i < reportsToProcess; i++) {
             if (needReset) {
-                pilotContext = new PilotContext(pilotNumber);
-//todo                mainContext = new MainContext(reportDatasource, persistenceLayer);
-//                mainContext.setLastReport(report);
-//                mainContext.loadActivePilotContexts();
+//                pilotContext = new PilotContext(pilotNumber);
+                mainContext = new RecognitionContext(reportDatasource, persistenceLayer, report);
+                mainContext.loadActivePilotContexts();
+                pilotContext = null;
+                flight = null;
                 needReset = false;
             }
 
-//todo            mainContext.processReports(1);
-            report = reportDatasource.loadNextReport(this.report.getReport());
-            ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(report.getId(), pilotNumber);
+            mainContext.processNextReport();
+//            report = reportDatasource.loadNextReport(this.report.getReport());
+//            ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(report.getId(), pilotNumber);
+//
+//            pilotContext = pilotContext.processPosition(report, reportPilotPosition);
 
-            pilotContext.processPosition(report, reportPilotPosition);
-
-//todo           this.report = mainContext.getLastReport();
-//            pilotContext = mainContext.getPilotContext(pilotNumber);
+            this.report = mainContext.getLastProcessedReport();
+            pilotContext = mainContext.getPilotContext(pilotNumber);
             if (pilotContext != null) {
                 flight = pilotContext.getCurrFlight();
-                eventHistory.put(this.report.getId(), pilotContext.getRecentEvents());
+
+                List<TrackingEvent> events = new LinkedList<>();
+                if (flight != null) {
+                    events.addAll(flight.getRecentEvents());
+                }
+                pilotContext.getRecentFlights().stream().forEach(f -> events.addAll(f.getRecentEvents()));
+
+                eventHistory.put(this.report.getId(), events);
             } else {
                 flight = null;
             }
@@ -153,9 +157,9 @@ public class BaseTest {
     }
 
     protected void initNoOpPersistence() {
-/*        persistenceLayer = new PersistenceLayer() {
+        persistenceLayer = new PersistenceLayer() {
             @Override
-            public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) {
+            public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) throws IOException {
                 return Collections.EMPTY_LIST;
             }
 
@@ -173,7 +177,7 @@ public class BaseTest {
             public PilotContext saveChanges(PilotContext pilotContext) {
                 return pilotContext; // we do not save anything
             }
-        };*/
+        };
     }
 
     protected void countCheckMethod() {
@@ -223,28 +227,28 @@ public class BaseTest {
     protected void checkPositionKnown() {
         countCheckMethod();
 
-        assertTrue(pilotContext.getCurrPosition().isPositionKnown());
+        assertTrue(pilotContext.getLastProcessedPosition().isPositionKnown());
         logger.info("\tOK Position Known");
     }
 
     protected void checkPositionUnknown() {
         countCheckMethod();
 
-        assertFalse(pilotContext.getCurrPosition().isPositionKnown());
+        assertFalse(pilotContext.getLastProcessedPosition().isPositionKnown());
         logger.info("\tOK Position Unknown");
     }
 
     protected void checkOnGround() {
         countCheckMethod();
 
-        assertTrue(pilotContext.getCurrPosition().isOnGround());
+        assertTrue(pilotContext.getLastProcessedPosition().isOnGround());
         logger.info("\tOK On Ground");
     }
 
     protected void checkFlying() {
         countCheckMethod();
 
-        assertTrue(!pilotContext.getCurrPosition().isOnGround());
+        assertTrue(!pilotContext.getLastProcessedPosition().isOnGround());
         logger.info("\tOK Flying");
     }
 
@@ -375,18 +379,22 @@ public class BaseTest {
     }
 
     protected Flight getFlightFromStatusEvent(FlightStatus status) {
-        List<TrackingEvent> events = _getEvents(report.getId());
-        String eventType = "flight/status/" + status.toString();
-        FlightStatusEvent foundEvent = null;
-        for (TrackingEvent event : events) {
-            if (eventType.equals(event.getType())) {
-                foundEvent = (FlightStatusEvent) event;
-                break;
-            }
+        if (hasEvent(flight, status)) {
+            return flight;
         }
 
-        assertNotNull(foundEvent);
-        return foundEvent.getFlight();
+        return pilotContext.getRecentFlights().stream().filter(f -> hasEvent(f, status)).findFirst().orElse(null);
+    }
+
+    private boolean hasEvent(Flight flight, FlightStatus status) {
+        List<TrackingEvent> events = flight.getRecentEvents();
+        String eventType = "flight/status/" + status.toString();
+        for (TrackingEvent event : events) {
+            if (eventType.equals(event.getType())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected void checkRecentFlightCount(int expectedFlightCount) {
