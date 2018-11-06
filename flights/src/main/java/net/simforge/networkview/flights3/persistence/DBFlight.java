@@ -49,31 +49,31 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     @Column(name = "last_seen_dt")
     private LocalDateTime lastSeenDt;
 
-    @Column(name = "departure_report_id")
-    private Long departureReportId;
-    @Column(name = "departure_dt")
-    private LocalDateTime departureDt;
-    @Column(name = "departure_latitude")
-    private Double departureLatitude;
-    @Column(name = "departure_longitude")
-    private Double departureLongitude;
-    @Column(name = "departure_type")
-    private Integer departureType; // ICAO, InAir, Other
-    @Column(name = "departure_icao")
-    private String departureIcao;
+    @Column(name = "takeoff_report_id")
+    private Long takeoffReportId;
+    @Column(name = "takeoff_dt")
+    private LocalDateTime takeoffDt;
+    @Column(name = "takeoff_latitude")
+    private Double takeoffLatitude;
+    @Column(name = "takeoff_longitude")
+    private Double takeoffLongitude;
+    @Column(name = "takeoff_type")
+    private Integer takeoffType; // ICAO, InAir, Other
+    @Column(name = "takeoff_icao")
+    private String takeoffIcao;
 
-    @Column(name = "arrival_report_id")
-    private Long arrivalReportId;
-    @Column(name = "arrival_dt")
-    private LocalDateTime arrivalDt;
-    @Column(name = "arrival_latitude")
-    private Double arrivalLatitude;
-    @Column(name = "arrival_longitude")
-    private Double arrivalLongitude;
-    @Column(name = "arrival_type")
-    private Integer arrivalType; // ICAO, InAir, Other
-    @Column(name = "arrival_icao")
-    private String arrivalIcao;
+    @Column(name = "landing_report_id")
+    private Long landingReportId;
+    @Column(name = "landing_dt")
+    private LocalDateTime landingDt;
+    @Column(name = "landing_latitude")
+    private Double landingLatitude;
+    @Column(name = "landing_longitude")
+    private Double landingLongitude;
+    @Column(name = "landing_type")
+    private Integer landingType; // ICAO, InAir, Other
+    @Column(name = "landing_icao")
+    private String landingIcao;
 
     @Column(name = "distance_flown")
     private Double distanceFlown;
@@ -219,100 +219,100 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
         this.lastSeenDt = lastSeenDt;
     }
 
-    public Long getDepartureReportId() {
-        return departureReportId;
+    public Long getTakeoffReportId() {
+        return takeoffReportId;
     }
 
-    public void setDepartureReportId(Long departureReportId) {
-        this.departureReportId = departureReportId;
+    public void setTakeoffReportId(Long takeoffReportId) {
+        this.takeoffReportId = takeoffReportId;
     }
 
-    public LocalDateTime getDepartureDt() {
-        return departureDt;
+    public LocalDateTime getTakeoffDt() {
+        return takeoffDt;
     }
 
-    public void setDepartureDt(LocalDateTime departureDt) {
-        this.departureDt = departureDt;
+    public void setTakeoffDt(LocalDateTime takeoffDt) {
+        this.takeoffDt = takeoffDt;
     }
 
-    public Double getDepartureLatitude() {
-        return departureLatitude;
+    public Double getTakeoffLatitude() {
+        return takeoffLatitude;
     }
 
-    public void setDepartureLatitude(Double departureLatitude) {
-        this.departureLatitude = departureLatitude;
+    public void setTakeoffLatitude(Double takeoffLatitude) {
+        this.takeoffLatitude = takeoffLatitude;
     }
 
-    public Double getDepartureLongitude() {
-        return departureLongitude;
+    public Double getTakeoffLongitude() {
+        return takeoffLongitude;
     }
 
-    public void setDepartureLongitude(Double departureLongitude) {
-        this.departureLongitude = departureLongitude;
+    public void setTakeoffLongitude(Double takeoffLongitude) {
+        this.takeoffLongitude = takeoffLongitude;
     }
 
-    public Integer getDepartureType() {
-        return departureType;
+    public Integer geTakeoffType() {
+        return takeoffType;
     }
 
-    public void setDepartureType(Integer originType) {
-        this.departureType = originType;
+    public void setTakeoffType(Integer originType) {
+        this.takeoffType = originType;
     }
 
-    public String getDepartureIcao() {
-        return departureIcao;
+    public String getTakeoffIcao() {
+        return takeoffIcao;
     }
 
-    public void setDepartureIcao(String originIcao) {
-        this.departureIcao = originIcao;
+    public void setTakeoffIcao(String originIcao) {
+        this.takeoffIcao = originIcao;
     }
 
-    public Long getArrivalReportId() {
-        return arrivalReportId;
+    public Long getLandingReportId() {
+        return landingReportId;
     }
 
-    public void setArrivalReportId(Long arrivalReportId) {
-        this.arrivalReportId = arrivalReportId;
+    public void setLandingReportId(Long landingReportId) {
+        this.landingReportId = landingReportId;
     }
 
-    public LocalDateTime getArrivalDt() {
-        return arrivalDt;
+    public LocalDateTime getLandingDt() {
+        return landingDt;
     }
 
-    public void setArrivalDt(LocalDateTime arrivalDt) {
-        this.arrivalDt = arrivalDt;
+    public void setLandingDt(LocalDateTime landingDt) {
+        this.landingDt = landingDt;
     }
 
-    public Double getArrivalLatitude() {
-        return arrivalLatitude;
+    public Double getLandingLatitude() {
+        return landingLatitude;
     }
 
-    public void setArrivalLatitude(Double arrivalLatitude) {
-        this.arrivalLatitude = arrivalLatitude;
+    public void setLandingLatitude(Double landingLatitude) {
+        this.landingLatitude = landingLatitude;
     }
 
-    public Double getArrivalLongitude() {
-        return arrivalLongitude;
+    public Double getLandingLongitude() {
+        return landingLongitude;
     }
 
-    public void setArrivalLongitude(Double arrivalLongitude) {
-        this.arrivalLongitude = arrivalLongitude;
+    public void setLandingLongitude(Double landingLongitude) {
+        this.landingLongitude = landingLongitude;
     }
 
-    public Integer getArrivalType() {
-        return arrivalType;
+    public Integer getLandingType() {
+        return landingType;
     }
 
-    public void setArrivalType(Integer destinationType) {
-        this.arrivalType = destinationType;
+    public void setLandingType(Integer landingType) {
+        this.landingType = landingType;
     }
 
-    public String getArrivalIcao() {
-        return arrivalIcao;
+    public String getLandingIcao() {
+        return landingIcao;
     }
 
-    public void setArrivalIcao(String destinationIcao) {
-        this.arrivalIcao = destinationIcao;
+    public void setLandingIcao(String landingIcao) {
+        this.landingIcao = landingIcao;
     }
 
     public Double getDistanceFlown() {

@@ -219,8 +219,8 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     dbFlight.getCallsign(),
                     Position.create(reportDatasource.loadPilotPosition(dbFlight.getFirstSeenReportId(), pilotNumber)),
                     Position.create(reportDatasource.loadPilotPosition(dbFlight.getLastSeenReportId(), pilotNumber)),
-                    dbFlight.getDepartureReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getDepartureReportId(), pilotNumber)) : null,
-                    dbFlight.getArrivalReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getArrivalReportId(), pilotNumber)) : null,
+                    dbFlight.getTakeoffReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getTakeoffReportId(), pilotNumber)) : null,
+                    dbFlight.getLandingReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getLandingReportId(), pilotNumber)) : null,
                     new Flightplan(dbFlight.getCallsign(), dbFlight.getAircraftType(), dbFlight.getRegNo(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination())
             );
             // todo !!!!!!!!!!!! load curr flight track trail positions!!1
@@ -264,35 +264,35 @@ public class DBPersistenceLayer implements PersistenceLayer {
             dbFlight.setLastSeenDt(flight.getLastSeen().getDt());
 
             if (flight.getTakeoff() != null) {
-                dbFlight.setDepartureReportId(flight.getTakeoff().getReportId());
-                dbFlight.setDepartureDt(flight.getTakeoff().getDt());
-                dbFlight.setDepartureLatitude(flight.getTakeoff().getCoords().getLat());
-                dbFlight.setDepartureLongitude(flight.getTakeoff().getCoords().getLon());
+                dbFlight.setTakeoffReportId(flight.getTakeoff().getReportId());
+                dbFlight.setTakeoffDt(flight.getTakeoff().getDt());
+                dbFlight.setTakeoffLatitude(flight.getTakeoff().getCoords().getLat());
+                dbFlight.setTakeoffLongitude(flight.getTakeoff().getCoords().getLon());
                 // todo AK dbFlight.setOriginType(null);
-                dbFlight.setDepartureIcao(flight.getTakeoff().getAirportIcao());
+                dbFlight.setTakeoffIcao(flight.getTakeoff().getAirportIcao());
             } else {
-                dbFlight.setDepartureReportId(null);
-                dbFlight.setDepartureDt(null);
-                dbFlight.setDepartureLatitude(null);
-                dbFlight.setDepartureLongitude(null);
-                dbFlight.setDepartureType(null);
-                dbFlight.setDepartureIcao(null);
+                dbFlight.setTakeoffReportId(null);
+                dbFlight.setTakeoffDt(null);
+                dbFlight.setTakeoffLatitude(null);
+                dbFlight.setTakeoffLongitude(null);
+                dbFlight.setTakeoffType(null);
+                dbFlight.setTakeoffIcao(null);
             }
 
             if (flight.getLanding() != null) {
-                dbFlight.setArrivalReportId(flight.getLanding().getReportId());
-                dbFlight.setArrivalDt(flight.getLanding().getDt());
-                dbFlight.setArrivalLatitude(flight.getLanding().getCoords().getLat());
-                dbFlight.setArrivalLongitude(flight.getLanding().getCoords().getLon());
+                dbFlight.setLandingReportId(flight.getLanding().getReportId());
+                dbFlight.setLandingDt(flight.getLanding().getDt());
+                dbFlight.setLandingLatitude(flight.getLanding().getCoords().getLat());
+                dbFlight.setLandingLongitude(flight.getLanding().getCoords().getLon());
                 // todo AK dbFlight.setDestinationType(null);
-                dbFlight.setArrivalIcao(flight.getLanding().getAirportIcao());
+                dbFlight.setLandingIcao(flight.getLanding().getAirportIcao());
             } else {
-                dbFlight.setArrivalReportId(null);
-                dbFlight.setArrivalDt(null);
-                dbFlight.setArrivalLatitude(null);
-                dbFlight.setArrivalLongitude(null);
-                dbFlight.setArrivalType(null);
-                dbFlight.setArrivalIcao(null);
+                dbFlight.setLandingReportId(null);
+                dbFlight.setLandingDt(null);
+                dbFlight.setLandingLatitude(null);
+                dbFlight.setLandingLongitude(null);
+                dbFlight.setLandingType(null);
+                dbFlight.setLandingIcao(null);
             }
 
             // todo AK dbFlight.setDistanceFlown(null);
