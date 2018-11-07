@@ -24,11 +24,7 @@ public abstract class DbBaseTest extends BaseTest {
 
     @Before
     public void before() {
-        flightsSessionFactory = SessionFactoryBuilder
-                .forDatabase("flights")
-                .entities(new Class[]{DBPilotStatus.class, DBFlight.class})
-                .createSchemaIfNeeded()
-                .build();
+        flightsSessionFactory = Flights.buildSessionFactoryWithSchema("flights-testdb");
     }
 
     protected void initDBPersistence() {

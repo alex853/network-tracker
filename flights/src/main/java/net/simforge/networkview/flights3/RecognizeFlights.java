@@ -59,10 +59,7 @@ public class RecognizeFlights extends BaseTask {
             SessionManager datafeederSessionManager = new SessionManager();
             reportDatasource = new DBReportDatasource(network, datafeederSessionManager);
 
-            SessionFactory flightsSessionFactory = SessionFactoryBuilder
-                    .forDatabase("flights." + network.name()) // todo move it to separate class
-                    .entities(new Class[]{DBPilotStatus.class, DBFlight.class})
-                    .build();
+            SessionFactory flightsSessionFactory = Flights.buildSessionFactory("flights-" + network.name());
             persistenceLayer = new DBPersistenceLayer(flightsSessionFactory, reportDatasource);
 
             Report lastProcessedReport = null;
