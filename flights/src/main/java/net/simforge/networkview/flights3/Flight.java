@@ -142,6 +142,7 @@ public class Flight {
                     }
                 }
 
+                this.track.add(position); // just eat this position
                 return true;
 
             default:
