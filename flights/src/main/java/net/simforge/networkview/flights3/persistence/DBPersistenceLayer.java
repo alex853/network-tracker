@@ -2,6 +2,7 @@ package net.simforge.networkview.flights3.persistence;
 
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
+import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
@@ -45,10 +46,23 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     .createQuery("select ps from PilotStatus ps where currFlight is not null")
                     .list();
 
+            logger.info("Loaded {} DB pilot statuses. Converting into pilot contexts...", dbPilotStatuses.size());
+
+            long lastDt = System.currentTimeMillis();
+            int done = 0;
             List<PilotContext> pilotContexts = new ArrayList<>();
             for (DBPilotStatus dbPilotStatus : dbPilotStatuses) {
                 pilotContexts.add(toPilotContext(session, dbPilotStatus.getPilotNumber(), dbPilotStatus));
+                done++;
+
+                long now = System.currentTimeMillis();
+                if (now - lastDt > 10000) {
+                    logger.info("    {} % done", Math.round((100.0 * done) / dbPilotStatuses.size()));
+                    lastDt = now;
+                }
             }
+
+            logger.info("All done");
 
             return pilotContexts;
         } finally {
@@ -68,6 +82,8 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
             dbPilotStatus = new DBPilotStatus();
             dbPilotStatus.setPilotNumber(pilotNumber);
+            dbPilotStatus.setLastProcessedReportId(seenReport.getId());
+            dbPilotStatus.setLastProcessedDt(ReportUtils.fromTimestampJava(seenReport.getReport()));
 
             HibernateUtils.saveAndCommit(session, dbPilotStatus);
 
@@ -230,7 +246,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     : lastSeenReport;
             Report currReport = firstSeenReport;
 
-            while (true) {
+            while (true) {  // todo loadPilotPositions(pilotNumber, fromReportId, toReportId)
                 ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(currReport.getId(), pilotNumber);
                 Position position = reportPilotPosition != null
                         ? Position.create(reportPilotPosition)

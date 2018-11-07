@@ -122,7 +122,7 @@ public class RecognitionContext {
                     PilotContext dirtyPilotContext = pilotContext.processPosition(report, null);
 
                     PilotContext newPilotContext;
-                    if (dirtyPilotContext.isDirty() || !dirtyPilotContext.isActive() || Math.random() < 0.02) { // todo Math.random() < ... has to be replaced by counter in PilotContext
+                    if (dirtyPilotContext.isDirty() || !dirtyPilotContext.isActive()/* || Math.random() < 0.02*/) { // todo Math.random() < ... has to be replaced by counter in PilotContext
                         newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
                     } else {
                         newPilotContext = dirtyPilotContext;
@@ -155,7 +155,7 @@ public class RecognitionContext {
                 return pilotContext;
             }
 
-            Report currReport = reportDatasource.loadReport(lastProcessedPosition.getReportId());
+            Report currReport = reportDatasource.loadReport(lastProcessedPosition.getReportId()); // todo loadPilotPositions(pilotNumber, fromReportId, toReportId)
             while (true) {
                 currReport = reportDatasource.loadNextReport(currReport.getReport());
 

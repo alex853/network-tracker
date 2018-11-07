@@ -5,12 +5,12 @@ public enum FlightStatus {
       Preparing(110, Departure),
       Departing(150, Departure),
     Flying(200, null),
-      Lost(290, Flying),
+      Lost(299, Flying),
     Arrival(300, null),
       Arriving(310, Arrival),
       Arrived(370, Arrival),
     Finished(400, null),
-    Terminated(450, null);
+    Terminated(499, null);
 
     private int code;
     private FlightStatus parent;

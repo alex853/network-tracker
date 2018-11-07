@@ -1,7 +1,7 @@
 package net.simforge.networkview.flights3;
 
+import net.simforge.commons.misc.JavaTime;
 import net.simforge.networkview.flights2.Position;
-import net.simforge.networkview.flights2.events.*;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 import net.simforge.networkview.flights2.flight.Flightplan;
 import net.simforge.networkview.flights3.criteria.EllipseCriterion;
@@ -106,7 +106,7 @@ public class Flight {
             case Arrived:
                 boolean callsignChanged = false; // todo
                 boolean flightplanChanged = false; // todo
-                boolean tooMuchTimeSinceLanding = false; // todo
+                boolean tooMuchTimeSinceLanding = JavaTime.hoursBetween(this.landing.getDt(), position.getDt()) > 0.5; // todo test for this condition
                 if (wentOffline
                         || OnGroundJumpCriterion.get(this).meets(position)
                         || callsignChanged
@@ -116,15 +116,23 @@ public class Flight {
                     return false;
                 }
 
-                boolean stoppedForSomeTime = false; // todo
+                boolean stoppedForSomeTime = false; // todo test for this condition
                 if (stoppedForSomeTime && (status == FlightStatus.Arrival || status == FlightStatus.Arriving)) {
                     setStatus(FlightStatus.Arrived, position.getReport());
                     continueFlight(position);
+                    return true;
                 }
 
+                continueFlight(position); // todo test for this line
                 return true;
 
             case Lost:
+                // todo the condition below should be replaced by normal endurance condition
+                if (JavaTime.hoursBetween(lastSeen.getDt(), position.getDt()) > 6.0) {
+                    terminateFlight(position);
+                    return false;
+                }
+
                 if (aircraftTypeEnduranceExceeded) {
                     finishOrTerminateFlight(position);
                     return false;
