@@ -18,6 +18,7 @@ public class PilotContext {
     protected Flight currFlight;
     protected Position lastProcessedPosition;
 
+    private int positionsWithoutCurrFlight = 0;
     private final List<Flight> recentFlights = new ArrayList<>();
 //    private final List<TrackingEvent> recentEvents = new ArrayList<>();
 
@@ -25,11 +26,6 @@ public class PilotContext {
 
     public PilotContext(int pilotNumber) {
         this.pilotNumber = pilotNumber;
-    }
-
-    public PilotContext(int pilotNumber, Flight currFlight) {
-        this.pilotNumber = pilotNumber;
-        this.currFlight = currFlight;
     }
 
     public PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
@@ -64,6 +60,12 @@ public class PilotContext {
                     ? Flight.start(pilotNumber, position)
                     : null;
         }
+
+        if (currFlight != null) {
+            positionsWithoutCurrFlight = 0;
+        } else {
+            positionsWithoutCurrFlight++;
+        }
     }
 
     public int getPilotNumber() {
@@ -92,7 +94,7 @@ public class PilotContext {
 //    }
 
     public boolean isActive() {
-        return currFlight != null;
+        return currFlight != null || positionsWithoutCurrFlight < 10;
     }
 
     public boolean isDirty() {
@@ -107,6 +109,7 @@ public class PilotContext {
         copy.lastProcessedPosition = lastProcessedPosition;
         copy.currFlight = currFlight != null ? currFlight.makeCopy() : null;
 
+        copy.positionsWithoutCurrFlight = positionsWithoutCurrFlight;
         copy.recentFlights.addAll(recentFlights.stream().map(Flight::makeCopy).collect(Collectors.toList()));
 //        copy.recentEvents.addAll(recentEvents);
 

@@ -53,6 +53,11 @@ public class Flight {
             case Departure:
             case Preparing:
             case Departing:
+                if (wentOffline) {
+                    terminateFlight(position);
+                    return false;
+                }
+
                 if (OnGroundJumpCriterion.get(this).meets(position)
                         || !TrackTrailCriterion.meetsOrInapplicable(this, position)) {
                     finishOrTerminateFlight(position);
