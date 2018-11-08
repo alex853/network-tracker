@@ -1,5 +1,6 @@
 package net.simforge.networkview.flights3;
 
+import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;
 import net.simforge.networkview.flights2.Position;
 import net.simforge.networkview.flights2.flight.FlightStatus;
@@ -26,6 +27,8 @@ public class Flight {
     private Position takeoff;
     private Position landing;
     private Flightplan flightplan;
+    private Double distanceFlown;
+    private Double flightTime;
 
     private LinkedList<Position> track = new LinkedList<>();
 
@@ -68,6 +71,7 @@ public class Flight {
                 if (takeoff) {
                     takeoffFlight(position, prevPosition);
                     collectFlightplan();
+                    increaseDistanceAndTime(position, prevPosition);
                     return true;
                 } else if (moving && (status == FlightStatus.Departure || status == FlightStatus.Preparing)) {
                     setStatus(FlightStatus.Departing, position.getReport());
@@ -93,11 +97,13 @@ public class Flight {
                 if (landing) {
                     landFlight(position);
                     collectFlightplan();
+                    increaseDistanceAndTime(position, prevPosition);
                     return true;
                 }
 
                 continueFlight(position);
                 collectFlightplan();
+                increaseDistanceAndTime(position, prevPosition);
 
                 return true;
 
@@ -141,8 +147,10 @@ public class Flight {
                 if (wentOnline) {
                     if (TrackTrailCriterion.meetsOrInapplicable(this, position)
                             && EllipseCriterion.get(this).meets(position)) {
+                        Position prevSeenPosition = lastSeen;
                         resumeLostFlight(position);
                         collectFlightplan();
+                        increaseDistanceAndTime(position, prevSeenPosition);
                         return true;
                     } else {
                         terminateFlight(position);
@@ -158,10 +166,17 @@ public class Flight {
         }
     }
 
+    private void increaseDistanceAndTime(Position position, Position prevPosition) {
+        distanceFlown = (distanceFlown != null ? distanceFlown : 0) + Geo.distance(prevPosition.getCoords(), position.getCoords());
+        flightTime = (flightTime != null ? flightTime : 0) + JavaTime.hoursBetween(prevPosition.getDt(), position.getDt());
+    }
+
     public static Flight load(int pilotNumber, FlightStatus status, String callsign,
                               Position firstSeen, Position lastSeen,
                               Position takeoff, Position landing,
                               Flightplan flightplan,
+                              Double distanceFlown,
+                              Double flightTime,
                               List<Position> track) {
         Flight flight = new Flight(pilotNumber);
         flight.status = status;
@@ -171,6 +186,8 @@ public class Flight {
         flight.takeoff = takeoff;
         flight.landing = landing;
         flight.flightplan = flightplan;
+        flight.distanceFlown = distanceFlown;
+        flight.flightTime = flightTime;
         flight.track.addAll(track);
         return flight;
     }
@@ -320,6 +337,14 @@ public class Flight {
         return flightplan;
     }
 
+    public Double getDistanceFlown() {
+        return distanceFlown;
+    }
+
+    public Double getFlightTime() {
+        return flightTime;
+    }
+
     // todo hide it from public interface
     public LinkedList<Position> getTrack() {
         return track;
@@ -342,6 +367,8 @@ public class Flight {
         copy.takeoff = takeoff;
         copy.landing = landing;
         copy.flightplan = flightplan;
+        copy.distanceFlown = distanceFlown;
+        copy.flightTime = flightTime;
         copy.track.addAll(track);
         copy.dirty = false;
         return copy;

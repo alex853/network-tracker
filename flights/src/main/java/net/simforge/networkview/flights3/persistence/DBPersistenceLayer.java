@@ -291,6 +291,8 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     dbFlight.getTakeoffReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getTakeoffReportId(), pilotNumber)) : null,
                     dbFlight.getLandingReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getLandingReportId(), pilotNumber)) : null,
                     new Flightplan(dbFlight.getCallsign(), dbFlight.getAircraftType(), dbFlight.getRegNo(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination()),
+                    dbFlight.getDistanceFlown(),
+                    dbFlight.getFlightTime(),
                     track
             );
 
@@ -364,8 +366,8 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 dbFlight.setLandingIcao(null);
             }
 
-            // todo dbFlight.setDistanceFlown(null);
-            // todo dbFlight.setFlightTime(flight.getFlightTime().toMillis() / 3600000.0);
+            dbFlight.setDistanceFlown(flight.getDistanceFlown());
+            dbFlight.setFlightTime(flight.getFlightTime());
         } finally {
             BM.stop();
         }

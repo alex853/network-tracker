@@ -69,7 +69,7 @@ public class RecognitionContext {
 
             Report report = reportDatasource.loadNextReport(lastProcessedReport != null ? lastProcessedReport.getReport() : null);
             if (report == null) {
-                logger.info("There is no any report to process");
+//                logger.info("There is no any report to process");
                 return;
             }
 

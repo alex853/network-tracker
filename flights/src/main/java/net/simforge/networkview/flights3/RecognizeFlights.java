@@ -43,8 +43,8 @@ public class RecognizeFlights extends BaseTask {
             super.startup();
 
 //            BM.setLoggingPeriod(TimeUnit.HOURS.toMillis(1));
-//            BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(10));
-            BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(1));
+            BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(10));
+//            BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(1));
 
             RunningMarker.lock(getTaskName());
 
@@ -93,7 +93,7 @@ public class RecognizeFlights extends BaseTask {
             marker.setString(lastReport.getReport());
 
             if (reportDatasource.loadNextReport(lastReport.getReport()) != null) {
-                setNextSleepTime(100);
+                setNextSleepTime(1000);
             }
 
         } catch (IOException e) {
