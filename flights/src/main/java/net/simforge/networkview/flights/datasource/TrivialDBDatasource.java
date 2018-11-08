@@ -18,7 +18,9 @@ public class TrivialDBDatasource implements ReportDatasource {
     public Report loadReport(long reportId) throws IOException {
         BM.start("TrivialDBDatasource.loadReport(long)");
         try {
+
             return session.byId(Report.class).load(reportId);
+
         } finally {
             BM.stop();
         }
@@ -27,11 +29,13 @@ public class TrivialDBDatasource implements ReportDatasource {
     public Report loadReport(String report) throws IOException {
         BM.start("TrivialDBDatasource.loadReport(String)");
         try {
+
             //noinspection JpaQlInspection
             return (Report) session
                     .createQuery("select r from Report r where report = :report")
                     .setString("report", report)
                     .uniqueResult();
+
         } finally {
             BM.stop();
         }
@@ -40,6 +44,7 @@ public class TrivialDBDatasource implements ReportDatasource {
     public Report loadNextReport(String report) throws IOException {
         BM.start("TrivialDBDatasource.loadNextReport");
         try {
+
             if (report == null) {
                 //noinspection JpaQlInspection
                 return (Report) session
@@ -54,6 +59,7 @@ public class TrivialDBDatasource implements ReportDatasource {
                         .setMaxResults(1)
                         .uniqueResult();
             }
+
         } finally {
             BM.stop();
         }
@@ -62,12 +68,14 @@ public class TrivialDBDatasource implements ReportDatasource {
     public ReportPilotPosition loadPilotPosition(long reportId, int pilotNumber) throws IOException {
         BM.start("TrivialDBDatasource.loadPilotPosition");
         try {
+
             //noinspection JpaQlInspection
             return (ReportPilotPosition) session
                     .createQuery("select p from ReportPilotPosition p where p.report.id = :reportId and p.pilotNumber = :pilotNumber")
                     .setLong("reportId", reportId)
                     .setLong("pilotNumber", pilotNumber)
                     .uniqueResult();
+
         } finally {
             BM.stop();
         }
@@ -77,11 +85,49 @@ public class TrivialDBDatasource implements ReportDatasource {
     public List<ReportPilotPosition> loadPilotPositions(long reportId) throws IOException {
         BM.start("TrivialDBDatasource.loadPilotPositions");
         try {
+
             //noinspection JpaQlInspection,unchecked
             return (List<ReportPilotPosition>) session
                     .createQuery("select p from ReportPilotPosition p where p.report.id = :reportId")
                     .setLong("reportId", reportId)
                     .list();
+
+        } finally {
+            BM.stop();
+        }
+    }
+
+
+    @Override
+    public List<Report> loadReports(long fromReportId, long toReportId) {
+        BM.start("TrivialDBDatasource.loadReports");
+        try {
+
+            //noinspection unchecked,JpaQlInspection
+            return session
+                    .createQuery("select r from Report r where r.id between :fromReportId and :toReportId and r.parsed = true order by r.report")
+                    .setLong("fromReportId", fromReportId)
+                    .setLong("toReportId", toReportId)
+                    .list();
+
+        } finally {
+            BM.stop();
+        }
+    }
+
+    @Override
+    public List<ReportPilotPosition> loadPilotPositions(int pilotNumber, long fromReportId, long toReportId) {
+        BM.start("TrivialDBDatasource.loadPilotPositions(int,long,long)");
+        try {
+
+            //noinspection unchecked,JpaQlInspection
+            return session
+                    .createQuery("select p from ReportPilotPosition p where p.pilotNumber = :pilotNumber and p.report.id between :fromReportId and :toReportId order by p.report.id")
+                    .setInteger("pilotNumber", pilotNumber)
+                    .setLong("fromReportId", fromReportId)
+                    .setLong("toReportId", toReportId)
+                    .list();
+
         } finally {
             BM.stop();
         }

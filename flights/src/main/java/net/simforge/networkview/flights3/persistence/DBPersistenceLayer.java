@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class DBPersistenceLayer implements PersistenceLayer {
 
@@ -244,9 +245,26 @@ public class DBPersistenceLayer implements PersistenceLayer {
             Report loadTillReport = lastProcessedReport.getReport().compareTo(lastSeenReport.getReport()) > 0
                     ? lastProcessedReport
                     : lastSeenReport;
-            Report currReport = firstSeenReport;
 
-            while (true) {  // todo loadPilotPositions(pilotNumber, fromReportId, toReportId)
+            long fromReportId = firstSeenReport.getId();
+            long toReportId = loadTillReport.getId();
+
+            List<Report> reports = reportDatasource.loadReports(fromReportId, toReportId);
+            List<ReportPilotPosition> reportPilotPositions = reportDatasource.loadPilotPositions(pilotNumber, fromReportId, toReportId);
+            Map<Long, ReportPilotPosition> reportPilotPositionMap = reportPilotPositions.stream().collect(toMap(p -> p.getReport().getId(), Function.identity()));
+
+            for (Report report : reports) {
+                ReportPilotPosition reportPilotPosition = reportPilotPositionMap.get(report.getId());
+                Position position = reportPilotPosition != null
+                        ? Position.create(reportPilotPosition)
+                        : Position.createOfflinePosition(report);
+                track.add(position);
+            }
+
+
+/*            Report currReport = firstSeenReport;
+
+            while (true) {
                 ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(currReport.getId(), pilotNumber);
                 Position position = reportPilotPosition != null
                         ? Position.create(reportPilotPosition)
@@ -262,7 +280,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     throw new IllegalStateException(); // todo message
                 }
 
-            }
+            }*/
 
             Flight flight = Flight.load(
                     pilotNumber,

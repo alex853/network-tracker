@@ -6,6 +6,7 @@ import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CsvDatasource implements ReportDatasource {
 
@@ -116,6 +117,16 @@ public class CsvDatasource implements ReportDatasource {
     public List<ReportPilotPosition> loadPilotPositions(long reportId) throws IOException {
         ReportPilotPosition pilotPosition = positions.get(reportId);
         return pilotPosition != null ? Collections.singletonList(pilotPosition) : Collections.emptyList();
+    }
+
+    @Override
+    public List<Report> loadReports(long fromReportId, long toReportId) {
+        return reports.stream().filter(r -> fromReportId <= r.getId() && r.getId() <= toReportId).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ReportPilotPosition> loadPilotPositions(int pilotNumber, long fromReportId, long toReportId) {
+        return positions.entrySet().stream().filter(e -> fromReportId <= e.getKey() && e.getKey() <= toReportId).map(Map.Entry::getValue).collect(Collectors.toList());
     }
 
     public static void addColumns(Csv csv) {

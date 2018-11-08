@@ -165,4 +165,14 @@ public class SinglePilotDBDatasource implements ReportDatasource {
         }
         return result;
     }
+
+    @Override
+    public List<Report> loadReports(long fromReportId, long toReportId) {
+        throw new UnsupportedOperationException("SinglePilotDBDatasource.loadReports");
+    }
+
+    @Override
+    public List<ReportPilotPosition> loadPilotPositions(int pilotNumber, long fromReportId, long toReportId) {
+        throw new UnsupportedOperationException("SinglePilotDBDatasource.loadPilotPositions");
+    }
 }

@@ -12,6 +12,8 @@ public interface ReportDatasource {
 
     Report loadReport(String report) throws IOException;
 
+    List<Report> loadReports(long fromReportId, long toReportId);
+
     /**
      *
      * @param report timestamp of previous report, or null if we need to load "first" report from timeline
@@ -23,4 +25,7 @@ public interface ReportDatasource {
     ReportPilotPosition loadPilotPosition(long reportId, int pilotNumber) throws IOException;
 
     List<ReportPilotPosition> loadPilotPositions(long reportId) throws IOException;
+
+    List<ReportPilotPosition> loadPilotPositions(int pilotNumber, long fromReportId, long toReportId);
+
 }

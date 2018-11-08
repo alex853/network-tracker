@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 public class RecognitionContext {
 
@@ -155,7 +158,28 @@ public class RecognitionContext {
                 return pilotContext;
             }
 
-            Report currReport = reportDatasource.loadReport(lastProcessedPosition.getReportId()); // todo loadPilotPositions(pilotNumber, fromReportId, toReportId)
+            long fromReportId = lastProcessedPosition.getReportId();
+            long toReportId = lastProcessedReport.getId();
+
+            List<Report> reports = reportDatasource.loadReports(fromReportId, toReportId);
+            List<ReportPilotPosition> reportPilotPositions = reportDatasource.loadPilotPositions(pilotContext.getPilotNumber(), fromReportId, toReportId);
+            Map<Long, ReportPilotPosition> reportPilotPositionMap = reportPilotPositions.stream().collect(toMap(p -> p.getReport().getId(), Function.identity()));
+
+            for (Report report : reports) {
+                ReportPilotPosition reportPilotPosition = reportPilotPositionMap.get(report.getId());
+
+                PilotContext dirtyPilotContext = pilotContext.processPosition(report, reportPilotPosition);
+
+                boolean stopNow = report.getId().equals(lastProcessedReport.getId());
+
+                if (dirtyPilotContext.isDirty() || stopNow) {
+                    pilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                } else {
+                    pilotContext = dirtyPilotContext;
+                }
+            }
+
+/*            Report currReport = reportDatasource.loadReport(lastProcessedPosition.getReportId());
             while (true) {
                 currReport = reportDatasource.loadNextReport(currReport.getReport());
 
@@ -179,9 +203,9 @@ public class RecognitionContext {
                     // yeah, we've done!
                     break;
                 }
-            }
-        } catch (IOException e) {
-            logger.error("Error on a processing of missing positions", e);
+            }*/
+//        } catch (IOException e) {
+//            logger.error("Error on a processing of missing positions", e);
         } finally {
             BM.stop();
         }

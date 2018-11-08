@@ -38,4 +38,14 @@ public class MultiSessionDBDatasource implements ReportDatasource {
     public List<ReportPilotPosition> loadPilotPositions(long reportId) throws IOException {
         throw new UnsupportedOperationException("MultiSessionDBDatasource.loadPilotPositions");
     }
+
+    @Override
+    public List<Report> loadReports(long fromReportId, long toReportId) {
+        throw new UnsupportedOperationException("MultiSessionDBDatasource.loadReports");
+    }
+
+    @Override
+    public List<ReportPilotPosition> loadPilotPositions(int pilotNumber, long fromReportId, long toReportId) {
+        throw new UnsupportedOperationException("MultiSessionDBDatasource.loadPilotPositions");
+    }
 }

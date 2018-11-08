@@ -22,7 +22,7 @@ public class RecognizeFlights extends BaseTask {
     private static final String ARG_INTERVAL = "interval";
 
     private Network network;
-    private int interval = 55;
+    private int interval = 15;
 
     private Marker marker;
 
