@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Deprecated
 //@Path("statistics")
 public class StatisticsAPI {
 /*    private static final Logger logger = LoggerFactory.getLogger(StatisticsAPI.class.getName());

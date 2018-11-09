@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 //@Path("auth")
 public class AuthAPI {
 /*    private static final Logger logger = LoggerFactory.getLogger(AuthAPI.class.getName());

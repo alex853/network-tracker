@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
+@Deprecated
 //@Path("flights")
 public class FlightsAPI1 {
 /*    private static final Logger logger = LoggerFactory.getLogger(FlightsAPI.class.getName());

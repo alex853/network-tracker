@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
+@Deprecated
 //@Path("aircraft-models")
 public class AircraftModelsAPI {
 /*    private static final Logger logger = LoggerFactory.getLogger(AircraftModelsAPI.class.getName());
