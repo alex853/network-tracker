@@ -75,4 +75,15 @@ public class ParsingLogicsTest extends TestCase {
         assertEquals("A321", ParsingLogics.parseAircraftType("A321/M-SDE2E3FGJ4HIRWYZ/LB1"));
     }
 
+    public void testParseAircraftType_P8_X() {
+        assertEquals("P8", ParsingLogics.parseAircraftType("P8/X"));
+    }
+
+    public void testParseAircraftType_C17_L() {
+        assertEquals("C17", ParsingLogics.parseAircraftType("C17/L"));
+    }
+
+    public void testParseAircraftType_AN2_X() {
+        assertEquals("AN2", ParsingLogics.parseAircraftType("AN2/X"));
+    }
 }

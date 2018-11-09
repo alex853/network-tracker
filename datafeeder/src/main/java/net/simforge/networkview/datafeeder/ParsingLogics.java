@@ -68,15 +68,23 @@ public class ParsingLogics {
             return null;
         }
 
+        int i = fpAircraft.indexOf("-");
+        if (i != -1) {
+            fpAircraft = fpAircraft.substring(0, i);
+        }
+
+        // We expect:
+        //   [Z/]DDDD[/X] or [Z/]DDD[/X] or [Z/]DD[/X]
+        // We split it by '/' symbol and the longest section will be aircraft type
+
         String[] strs = fpAircraft.split("/");
-        if (strs.length == 1) {
-            return strs[0];
+        String result = strs[0];
+        for (i = 1; i < strs.length; i++) {
+            if (result.length() < strs[i].length()) {
+                result = strs[i];
+            }
         }
 
-        if (strs[0].length() == 4) {
-            return strs[0];
-        }
-
-        return strs[1];
+        return result;
     }
 }
