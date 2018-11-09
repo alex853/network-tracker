@@ -1,0 +1,35 @@
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url System.getenv('SIMFORGE_REPO_READ_URL')
+    }
+}
+
+dependencies {
+    compile project(':datafeeder')
+    compile project(':flights')
+
+    compileOnly group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+
+    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: '2.19'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '2.4.1'
+
+    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.7'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
+
+//    testCompile 'junit:junit:4.11'
+}
+
+war {
+    from('./') {
+        include 'simforge.properties'
+        include 'logback.xml'
+        into('WEB-INF/classes')
+    }
+}
