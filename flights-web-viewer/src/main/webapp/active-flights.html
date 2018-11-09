@@ -1,0 +1,74 @@
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-table.min.css">
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-table.min.js"></script>
+    <!--script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script-->
+
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: 'rest/flights/active-flights',
+                method: 'POST',
+                dataType: 'json',
+                success: function (data) {
+                    //alert('done');
+                    $('#active-flights').bootstrapTable(data);
+                },
+                error: function (e) {
+                    console.log(e.responseText);
+                }
+            });
+        });
+    </script>
+
+</head>
+
+<body>
+
+<table class="table" id="active-flights">
+    <thead>
+    <tr>
+        <th data-field="callsign">Callsign</th>
+        <th data-field="pilotNumber">Pilot</th>
+        <th data-field="aircraftType">Aircraft Type</th>
+        <th data-field="regNo">Reg No</th>
+        <th data-field="fpRoute">F/P Route</th>
+        <th data-field="status">Status</th>
+        <th data-field="takeoff">Takeoff</th>
+        <th data-field="landing">Landing</th>
+        <th data-field="distance">Distance</th>
+        <th data-field="time">Time</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!--    <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+        </tr>
+        <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+        </tr>
+        <tr>
+            <th scope="row">3</th>
+            <td>Larry</td>
+            <td>the Bird</td>
+            <td>@twitter</td>
+        </tr>-->
+    </tbody>
+</table>
+
+</body>
+
+</html>
