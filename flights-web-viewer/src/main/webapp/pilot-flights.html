@@ -1,0 +1,165 @@
+<html>
+
+<head>
+
+    <title>Flights - Pilot Flights</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-table.min.css">
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false&key=AIzaSyDPoJDn41ICyknpZpDOsFbeJV0xOSw8x5o"></script>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-table.min.js"></script>
+
+    <script>
+
+        var url = window.location.href;
+        var captured = /pilotNumber=([^&]+)/.exec(url)[1];
+        if (!captured) {
+            alert('No pilot number specified');
+            window.close();
+        }
+        var pilotNumber = captured;
+
+        var map;
+
+        $(document).ready(function () {
+            var windowHeight = $(window).height();
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 0, lng: 0},
+                zoom: 5
+            });
+
+            $.ajax({
+                url: 'rest/flights/pilot-flights',
+                data: {
+                    pilotNumber: pilotNumber
+                },
+                //method: 'POST',
+                dataType: 'json',
+                success: function (response) {
+                    $('#pilot-flights').bootstrapTable({
+                        data: response.data
+                    });
+                    $('#pilot-flights').bootstrapTable('resetView', {
+                        height: windowHeight - 5
+                    });
+
+                    var flights = response.data;
+                    for (var i = 0; i < flights.length; i++) {
+                        var flight = flights[i];
+
+                        if (flight.takeoffDt == null || flight.landingDt == null) {
+                            continue;
+                        }
+
+                        flight.directPolyline = new google.maps.Polyline({
+                            path: [
+                                {lat: flight.takeoffLat, lng: flight.takeoffLng},
+                                {lat: flight.landingLat, lng: flight.landingLng}
+                            ],
+                            geodesic: true,
+//                            strokeColor: TrackerStyles.PlannedOriginToAirlineLine.Color,
+//                            strokeOpacity: TrackerStyles.PlannedOriginToAirlineLine.Opacity,
+//                            strokeWeight: TrackerStyles.PlannedOriginToAirlineLine.Weight,
+                            map: map
+                        });
+                    }
+                },
+                error: function (e) {
+                    console.log(e.responseText);
+                }
+            });
+        });
+
+        $(function () {
+            $('#pilot-flights').on('click-row.bs.table', function (e, row, $element) {
+                $('.success').removeClass('success');
+                $($element).addClass('success');
+
+                var directPolyline = row.directPolyline;
+                if (directPolyline != null) {
+                    var path = directPolyline.getPath();
+                    var bounds = new google.maps.LatLngBounds();
+                    bounds.extend(path.getAt(0));
+                    bounds.extend(path.getAt(1));
+                    map.fitBounds(bounds);
+                }
+            });
+        });
+
+
+
+        function aircraftColumnFormatter(value, row) {
+            return (row.aircraftType ? row.aircraftType : '') + '<br>' + (row.regNo ? row.regNo : '');
+        }
+
+        function statusColumnFormatter(value, row) {
+            var statusCode = row.statusCode;
+
+            if (statusCode == 299) { // Lost
+                return row.statusText + '<br>' + row.lastSeenDt;
+            } else {
+                return row.statusText;
+            }
+        }
+
+        function fromColumnFormatter(value, row) {
+            if (row.takeoffDt) {
+                return (row.takeoffIcao ? row.takeoffIcao : "ZZZZ") + '<br>' + row.takeoffDt;
+            } else {
+                return '&nbsp;';
+            }
+        }
+
+        function toColumnFormatter(value, row) {
+            if (row.landingDt) {
+                return (row.landingIcao ? row.landingIcao : "ZZZZ") + '<br>' + row.landingDt;
+            } else {
+                return '&nbsp;';
+            }
+        }
+
+        function flightInfoColumnFormatter(value, row) {
+            return (row.distance ? row.distance : '') + '<br>' + (row.time ? row.time : '');
+        }
+
+    </script>
+
+    <style>
+        .fixed-table-container {
+            border-width: 0px 0px 0px 0px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<table style="width: 100%; height: 100%;">
+    <tr>
+        <td id="map" style="width: 60%;"></td>
+        <td style="width: 40%; vertical-align: top;">
+            <table id="pilot-flights" class="table table-no-bordered">
+                <thead>
+                <tr>
+                    <th data-field="callsign">Callsign</th>
+                    <th data-formatter="aircraftColumnFormatter">Aircraft<br>Reg No</th>
+                    <th data-field="fpRoute">F/P Route</th>
+                    <th data-formatter="statusColumnFormatter">Status</th>
+                    <th data-formatter="fromColumnFormatter">From</th>
+                    <th data-formatter="toColumnFormatter">To</th>
+                    <th data-formatter="flightInfoColumnFormatter">Distance<br>Time</th>
+                </tr>
+                </thead>
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+
+</html>

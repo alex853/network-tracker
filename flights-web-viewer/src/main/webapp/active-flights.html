@@ -2,6 +2,8 @@
 
 <head>
 
+    <title>Flights - Active Flights</title>
+
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-table.min.css">
     <script src="js/jquery-3.3.1.min.js"></script>
@@ -15,59 +17,59 @@
         $(document).ready(function () {
             $.ajax({
                 url: 'rest/flights/active-flights',
-                method: 'POST',
+                //method: 'POST',
                 dataType: 'json',
-                success: function (data) {
-                    //alert('done');
-                    $('#active-flights').bootstrapTable(data);
+                success: function (response) {
+                    $('#active-flights').bootstrapTable({
+                        data: response.data
+                    });
+                    $('#active-flights').bootstrapTable('resetView', {
+                        height: $('#active-flights').height() + 30
+                    });
                 },
                 error: function (e) {
                     console.log(e.responseText);
                 }
             });
         });
+
+        function pilotFlightsPageLink(value) {
+            return '<a href="pilot-flights.html?pilotNumber=' + value + '">' + value + '</a>';
+        }
+
     </script>
 
+    <style>
+        .fixed-table-container { /* lets disable frame around table */
+            border-width: 0px 0px 0px 0px;
+        }
+    </style>
 </head>
 
 <body>
 
-<table class="table" id="active-flights">
-    <thead>
-    <tr>
-        <th data-field="callsign">Callsign</th>
-        <th data-field="pilotNumber">Pilot</th>
-        <th data-field="aircraftType">Aircraft Type</th>
-        <th data-field="regNo">Reg No</th>
-        <th data-field="fpRoute">F/P Route</th>
-        <th data-field="status">Status</th>
-        <th data-field="takeoff">Takeoff</th>
-        <th data-field="landing">Landing</th>
-        <th data-field="distance">Distance</th>
-        <th data-field="time">Time</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!--    <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-        </tr>
+<div class="container">
+    <h1>Active Flights</h1>
+
+    <table id="active-flights" class="table table-no-bordered">
+        <thead>
         <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
+            <th data-field="callsign">Callsign</th>
+            <th data-field="pilotNumber" data-formatter="pilotFlightsPageLink">Pilot</th>
+            <th data-field="aircraftType">Aircraft Type</th>
+            <th data-field="regNo">Reg No</th>
+            <th data-field="fpRoute">F/P Route</th>
+            <th data-field="status">Status</th>
+            <th data-field="takeoff">Takeoff</th>
+            <th data-field="landing">Landing</th>
+            <th data-field="distance">Distance</th>
+            <th data-field="time">Time</th>
         </tr>
-        <tr>
-            <th scope="row">3</th>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-        </tr>-->
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
 
 </body>
 
