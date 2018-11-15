@@ -1,0 +1,139 @@
+<html>
+
+<head>
+
+    <title>Flights - Pilot Track</title>
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-table.min.css">
+
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3&sensor=false&key=AIzaSyDPoJDn41ICyknpZpDOsFbeJV0xOSw8x5o"></script>
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootstrap-table.min.js"></script>
+
+    <script>
+
+        var url = window.location.href;
+        var captured = /pilotNumber=([^&]+)/.exec(url)[1];
+        if (!captured) {
+            alert('No pilot number specified');
+            window.close();
+        }
+        var pilotNumber = captured;
+
+        var map;
+
+        $(document).ready(function () {
+            var windowHeight = $(window).height();
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 0, lng: 0},
+                zoom: 5
+            });
+
+            $.ajax({
+                url: 'rest/track/pilot-track',
+                data: {
+                    pilotNumber: pilotNumber
+                },
+                dataType: 'json',
+                success: function (response) {
+                    $('#pilot-track').bootstrapTable({
+                        data: response.data
+                    });
+                    $('#pilot-track').bootstrapTable('resetView', {
+                        height: windowHeight - 5
+                    });
+
+                    var positions = response.data;
+                    for (var i = 0; i < positions.length; i++) {
+                        var position = positions[i];
+
+                        position.marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(position.posLat, position.posLng),
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                scale: 3,
+                                strokeWeight: 1,
+                                strokeColor: '#FF0000',
+                                fillColor: '#FFFFFF',
+                                fillOpacity: 0.75
+                            },
+                            map: map
+                        });
+
+                        if (i >= 1) {
+                            var prevPosition = positions[i-1];
+                            position.leg = new google.maps.Polyline({
+                                path: [
+                                    {lat: position.posLat, lng: position.posLng},
+                                    {lat: prevPosition.posLat, lng: prevPosition.posLng}
+                                ],
+                                geodesic: true,
+                                strokeColor: '#FF0000',
+                                strokeWeight: 1.5,
+                                map: map
+                            });
+
+                        }
+                    }
+
+                    if (positions[0].marker) {
+                        map.setCenter(positions[0].marker.getPosition());
+                    }
+
+                },
+                error: function (e) {
+                    console.log(e.responseText);
+                }
+            });
+        });
+
+        $(function () {
+            $('#pilot-track').on('click-row.bs.table', function (e, row, $element) {
+                $('.success').removeClass('success');
+                $($element).addClass('success');
+
+                if (row.marker) {
+                    map.setCenter(row.marker.getPosition());
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .fixed-table-container {
+            border-width: 0px 0px 0px 0px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<table style="width: 100%; height: 100%;">
+    <tr>
+        <td id="map" style="width: 60%;"></td>
+        <td style="width: 40%; vertical-align: top;">
+            <table id="pilot-track" class="table table-no-bordered">
+                <thead>
+                <tr>
+                    <th data-field="report">Report</th>
+                    <th data-field="posInfo">Position</th>
+                    <th data-field="flightInfo">Flight</th>
+                    <th>Events</th>
+                    <!--<th data-formatter="fromColumnFormatter">From</th>-->
+                    <!--<th data-formatter="toColumnFormatter">To</th>-->
+                    <!--<th data-formatter="flightInfoColumnFormatter">Distance<br>Time</th>-->
+                </tr>
+                </thead>
+            </table>
+        </td>
+    </tr>
+</table>
+
+</body>
+
+</html>
