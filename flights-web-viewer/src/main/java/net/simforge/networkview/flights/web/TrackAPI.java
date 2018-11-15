@@ -95,6 +95,9 @@ public class TrackAPI {
 
                 Map<String, Object> map = new HashMap<>();
                 map.put("report", JavaTime.Hms.format(ReportUtils.fromTimestampJava(report.getReport())));
+                if (report.getId().equals(lastReport.getId())) {
+                    map.put("reportLast", true);
+                }
 
                 if (reportPilotPosition != null) {
                     Position position = Position.create(reportPilotPosition);
