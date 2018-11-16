@@ -53,96 +53,27 @@ public class TrackAPI {
     }
 
     @GET
-    @Path("pilot-track")
+    @Path("track-behind")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPilotTrack(@QueryParam("pilotNumber") String pilotNumber) {
-        BM.start("TrackAPI.getPilotTrack");
-
-        // load last report
-        // load previous 50 reports
-        // load pilot available positions for loaded reports
-        // load flights for the period
-        // make the result
-
-        try (Session session = webAppContext.openFlightsSession()) {
-
-            Report lastReport = loadLastReport();
-            List<Report> reports = loadPreviousReports(lastReport, 50);
+    public Response getTrackBehind(@QueryParam("pilotNumber") String pilotNumber, @QueryParam("_beforeReport") String _beforeReport) {
+        BM.start("TrackAPI.getTrackBehind");
+        try {
+            Report latestReport = loadLatestReport();
 
             ReportDatasource datasource = new DBReportDatasource(Network.VATSIM, webAppContext.getReportsSessionManager());
-
-            long fromReportId = reports.get(0).getId();
-            long toReportId = reports.get(reports.size() - 1).getId();
-            List<ReportPilotPosition> reportPilotPositions = datasource.loadPilotPositions(Integer.parseInt(pilotNumber), fromReportId, toReportId);
-            Map<Long, ReportPilotPosition> reportPilotPositionMap = reportPilotPositions.stream().collect(toMap(p -> p.getReport().getId(), Function.identity()));
-
-            List<Map<String, Object>> positionDtos = new ArrayList<>();
-
-            //noinspection unchecked,JpaQlInspection
-            List<DBFlight> flights = session
-                    .createQuery("from Flight where pilotNumber = :pilotNumber " +
-                            "and (firstSeenReportId between :fromReportId and :toReportId " +
-                            "or lastSeenReportId between :fromReportId and :toReportId " +
-                            "or (firstSeenReportId <= :fromReportId and lastSeenReportId >= :toReportId))")
-                    .setInteger("pilotNumber", Integer.parseInt(pilotNumber))
-                    .setLong("fromReportId", fromReportId)
-                    .setLong("toReportId", toReportId)
-                    .list();
-
-            for (Report report : reports) {
-                ReportPilotPosition reportPilotPosition = reportPilotPositionMap.get(report.getId());
-                DBFlight flight = findFlight(flights, report);
-
-                Map<String, Object> map = new HashMap<>();
-                map.put("report", JavaTime.Hms.format(ReportUtils.fromTimestampJava(report.getReport())));
-                if (report.getId().equals(lastReport.getId())) {
-                    map.put("reportLast", true);
-                }
-
-                if (reportPilotPosition != null) {
-                    Position position = Position.create(reportPilotPosition);
-                    map.put("posInfo", position.getStatus());
-                    map.put("posLat", position.getCoords().getLat());
-                    map.put("posLng", position.getCoords().getLon());
-                    map.put("posOnGround", position.isOnGround());
-                }
-
-                if (flight != null) {
-                    String from = flight.getTakeoffIcao();
-                    if (from == null) {
-                        if (flight.getPlannedDeparture() != null) {
-                            from = "(" + flight.getPlannedDeparture() + ")";
-                        }
-                    } else {
-                        if (from.equals(flight.getPlannedDeparture())) {
-                            from = "[" + from + "]";
-                        }
-                    }
-                    if (from == null) {
-                        from = "InAir";
-                    }
-
-                    String to = flight.getLandingIcao();
-                    if (to == null) {
-                        if (flight.getPlannedDestination() != null) {
-                            to = "(" + flight.getPlannedDestination() + ")";
-                        }
-                    } else {
-                        if (to.equals(flight.getPlannedDestination())) {
-                            to = "[" + to + "]";
-                        }
-                    }
-                    if (to == null) {
-                        to = flight.getStatus() == Lost.getCode() ? "{LOST}" : "{Unkn}";
-                    }
-
-                    map.put("flightInfo", from + "-" + to);
-                }
-
-                positionDtos.add(0, map); // making it in reverse order
+            Report beforeReport = null;
+            if (_beforeReport != null) {
+                beforeReport = datasource.loadReport(_beforeReport);
+            }
+            if (beforeReport == null) {
+                beforeReport = latestReport;
             }
 
-            return Response.ok(RestUtils.success(positionDtos)).build();
+            List<Report> reports = loadPreviousReports(beforeReport, 50);
+
+            List<Map<String, Object>> trackDtos = buildTrackDtos(Integer.parseInt(pilotNumber), reports, latestReport);
+
+            return Response.ok(RestUtils.success(trackDtos)).build();
         } catch (Exception e) {
             logger.error("Could not load active flights", e);
 
@@ -151,6 +82,118 @@ public class TrackAPI {
         } finally {
             BM.stop();
         }
+    }
+
+    @GET
+    @Path("track-ahead")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getTrackAhead(@QueryParam("pilotNumber") String pilotNumber, @QueryParam("afterReport") String _afterReport) {
+        BM.start("TrackAPI.getTrackAhead");
+        try {
+            Report latestReport = loadLatestReport();
+
+            ReportDatasource datasource = new DBReportDatasource(Network.VATSIM, webAppContext.getReportsSessionManager());
+            Report afterReport = null;
+            if (_afterReport != null) {
+                afterReport = datasource.loadReport(_afterReport);
+            }
+            if (afterReport == null) {
+                throw new IllegalArgumentException("Unable to find report " + _afterReport);
+            }
+
+            List<Report> reports = loadNextReports(afterReport, 50);
+
+            List<Map<String, Object>> trackDtos = buildTrackDtos(Integer.parseInt(pilotNumber), reports, latestReport);
+
+            return Response.ok(RestUtils.success(trackDtos)).build();
+        } catch (Exception e) {
+            logger.error("Could not load active flights", e);
+
+            String msg = String.format("Could not load active flights: %s", Misc.messagesBr(e));
+            return Response.ok(RestUtils.failure(msg)).build();
+        } finally {
+            BM.stop();
+        }
+    }
+
+    private List<Map<String, Object>> buildTrackDtos(int pilotNumber, List<Report> reports, Report latestReport) {
+        ReportDatasource datasource = new DBReportDatasource(Network.VATSIM, webAppContext.getReportsSessionManager());
+
+        long fromReportId = reports.get(0).getId();
+        long toReportId = reports.get(reports.size() - 1).getId();
+        List<ReportPilotPosition> reportPilotPositions = datasource.loadPilotPositions(pilotNumber, fromReportId, toReportId);
+        Map<Long, ReportPilotPosition> reportPilotPositionMap = reportPilotPositions.stream().collect(toMap(p -> p.getReport().getId(), Function.identity()));
+
+        List<DBFlight> flights;
+        try (Session session = webAppContext.openFlightsSession()) {
+            //noinspection unchecked,JpaQlInspection
+            flights = session
+                    .createQuery("from Flight where pilotNumber = :pilotNumber " +
+                            "and (firstSeenReportId between :fromReportId and :toReportId " +
+                            "or lastSeenReportId between :fromReportId and :toReportId " +
+                            "or (firstSeenReportId <= :fromReportId and lastSeenReportId >= :toReportId))")
+                    .setInteger("pilotNumber", pilotNumber)
+                    .setLong("fromReportId", fromReportId)
+                    .setLong("toReportId", toReportId)
+                    .list();
+        }
+
+        List<Map<String, Object>> trackDtos = new ArrayList<>();
+
+        for (Report report : reports) {
+            ReportPilotPosition reportPilotPosition = reportPilotPositionMap.get(report.getId());
+            DBFlight flight = findFlight(flights, report);
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("report", JavaTime.Hms.format(ReportUtils.fromTimestampJava(report.getReport())));
+            if (report.getId().equals(latestReport.getId())) {
+                map.put("reportLast", true);
+            }
+
+            if (reportPilotPosition != null) {
+                Position position = Position.create(reportPilotPosition);
+                map.put("posInfo", position.getStatus());
+                map.put("posLat", position.getCoords().getLat());
+                map.put("posLng", position.getCoords().getLon());
+                map.put("posOnGround", position.isOnGround());
+            }
+
+            if (flight != null) {
+                String from = flight.getTakeoffIcao();
+                if (from == null) {
+                    if (flight.getPlannedDeparture() != null) {
+                        from = "(" + flight.getPlannedDeparture() + ")";
+                    }
+                } else {
+                    if (from.equals(flight.getPlannedDeparture())) {
+                        from = "[" + from + "]";
+                    }
+                }
+                if (from == null) {
+                    from = "InAir";
+                }
+
+                String to = flight.getLandingIcao();
+                if (to == null) {
+                    if (flight.getPlannedDestination() != null) {
+                        to = "(" + flight.getPlannedDestination() + ")";
+                    }
+                } else {
+                    if (to.equals(flight.getPlannedDestination())) {
+                        to = "[" + to + "]";
+                    }
+                }
+                if (to == null) {
+                    to = flight.getStatus() == Lost.getCode() ? "{LOST}" : "{Unkn}";
+                }
+
+                map.put("flightInfo", from + "-" + to);
+            }
+
+            trackDtos.add(0, map); // making it in reverse order
+        }
+
+        return trackDtos;
     }
 
     private DBFlight findFlight(List<DBFlight> flights, Report report) {
@@ -163,7 +206,7 @@ public class TrackAPI {
         return null;
     }
 
-    private Report loadLastReport() {
+    private Report loadLatestReport() {
         BM.start("TrackAPI.loadLastReport");
         try (Session session = webAppContext.getReportsSessionManager().getSession(Network.VATSIM)) {
 
@@ -178,14 +221,32 @@ public class TrackAPI {
         }
     }
 
-    private List<Report> loadPreviousReports(Report fromReport, int amount) {
+    private List<Report> loadNextReports(Report afterReport, int amount) {
+        BM.start("TrackAPI.loadNextReports");
+        try (Session session = webAppContext.getReportsSessionManager().getSession(Network.VATSIM)) {
+
+            //noinspection JpaQlInspection,unchecked
+            List<Report> reports = session
+                    .createQuery("from Report where report >= :afterReport and parsed = true order by report asc")
+                    .setString("afterReport", afterReport.getReport())
+                    .setMaxResults(amount)
+                    .list();
+            Collections.reverse(reports);
+            return reports;
+
+        } finally {
+            BM.stop();
+        }
+    }
+
+    private List<Report> loadPreviousReports(Report beforeReport, int amount) {
         BM.start("TrackAPI.loadPreviousReports");
         try (Session session = webAppContext.getReportsSessionManager().getSession(Network.VATSIM)) {
 
             //noinspection JpaQlInspection,unchecked
             List<Report> reports = session
-                    .createQuery("from Report where report <= :fromReport and parsed = true order by report desc")
-                    .setString("fromReport", fromReport.getReport())
+                    .createQuery("from Report where report <= :beforeReport and parsed = true order by report desc")
+                    .setString("beforeReport", beforeReport.getReport())
                     .setMaxResults(amount)
                     .list();
             Collections.reverse(reports);

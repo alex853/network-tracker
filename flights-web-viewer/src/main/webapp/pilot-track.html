@@ -38,7 +38,7 @@
             });
 
             $.ajax({
-                url: 'rest/track/pilot-track',
+                url: 'rest/track/track-behind',
                 data: {
                     pilotNumber: pilotNumber
                 },
@@ -150,6 +150,7 @@
         <td style="width: 40%; vertical-align: top;">
             <div id="toolbar">
                 <button type="button" class="btn btn-outline-success" data-toggle="button">Live</button>
+                <button type="button" class="btn btn-outline-primary" data-toggle="button">Follow</button>
             </div>
             <table
                     id="pilot-track"
@@ -161,9 +162,6 @@
                     <th data-field="posInfo">Position</th>
                     <th data-field="flightInfo">Flight</th>
                     <th>Events</th>
-                    <!--<th data-formatter="fromColumnFormatter">From</th>-->
-                    <!--<th data-formatter="toColumnFormatter">To</th>-->
-                    <!--<th data-formatter="flightInfoColumnFormatter">Distance<br>Time</th>-->
                 </tr>
                 </thead>
             </table>
