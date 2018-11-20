@@ -13,7 +13,7 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/bootstrap-table.min.js"></script>
 
-    <script src="js/GMapStyle2.js"></script>
+    <script src="js/GMapStyle-ShadesOfGrey.js"></script>
 
     <script>
 
@@ -26,6 +26,25 @@
         var pilotNumber = captured;
 
         var map;
+        var currentPositions;
+        var liveModeTimeout;
+
+        var onGroundIcon = {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 3,
+            strokeWeight: 1,
+            strokeColor: '#808080',
+            fillColor: '#FFFFFF',
+            fillOpacity: 0.75
+        };
+        var flyingIcon = {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 3,
+            strokeWeight: 1,
+            strokeColor: '#0000FF',
+            fillColor: '#FFFFFF',
+            fillOpacity: 0.75
+        };
 
         $(document).ready(function () {
             var windowHeight = $(window).height();
@@ -44,6 +63,8 @@
                 },
                 dataType: 'json',
                 success: function (response) {
+                    currentPositions = response.data;
+
                     $('#pilot-track').bootstrapTable({
                         data: response.data
                     });
@@ -51,60 +72,25 @@
                         height: windowHeight - 5
                     });
 
-                    var onGroundIcon = {
-                        path: google.maps.SymbolPath.CIRCLE,
-                                scale: 3,
-                                strokeWeight: 1,
-                                strokeColor: '#808080',
-                                fillColor: '#FFFFFF',
-                                fillOpacity: 0.75
-                    };
-                    var flyingIcon = {
-                        path: google.maps.SymbolPath.CIRCLE,
-                                scale: 3,
-                                strokeWeight: 1,
-                                strokeColor: '#0000FF',
-                                fillColor: '#FFFFFF',
-                                fillOpacity: 0.75
-                    };
+                    drawTrackOnMap();
 
-                    var positions = response.data;
-                    for (var i = 0; i < positions.length; i++) {
-                        var position = positions[i];
-
-                        if (position.posInfo) {
-                            position.marker = new google.maps.Marker({
-                                position: new google.maps.LatLng(position.posLat, position.posLng),
-                                icon: position.posOnGround ? onGroundIcon : flyingIcon,
-                                map: map
-                            });
-                        }
-
-                        if (i >= 1 && position.posInfo) {
-                            var prevPosition = positions[i-1];
-
-                            if (prevPosition.posInfo) {
-                                position.leg = new google.maps.Polyline({
-                                    path: [
-                                        {lat: position.posLat, lng: position.posLng},
-                                        {lat: prevPosition.posLat, lng: prevPosition.posLng}
-                                    ],
-                                    geodesic: true,
-                                    strokeColor: '#FF0000',
-                                    strokeWeight: 1.5,
-                                    map: map
-                                });
-                            }
-                        }
+                    // todo if follow enabled?
+                    if (currentPositions[0].mapMarker) {
+                        map.panTo(currentPositions[0].mapMarker.getPosition());
                     }
-
-                    if (positions[0].marker) {
-                        map.setCenter(positions[0].marker.getPosition());
-                    }
-
                 },
                 error: function (e) {
                     console.log(e.responseText);
+                }
+            });
+
+            $('#live-button').on('click', function (event) {
+                var becomeActive = !$(this).hasClass('active');
+
+                if (becomeActive) {
+                    startLiveModeTimer();
+                } else {
+                    clearTimeout(liveModeTimeout);
                 }
             });
         });
@@ -114,14 +100,85 @@
                 $('.success').removeClass('success');
                 $($element).addClass('success');
 
-                if (row.marker) {
-                    map.setCenter(row.marker.getPosition());
+                if (row.mapMarker) {
+                    map.panTo(row.mapMarker.getPosition());
                 }
             });
         });
 
+        function startLiveModeTimer() {
+            liveModeTimeout = setTimeout(loadLiveData, 10000);
+        }
+
+        function loadLiveData() {
+            $.ajax({
+                url: 'rest/track/track-ahead',
+                data: {
+                    pilotNumber: pilotNumber,
+                    afterReport: currentPositions[0].report
+                },
+                dataType: 'json',
+                success: function (response) {
+                    var newPositions = response.data;
+                    if (newPositions.length == 0) { // some error happened?
+                        return;
+                    }
+
+                    $('#pilot-track').bootstrapTable('remove', {field: 'report', values: [currentPositions[0].report]});
+                    currentPositions.splice(0, 1); // todo remove gmap objects!
+
+                    currentPositions = newPositions.concat(currentPositions);
+                    $('#pilot-track').bootstrapTable('prepend', newPositions);
+
+                    drawTrackOnMap();
+
+                    // todo if follow active
+                    if (currentPositions[0].mapMarker) {
+                        map.panTo(currentPositions[0].mapMarker.getPosition());
+                    }
+
+                    startLiveModeTimer();
+                },
+                error: function (e) {
+                    console.log(e.message);
+                    startLiveModeTimer();
+                }
+            });
+        }
+
+        function drawTrackOnMap() {
+            for (var i = 0; i < currentPositions.length; i++) {
+                var position = currentPositions[i];
+
+                if (position.posInfo && !position.mapMarker) {
+                    position.mapMarker = new google.maps.Marker({
+                        position: new google.maps.LatLng(position.posLat, position.posLng),
+                        icon: position.posOnGround ? onGroundIcon : flyingIcon,
+                        map: map
+                    });
+                }
+
+                if (i >= 1 && position.posInfo && !position.mapLeg) {
+                    var prevPosition = currentPositions[i - 1];
+
+                    if (prevPosition.posInfo) {
+                        position.mapLeg = new google.maps.Polyline({
+                            path: [
+                                {lat: position.posLat, lng: position.posLng},
+                                {lat: prevPosition.posLat, lng: prevPosition.posLng}
+                            ],
+                            geodesic: true,
+                            strokeColor: '#FF0000',
+                            strokeWeight: 1.5,
+                            map: map
+                        });
+                    }
+                }
+            }
+        }
+
         function reportColumnFormatter(value, row) {
-            if (row.reportLast) {
+            if (row.reportLatest) {
                 return '<b>' + value + ' NOW</b>';
             } else {
                 return value;
@@ -149,7 +206,8 @@
         <td id="map" style="width: 60%;"></td>
         <td style="width: 40%; vertical-align: top;">
             <div id="toolbar">
-                <button type="button" class="btn btn-outline-success" data-toggle="button">Live</button>
+                <button type="button" class="btn btn-outline-success" data-toggle="button" id="live-button">Live
+                </button>
                 <button type="button" class="btn btn-outline-primary" data-toggle="button">Follow</button>
             </div>
             <table
@@ -158,7 +216,7 @@
                     data-toolbar="#toolbar">
                 <thead>
                 <tr>
-                    <th data-field="report" data-formatter="reportColumnFormatter">Report</th>
+                    <th data-field="reportDt" data-formatter="reportColumnFormatter">Report</th>
                     <th data-field="posInfo">Position</th>
                     <th data-field="flightInfo">Flight</th>
                     <th>Events</th>

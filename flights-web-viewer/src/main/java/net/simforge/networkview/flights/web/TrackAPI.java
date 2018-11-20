@@ -75,10 +75,10 @@ public class TrackAPI {
 
             return Response.ok(RestUtils.success(trackDtos)).build();
         } catch (Exception e) {
-            logger.error("Could not load active flights", e);
+            logger.error("Could not load track data", e);
 
-            String msg = String.format("Could not load active flights: %s", Misc.messagesBr(e));
-            return Response.ok(RestUtils.failure(msg)).build();
+            String msg = String.format("Could not load track data: %s", Misc.messagesBr(e));
+            return Response.serverError().entity(RestUtils.failure(msg)).build();
         } finally {
             BM.stop();
         }
@@ -107,10 +107,10 @@ public class TrackAPI {
 
             return Response.ok(RestUtils.success(trackDtos)).build();
         } catch (Exception e) {
-            logger.error("Could not load active flights", e);
+            logger.error("Could not load track data", e);
 
-            String msg = String.format("Could not load active flights: %s", Misc.messagesBr(e));
-            return Response.ok(RestUtils.failure(msg)).build();
+            String msg = String.format("Could not load track data: %s", Misc.messagesBr(e));
+            return Response.serverError().entity(RestUtils.failure(msg)).build();
         } finally {
             BM.stop();
         }
@@ -145,9 +145,10 @@ public class TrackAPI {
             DBFlight flight = findFlight(flights, report);
 
             Map<String, Object> map = new HashMap<>();
-            map.put("report", JavaTime.Hms.format(ReportUtils.fromTimestampJava(report.getReport())));
+            map.put("report", report.getReport());
+            map.put("reportDt", JavaTime.Hms.format(ReportUtils.fromTimestampJava(report.getReport())));
             if (report.getId().equals(latestReport.getId())) {
-                map.put("reportLast", true);
+                map.put("reportLatest", true);
             }
 
             if (reportPilotPosition != null) {
@@ -231,7 +232,6 @@ public class TrackAPI {
                     .setString("afterReport", afterReport.getReport())
                     .setMaxResults(amount)
                     .list();
-            Collections.reverse(reports);
             return reports;
 
         } finally {
