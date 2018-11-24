@@ -1,23 +1,9 @@
 package net.simforge.networkview.datafeeder;
 
-//import org.joda.time.DateTime;
-//import org.joda.time.format.DateTimeFormat;
-//import org.joda.time.format.DateTimeFormatter;
-
 import java.time.LocalDateTime;
 
 public class ReportUtils {
-//    @Deprecated
-//    private static final DateTimeFormatter timestampDateFormat_joda = DateTimeFormat.forPattern("yyyyMMddHHmmss").withZoneUTC();
     private static final java.time.format.DateTimeFormatter timestampDateFormat_java = java.time.format.DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-
-    /**
-     * Use {@link #fromTimestampJava(String)} instead
-     */
-//    @Deprecated
-//    public static DateTime fromTimestamp(String timestamp) {
-//        return timestampDateFormat_joda.parseDateTime(timestamp);
-//    }
 
     public static LocalDateTime fromTimestampJava(String timestamp) {
         return LocalDateTime.parse(timestamp, timestampDateFormat_java);

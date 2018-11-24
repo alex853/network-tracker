@@ -1,11 +1,13 @@
 package net.simforge.networkview.datafeeder.persistence;
 
+import net.simforge.networkview.datafeeder.ReportInfo;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "report")
-public class Report implements Serializable {
+public class Report implements Serializable, ReportInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pk_report_id")
     @SequenceGenerator(name = "pk_report_id", sequenceName = "report_id_seq", allocationSize = 1)

@@ -3,7 +3,7 @@ package net.simforge.networkview.flights2;
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Str;
 import net.simforge.networkview.datafeeder.ParsingLogics;
-import net.simforge.networkview.datafeeder.ReportUtils;
+import net.simforge.networkview.datafeeder.ReportInfo;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.world.airports.Airport;
@@ -18,7 +18,7 @@ public class Position {
 
     private long reportId;
     private String report;
-    private LocalDateTime dt;
+    private ReportInfo reportInfo;
 
     private Geo.Coords coords;
     private int actualAltitude;
@@ -41,7 +41,6 @@ public class Position {
 
         result.reportId = reportPilotPosition.getReport().getId();
         result.report = reportPilotPosition.getReport().getReport();
-        result.dt = ReportUtils.fromTimestampJava(reportPilotPosition.getReport().getReport());
         result.coords = new Geo.Coords(reportPilotPosition.getLatitude(), reportPilotPosition.getLongitude());
 
         Airport nearestAirport = Airports.get().findNearest(result.coords);
@@ -100,9 +99,25 @@ public class Position {
 
         result.reportId = report.getId();
         result.report = report.getReport();
-        result.dt = ReportUtils.fromTimestampJava(report.getReport());
 
         return result;
+    }
+
+    public ReportInfo getReportInfo() {
+        if (reportInfo == null) {
+            reportInfo = new ReportInfo() {
+                @Override
+                public Long getId() {
+                    return reportId;
+                }
+
+                @Override
+                public String getReport() {
+                    return report;
+                }
+            };
+        }
+        return reportInfo;
     }
 
     @Deprecated
@@ -110,13 +125,14 @@ public class Position {
         return reportId;
     }
 
+    @Deprecated
     public String getReport() {
         return report;
     }
 
     @Deprecated
     public LocalDateTime getDt() {
-        return dt;
+        return getReportInfo().getDt();
     }
 
     public Geo.Coords getCoords() {
