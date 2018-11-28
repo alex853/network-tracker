@@ -1,13 +1,15 @@
 package net.simforge.networkview.flights3.events;
 
+import net.simforge.networkview.datafeeder.ReportInfo;
+
 public class BaseEvent implements TrackingEvent {
     private int pilotNumber;
-    private String report;
+    private ReportInfo reportInfo;
     private String type;
 
-    protected BaseEvent(int pilotNumber, String report, String type) {
+    protected BaseEvent(int pilotNumber, ReportInfo reportInfo, String type) {
         this.pilotNumber = pilotNumber;
-        this.report = report;
+        this.reportInfo = reportInfo;
         this.type = type;
     }
 
@@ -17,8 +19,8 @@ public class BaseEvent implements TrackingEvent {
     }
 
     @Override
-    public String getReport() {
-        return report;
+    public ReportInfo getReportInfo() {
+        return reportInfo;
     }
 
     @Override

@@ -2,7 +2,6 @@ package net.simforge.networkview.flights3.persistence;
 
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
-import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
@@ -12,6 +11,7 @@ import net.simforge.networkview.flights2.flight.Flightplan;
 import net.simforge.networkview.flights3.Flight;
 import net.simforge.networkview.flights3.PersistenceLayer;
 import net.simforge.networkview.flights3.PilotContext;
+import net.simforge.networkview.flights3.events.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
     public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) throws IOException {
         BM.start("DBPersistenceLayer.loadActivePilotContexts");
         try (Session session = sessionFactory.openSession()) {
-            //noinspection unchecked,JpaQlInspection
+            //noinspection unchecked
             List<DBPilotStatus> dbPilotStatuses = session
                     .createQuery("select ps from PilotStatus ps where currFlight is not null")
                     .list();
@@ -73,7 +73,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
     @Override
     public PilotContext createContext(int pilotNumber, Report seenReport) {
-        BM.start("DBPersistenceLayer.createContext");
+/*        BM.start("DBPersistenceLayer.createContext");
         try (Session session = sessionFactory.openSession()) {
             DBPilotStatus dbPilotStatus = loadPilotStatus(session, pilotNumber);
 
@@ -91,7 +91,8 @@ public class DBPersistenceLayer implements PersistenceLayer {
             return new PilotContext(pilotNumber);
         } finally {
             BM.stop();
-        }
+        }*/
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -119,9 +120,22 @@ public class DBPersistenceLayer implements PersistenceLayer {
             HibernateUtils.transaction(session, () -> {
 
                 DBPilotStatus dbPilotStatus = loadPilotStatus(session, pilotContext.getPilotNumber());
+                if (dbPilotStatus == null) {
+                    dbPilotStatus = new DBPilotStatus();
+                    dbPilotStatus.setPilotNumber(pilotContext.getPilotNumber());
+                }
 
-                //noinspection unchecked
-                List<Flight> recentFlights = (List) pilotContext.getRecentFlights();
+                Position lastProcessedPosition = pilotContext.getLastProcessedPosition();
+                dbPilotStatus.setLastProcessedReportId(lastProcessedPosition.getReportInfo().getId());
+                dbPilotStatus.setLastProcessedDt(lastProcessedPosition.getReportInfo().getDt());
+
+                if (dbPilotStatus.getId() == null) {
+                    session.save(dbPilotStatus);
+                }
+
+                pilotContext.getRecentEvents().stream().map(e -> toDbEvent(e, null)).forEach(session::save);
+
+                List<Flight> recentFlights = pilotContext.getRecentFlights();
 
                 List<Flight> dirtyFlightsList = recentFlights.stream().filter(Flight::isDirty).collect(toList());
                 Flight currFlight = pilotContext.getCurrFlight();
@@ -131,7 +145,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
                 List<DBFlight> loadedDbFlights = !dirtyFlightsList.isEmpty()
                         ? loadDbFlightsByFirstSeenReportId(session, pilotContext.getPilotNumber(), dirtyFlightsList)
-                        : Collections.EMPTY_LIST;
+                        : Collections.emptyList();
                 Map<Long, DBFlight> loadedDbFlightsMap = loadedDbFlights.stream().collect(Collectors.toMap(DBFlight::getFirstSeenReportId, Function.identity()));
 
                 Iterator<Flight> it = dirtyFlightsList.iterator();
@@ -144,7 +158,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                         continue;
                     }
 
-                    DBFlight dbFlight = loadedDbFlightsMap.get(flight.getFirstSeen().getReportId());
+                    DBFlight dbFlight = loadedDbFlightsMap.get(flight.getFirstSeen().getReportInfo().getId());
                     if (dbFlight == null) {
                         continue; // it seems we have new flight
                     }
@@ -153,6 +167,8 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     toDbFlight(dbFlight, pilotContext.getPilotNumber(), flight);
 
                     session.update(dbFlight);
+
+                    flight.getRecentEvents().stream().map(e -> toDbEvent(e, dbFlight)).forEach(session::save);
                 }
 
                 // persist new flights to DB
@@ -163,15 +179,13 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
                     session.save(dbFlight);
 
+                    flight.getRecentEvents().stream().map(e -> toDbEvent(e, dbFlight)).forEach(session::save);
+
                     loadedDbFlightsMap.put(dbFlight.getFirstSeenReportId(), dbFlight);
                 }
 
-                Position lastProcessedPosition = pilotContext.getLastProcessedPosition();
-                dbPilotStatus.setLastProcessedReportId(lastProcessedPosition.getReportId());
-                dbPilotStatus.setLastProcessedDt(lastProcessedPosition.getDt());
-
                 if (currFlight != null) {
-                    DBFlight currDbFlight = loadedDbFlightsMap.get(currFlight.getFirstSeen().getReportId());
+                    DBFlight currDbFlight = loadedDbFlightsMap.get(currFlight.getFirstSeen().getReportInfo().getId());
                     if (currDbFlight == null) {
                         throw new IllegalArgumentException("Unable to find currFlight in loaded DB flights");
                     }
@@ -194,7 +208,6 @@ public class DBPersistenceLayer implements PersistenceLayer {
     private DBPilotStatus loadPilotStatus(Session session, int pilotNumber) {
         BM.start("DBPersistenceLayer.loadPilotStatus");
         try {
-            //noinspection JpaQlInspection
             return (DBPilotStatus) session
                     .createQuery("select ps from PilotStatus ps where pilotNumber = :pilotNumber")
                     .setInteger("pilotNumber", pilotNumber)
@@ -261,27 +274,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 track.add(position);
             }
 
-
-/*            Report currReport = firstSeenReport;
-
-            while (true) {
-                ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(currReport.getId(), pilotNumber);
-                Position position = reportPilotPosition != null
-                        ? Position.create(reportPilotPosition)
-                        : Position.createOfflinePosition(currReport);
-                track.add(position);
-
-                if (currReport.getReport().equals(loadTillReport.getReport())) {
-                    break;
-                }
-
-                currReport = reportDatasource.loadNextReport(currReport.getReport());
-                if (currReport == null) {
-                    throw new IllegalStateException(); // todo message
-                }
-
-            }*/
-
+            //noinspection UnnecessaryLocalVariable
             Flight flight = Flight.load(
                     pilotNumber,
                     FlightStatus.byCode(dbFlight.getStatus()),
@@ -328,41 +321,43 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
             dbFlight.setStatus(flight.getStatus().getCode());
 
-            dbFlight.setFirstSeenReportId(flight.getFirstSeen().getReportId());
-            dbFlight.setFirstSeenDt(flight.getFirstSeen().getDt());
+            dbFlight.setFirstSeenReportId(flight.getFirstSeen().getReportInfo().getId());
+            dbFlight.setFirstSeenDt(flight.getFirstSeen().getReportInfo().getDt());
+            dbFlight.setFirstSeenLatitude(flight.getFirstSeen().getCoords().getLat());
+            dbFlight.setFirstSeenLongitude(flight.getFirstSeen().getCoords().getLon());
+            dbFlight.setFirstSeenIcao(flight.getFirstSeen().getAirportIcao());
 
-            dbFlight.setLastSeenReportId(flight.getLastSeen().getReportId());
-            dbFlight.setLastSeenDt(flight.getLastSeen().getDt());
+            dbFlight.setLastSeenReportId(flight.getLastSeen().getReportInfo().getId());
+            dbFlight.setLastSeenDt(flight.getLastSeen().getReportInfo().getDt());
+            dbFlight.setLastSeenLatitude(flight.getLastSeen().getCoords().getLat());
+            dbFlight.setLastSeenLongitude(flight.getLastSeen().getCoords().getLon());
+            dbFlight.setLastSeenIcao(flight.getLastSeen().getAirportIcao());
 
             if (flight.getTakeoff() != null) {
-                dbFlight.setTakeoffReportId(flight.getTakeoff().getReportId());
-                dbFlight.setTakeoffDt(flight.getTakeoff().getDt());
+                dbFlight.setTakeoffReportId(flight.getTakeoff().getReportInfo().getId());
+                dbFlight.setTakeoffDt(flight.getTakeoff().getReportInfo().getDt());
                 dbFlight.setTakeoffLatitude(flight.getTakeoff().getCoords().getLat());
                 dbFlight.setTakeoffLongitude(flight.getTakeoff().getCoords().getLon());
-                //dbFlight.setTakeoffType(null);
                 dbFlight.setTakeoffIcao(flight.getTakeoff().getAirportIcao());
             } else {
                 dbFlight.setTakeoffReportId(null);
                 dbFlight.setTakeoffDt(null);
                 dbFlight.setTakeoffLatitude(null);
                 dbFlight.setTakeoffLongitude(null);
-//                dbFlight.setTakeoffType(null);
                 dbFlight.setTakeoffIcao(null);
             }
 
             if (flight.getLanding() != null) {
-                dbFlight.setLandingReportId(flight.getLanding().getReportId());
-                dbFlight.setLandingDt(flight.getLanding().getDt());
+                dbFlight.setLandingReportId(flight.getLanding().getReportInfo().getId());
+                dbFlight.setLandingDt(flight.getLanding().getReportInfo().getDt());
                 dbFlight.setLandingLatitude(flight.getLanding().getCoords().getLat());
                 dbFlight.setLandingLongitude(flight.getLanding().getCoords().getLon());
-                //dbFlight.setLandingType(null);
                 dbFlight.setLandingIcao(flight.getLanding().getAirportIcao());
             } else {
                 dbFlight.setLandingReportId(null);
                 dbFlight.setLandingDt(null);
                 dbFlight.setLandingLatitude(null);
                 dbFlight.setLandingLongitude(null);
-//                dbFlight.setLandingType(null);
                 dbFlight.setLandingIcao(null);
             }
 
@@ -373,10 +368,37 @@ public class DBPersistenceLayer implements PersistenceLayer {
         }
     }
 
+    private DBEvent toDbEvent(TrackingEvent event, DBFlight dbFlight) {
+        DBEvent dbEvent = new DBEvent();
+        dbEvent.setPilotNumber(event.getPilotNumber());
+        dbEvent.setReportId(event.getReportInfo().getId());
+        dbEvent.setDt(event.getReportInfo().getDt());
+        dbEvent.setType(mapEventType(event));
+        dbEvent.setFlight(dbFlight);
+        return dbEvent;
+    }
+
+    private int mapEventType(TrackingEvent event) {
+        if (event instanceof PilotOnlineEvent) {
+            return 1;
+        } else if (event instanceof PilotOfflineEvent) {
+            return 2;
+        } else if (event instanceof PilotTakeoffEvent) {
+            return 11;
+        } else if (event instanceof PilotLandingEvent) {
+            return 19;
+        } else if (event instanceof FlightStatusEvent) {
+            return ((FlightStatusEvent) event).getStatus().getCode();
+        } else if (event instanceof FlightplanEvent) {
+            return 99;
+        } else {
+            throw new IllegalArgumentException("Unknown type of event " + event);
+        }
+    }
+
     private DBFlight loadCurrFlight(Session session, int pilotNumber) {
         BM.start("DBPersistenceLayer.loadCurrFlight");
         try {
-            //noinspection unchecked,JpaQlInspection
             return (DBFlight) session
                     .createQuery("select f from Flight f where pilotNumber = :pilotNumber and status < :finishedCode")
                     .setInteger("pilotNumber", pilotNumber)
@@ -390,11 +412,11 @@ public class DBPersistenceLayer implements PersistenceLayer {
     private List<DBFlight> loadDbFlightsByFirstSeenReportId(Session session, int pilotNumber, List<Flight> flights) {
         BM.start("DBPersistenceLayer.loadDbFlightsByFirstSeenReportId");
         try {
-            //noinspection unchecked,JpaQlInspection
+            //noinspection unchecked
             return session
                     .createQuery("select f from Flight f where pilotNumber = :pilotNumber and firstSeenReportId in (:firstSeenReportIdList)")
                     .setInteger("pilotNumber", pilotNumber)
-                    .setParameterList("firstSeenReportIdList", flights.stream().map(f -> f.getFirstSeen().getReportId()).collect(Collectors.toList()))
+                    .setParameterList("firstSeenReportIdList", flights.stream().map(f -> f.getFirstSeen().getReportInfo().getId()).collect(Collectors.toList()))
                     .list();
         } finally {
             BM.stop();
@@ -417,15 +439,15 @@ public class DBPersistenceLayer implements PersistenceLayer {
 
 
     private class DBLoadedPilotContext extends PilotContext {
-        public DBLoadedPilotContext(int pilotNumber) {
+        DBLoadedPilotContext(int pilotNumber) {
             super(pilotNumber);
         }
 
-        public void setLastProcessedPosition(Position lastProcessedPosition) {
+        void setLastProcessedPosition(Position lastProcessedPosition) {
             this.lastProcessedPosition = lastProcessedPosition;
         }
 
-        public void setCurrFlight(Flight currFlight) {
+        void setCurrFlight(Flight currFlight) {
             this.currFlight = currFlight;
         }
     }

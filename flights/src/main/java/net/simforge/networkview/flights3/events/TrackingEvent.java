@@ -1,10 +1,12 @@
 package net.simforge.networkview.flights3.events;
 
+import net.simforge.networkview.datafeeder.ReportInfo;
+
 public interface TrackingEvent {
 
     int getPilotNumber();
 
-    String getReport();
+    ReportInfo getReportInfo();
 
     String getType();
 

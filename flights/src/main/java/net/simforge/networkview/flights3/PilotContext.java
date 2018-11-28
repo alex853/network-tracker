@@ -29,6 +29,12 @@ public class PilotContext {
     }
 
     PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
+        if (lastProcessedPosition != null
+                && (report.getReport().equals(lastProcessedPosition.getReportInfo().getReport())
+                || report.getReport().compareTo(lastProcessedPosition.getReportInfo().getReport()) < 0)) {
+            throw new IllegalArgumentException("Unable to process the report as it is already processed");
+        }
+
         PilotContext copy = makeCopy();
         copy._processPosition(report, reportPilotPosition);
         return copy;
@@ -45,9 +51,9 @@ public class PilotContext {
         boolean wentOnline = position.isPositionKnown() && (lastProcessedPosition == null || !lastProcessedPosition.isPositionKnown());
         boolean wentOffline = !position.isPositionKnown() && (lastProcessedPosition == null || lastProcessedPosition.isPositionKnown());
         if (wentOnline) {
-            addEvent(new PilotOnlineEvent(pilotNumber, position.getReportInfo().getReport()));
+            addEvent(new PilotOnlineEvent(pilotNumber, position.getReportInfo()));
         } else if (wentOffline) {
-            addEvent(new PilotOfflineEvent(pilotNumber, position.getReportInfo().getReport()));
+            addEvent(new PilotOfflineEvent(pilotNumber, position.getReportInfo()));
         }
 
         this.lastProcessedPosition = position;
@@ -93,7 +99,7 @@ public class PilotContext {
         return Collections.unmodifiableList(recentFlights);
     }
 
-    List<TrackingEvent> getRecentEvents() {
+    public List<TrackingEvent> getRecentEvents() {
         return Collections.unmodifiableList(recentEvents);
     }
 

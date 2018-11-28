@@ -39,17 +39,27 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
 
     private Integer status;
 
-    // todo expand first_seen_XXX
     @Column(name = "first_seen_report_id")
     private Long firstSeenReportId;
     @Column(name = "first_seen_dt")
     private LocalDateTime firstSeenDt;
+    @Column(name = "first_seen_latitude")
+    private Double firstSeenLatitude;
+    @Column(name = "first_seen_longitude")
+    private Double firstSeenLongitude;
+    @Column(name = "first_seen_icao")
+    private String firstSeenIcao;
 
-    // todo expand last_seen_XXX
     @Column(name = "last_seen_report_id")
     private Long lastSeenReportId;
     @Column(name = "last_seen_dt")
     private LocalDateTime lastSeenDt;
+    @Column(name = "last_seen_latitude")
+    private Double lastSeenLatitude;
+    @Column(name = "last_seen_longitude")
+    private Double lastSeenLongitude;
+    @Column(name = "last_seen_icao")
+    private String lastSeenIcao;
 
     @Column(name = "takeoff_report_id")
     private Long takeoffReportId;
@@ -59,8 +69,6 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     private Double takeoffLatitude;
     @Column(name = "takeoff_longitude")
     private Double takeoffLongitude;
-    //    @Column(name = "takeoff_type")
-//    private Integer takeoffType; // ICAO, InAir, Other
     @Column(name = "takeoff_icao")
     private String takeoffIcao;
 
@@ -72,8 +80,6 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     private Double landingLatitude;
     @Column(name = "landing_longitude")
     private Double landingLongitude;
-    //    @Column(name = "landing_type")
-//    private Integer landingType; // ICAO, InAir, Other
     @Column(name = "landing_icao")
     private String landingIcao;
 
@@ -116,22 +122,6 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     public LocalDateTime getModifyDt() {
         return modifyDt;
     }
-
-/*    public Network getNetwork() {
-        switch (network) {
-            case 1: return Network.VATSIM;
-            case 2: return Network.IVAO;
-            default: return null;
-        }
-    }
-
-    public void setNetwork(Network network) {
-        if (network != null) {
-            this.network = network.getCode();
-        } else {
-            this.network = null;
-        }
-    }*/
 
     public Integer getPilotNumber() {
         return pilotNumber;
@@ -205,6 +195,30 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
         this.firstSeenDt = firstSeenDt;
     }
 
+    public Double getFirstSeenLatitude() {
+        return firstSeenLatitude;
+    }
+
+    public void setFirstSeenLatitude(Double firstSeenLatitude) {
+        this.firstSeenLatitude = firstSeenLatitude;
+    }
+
+    public Double getFirstSeenLongitude() {
+        return firstSeenLongitude;
+    }
+
+    public void setFirstSeenLongitude(Double firstSeenLongitude) {
+        this.firstSeenLongitude = firstSeenLongitude;
+    }
+
+    public String getFirstSeenIcao() {
+        return firstSeenIcao;
+    }
+
+    public void setFirstSeenIcao(String firstSeenIcao) {
+        this.firstSeenIcao = firstSeenIcao;
+    }
+
     public Long getLastSeenReportId() {
         return lastSeenReportId;
     }
@@ -219,6 +233,30 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
 
     public void setLastSeenDt(LocalDateTime lastSeenDt) {
         this.lastSeenDt = lastSeenDt;
+    }
+
+    public Double getLastSeenLatitude() {
+        return lastSeenLatitude;
+    }
+
+    public void setLastSeenLatitude(Double lastSeenLatitude) {
+        this.lastSeenLatitude = lastSeenLatitude;
+    }
+
+    public Double getLastSeenLongitude() {
+        return lastSeenLongitude;
+    }
+
+    public void setLastSeenLongitude(Double lastSeenLongitude) {
+        this.lastSeenLongitude = lastSeenLongitude;
+    }
+
+    public String getLastSeenIcao() {
+        return lastSeenIcao;
+    }
+
+    public void setLastSeenIcao(String lastSeenIcao) {
+        this.lastSeenIcao = lastSeenIcao;
     }
 
     public Long getTakeoffReportId() {
@@ -252,14 +290,6 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     public void setTakeoffLongitude(Double takeoffLongitude) {
         this.takeoffLongitude = takeoffLongitude;
     }
-
-//    public Integer geTakeoffType() {
-//        return takeoffType;
-//    }
-
-//    public void setTakeoffType(Integer originType) {
-//        this.takeoffType = originType;
-//    }
 
     public String getTakeoffIcao() {
         return takeoffIcao;

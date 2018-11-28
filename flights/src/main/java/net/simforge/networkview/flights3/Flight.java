@@ -2,6 +2,7 @@ package net.simforge.networkview.flights3;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;
+import net.simforge.networkview.datafeeder.ReportInfo;
 import net.simforge.networkview.flights2.Position;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 import net.simforge.networkview.flights2.flight.Flightplan;
@@ -69,7 +70,7 @@ public class Flight {
                     increaseDistanceAndTime(position, prevPosition);
                     return true;
                 } else if (moving && (status == FlightStatus.Departure || status == FlightStatus.Preparing)) {
-                    setStatus(FlightStatus.Departing, position.getReportInfo().getReport());
+                    setStatus(FlightStatus.Departing, position.getReportInfo());
                 }
 
                 continueFlight(position);
@@ -122,7 +123,7 @@ public class Flight {
                 double distanceInLastMinutes = calcDistanceInLastMinutes(position, Consts.TIME_TO_PARK_AFTER_ARRIVAL_MINUTES);
                 boolean parked = stoppedRightNow && distanceInLastMinutes <= Consts.DISTANCE_TO_PARK_AFTER_ARRIVAL_NM;
                 if (parked && (status == FlightStatus.Arrival || status == FlightStatus.Arriving)) {
-                    setStatus(FlightStatus.Arrived, position.getReportInfo().getReport());
+                    setStatus(FlightStatus.Arrived, position.getReportInfo());
                     continueFlight(position);
                     return true;
                 }
@@ -227,12 +228,12 @@ public class Flight {
         if (firstSeen.isOnGround()) {
             boolean moving = firstSeen.getGroundspeed() >= Consts.MOVING_GROUNDSPEED_LIMIT_KTS;
             if (!moving) {
-                flight.setStatus(FlightStatus.Preparing, firstSeen.getReportInfo().getReport());
+                flight.setStatus(FlightStatus.Preparing, firstSeen.getReportInfo());
             } else {
-                flight.setStatus(FlightStatus.Departing, firstSeen.getReportInfo().getReport());
+                flight.setStatus(FlightStatus.Departing, firstSeen.getReportInfo());
             }
         } else {
-            flight.setStatus(FlightStatus.Flying, firstSeen.getReportInfo().getReport());
+            flight.setStatus(FlightStatus.Flying, firstSeen.getReportInfo());
         }
 
         flight.track.add(firstSeen);
@@ -263,19 +264,19 @@ public class Flight {
     }
 
     private void terminateFlight(Position position) {
-        setStatus(FlightStatus.Terminated, position.getReportInfo().getReport());
+        setStatus(FlightStatus.Terminated, position.getReportInfo());
 
         dirty = true;
     }
 
     private void finishFlight(Position position) {
-        setStatus(FlightStatus.Finished, position.getReportInfo().getReport());
+        setStatus(FlightStatus.Finished, position.getReportInfo());
 
         dirty = true;
     }
 
     private void lostFlight(Position position) {
-        setStatus(FlightStatus.Lost, position.getReportInfo().getReport());
+        setStatus(FlightStatus.Lost, position.getReportInfo());
 
         track.add(position);
 
@@ -283,7 +284,7 @@ public class Flight {
     }
 
     private void resumeLostFlight(Position position) {
-        setStatus(FlightStatus.Flying, position.getReportInfo().getReport());
+        setStatus(FlightStatus.Flying, position.getReportInfo());
 
         lastSeen = position;
 
@@ -293,9 +294,9 @@ public class Flight {
     }
 
     private void takeoffFlight(Position position, Position prevPosition) {
-        addEvent(new PilotTakeoffEvent(pilotNumber, position.getReportInfo().getReport()));
+        addEvent(new PilotTakeoffEvent(pilotNumber, position.getReportInfo()));
 
-        setStatus(FlightStatus.Flying, position.getReportInfo().getReport());
+        setStatus(FlightStatus.Flying, position.getReportInfo());
 
         takeoff = prevPosition;
         lastSeen = position;
@@ -306,9 +307,9 @@ public class Flight {
     }
 
     private void landFlight(Position position) {
-        addEvent(new PilotLandingEvent(pilotNumber, position.getReportInfo().getReport()));
+        addEvent(new PilotLandingEvent(pilotNumber, position.getReportInfo()));
 
-        setStatus(FlightStatus.Arriving, position.getReportInfo().getReport());
+        setStatus(FlightStatus.Arriving, position.getReportInfo());
 
         landing = position;
         lastSeen = position;
@@ -324,14 +325,14 @@ public class Flight {
         if (flightplan != null) {
             if (!flightplan.equals(this.flightplan)) {
                 this.flightplan = flightplan;
-                addEvent(new FlightplanEvent(pilotNumber, position.getReportInfo().getReport()));
+                addEvent(new FlightplanEvent(pilotNumber, position.getReportInfo()));
             }
         }
     }
 
-    private void setStatus(FlightStatus status, String report) {
+    private void setStatus(FlightStatus status, ReportInfo reportInfo) {
         this.status = status;
-        addEvent(new FlightStatusEvent(pilotNumber, report, this.getStatus()));
+        addEvent(new FlightStatusEvent(pilotNumber, reportInfo, this.getStatus()));
     }
 
     private void addEvent(TrackingEvent event) {

@@ -91,21 +91,28 @@ public class RecognitionContext {
                         if (pilotContext != null) {
                             pilotContext = processMissingPositions(pilotContext);
                         } else {
-                            pilotContext = persistenceLayer.createContext(pilotNumber, report);
+                            pilotContext = new PilotContext(pilotNumber);
                         }
                     }
 
-                    PilotContext dirtyPilotContext = pilotContext.processPosition(report, pilotPosition);
+                    Position lastProcessedPosition = pilotContext.getLastProcessedPosition();
+                    if (lastProcessedPosition == null || lastProcessedPosition.getReportInfo().getDt().isBefore(report.getDt())) {
+                        PilotContext dirtyPilotContext = pilotContext.processPosition(report, pilotPosition);
 
-                    PilotContext newPilotContext;
-                    if (dirtyPilotContext.isDirty() || !dirtyPilotContext.isActive()) {
-                        newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                        PilotContext newPilotContext;
+                        if (dirtyPilotContext.isDirty() || !dirtyPilotContext.isActive()) {
+                            newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                        } else {
+                            newPilotContext = dirtyPilotContext;
+                        }
+
+                        if (newPilotContext.isActive()) {
+                            newPilotContexts.put(pilotNumber, newPilotContext);
+                        }
                     } else {
-                        newPilotContext = dirtyPilotContext;
-                    }
-
-                    if (newPilotContext.isActive()) {
-                        newPilotContexts.put(pilotNumber, newPilotContext);
+                        // it seems like we already processed this position for this pilot and then the process stopped
+                        // and now we are restarting, some of pilots will be already processed
+                        newPilotContexts.put(pilotNumber, pilotContext);
                     }
                 }
 
@@ -122,17 +129,24 @@ public class RecognitionContext {
                 for (Integer pilotNumber : pilotNumbersWithoutPositions) {
                     PilotContext pilotContext = pilotContexts.get(pilotNumber);
 
-                    PilotContext dirtyPilotContext = pilotContext.processPosition(report, null);
+                    Position lastProcessedPosition = pilotContext.getLastProcessedPosition();
+                    if (lastProcessedPosition == null || lastProcessedPosition.getReportInfo().getDt().isBefore(report.getDt())) {
+                        PilotContext dirtyPilotContext = pilotContext.processPosition(report, null);
 
-                    PilotContext newPilotContext;
-                    if (dirtyPilotContext.isDirty() || !dirtyPilotContext.isActive()/* || Math.random() < 0.02*/) { // todo Math.random() < ... has to be replaced by counter in PilotContext
-                        newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                        PilotContext newPilotContext;
+                        if (dirtyPilotContext.isDirty() || !dirtyPilotContext.isActive()/* || Math.random() < 0.02*/) { // todo Math.random() < ... has to be replaced by counter in PilotContext
+                            newPilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
+                        } else {
+                            newPilotContext = dirtyPilotContext;
+                        }
+
+                        if (newPilotContext.isActive()) {
+                            newPilotContexts.put(pilotNumber, newPilotContext);
+                        }
                     } else {
-                        newPilotContext = dirtyPilotContext;
-                    }
-
-                    if (newPilotContext.isActive()) {
-                        newPilotContexts.put(pilotNumber, newPilotContext);
+                        // it seems like we already processed this position for this pilot and then the process stopped
+                        // and now we are restarting, some of pilots will be already processed
+                        newPilotContexts.put(pilotNumber, pilotContext);
                     }
                 }
 
@@ -154,11 +168,11 @@ public class RecognitionContext {
         try {
             Position lastProcessedPosition = pilotContext.getLastProcessedPosition();
 
-            if (lastProcessedReport == null || lastProcessedPosition.getReportId() >= lastProcessedReport.getId()) {
+            if (lastProcessedReport == null || lastProcessedPosition.getReportInfo().getId() >= lastProcessedReport.getId()) {
                 return pilotContext;
             }
 
-            long fromReportId = lastProcessedPosition.getReportId();
+            long fromReportId = lastProcessedPosition.getReportInfo().getId();
             long toReportId = lastProcessedReport.getId();
 
             List<Report> reports = reportDatasource.loadReports(fromReportId, toReportId);
@@ -166,6 +180,11 @@ public class RecognitionContext {
             Map<Long, ReportPilotPosition> reportPilotPositionMap = reportPilotPositions.stream().collect(toMap(p -> p.getReport().getId(), Function.identity()));
 
             for (Report report : reports) {
+                if (report.getId().equals(fromReportId)) {
+                    // skip already processed report
+                    continue;
+                }
+
                 ReportPilotPosition reportPilotPosition = reportPilotPositionMap.get(report.getId());
 
                 PilotContext dirtyPilotContext = pilotContext.processPosition(report, reportPilotPosition);
