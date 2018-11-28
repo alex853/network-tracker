@@ -1,7 +1,7 @@
 package net.simforge.networkview.flights2;
 
+import net.simforge.networkview.flights.FlightStatus;
 import net.simforge.networkview.flights2.flight.Flight;
-import net.simforge.networkview.flights2.flight.FlightStatus;
 import org.junit.Test;
 
 import java.io.IOException;

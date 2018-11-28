@@ -1,6 +1,8 @@
 package net.simforge.networkview.flights2.flight;
 
-import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights.FlightStatus;
+import net.simforge.networkview.flights.Flightplan;
+import net.simforge.networkview.flights.Position;
 
 @Deprecated
 public interface Flight {

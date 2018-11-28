@@ -2,7 +2,7 @@ package net.simforge.networkview.flights2.criteria;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Misc;
-import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights.Position;
 import net.simforge.networkview.flights2.flight.Flight;
 
 @Deprecated

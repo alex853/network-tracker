@@ -4,6 +4,8 @@ import net.simforge.commons.io.Csv;
 import net.simforge.commons.io.IOHelper;
 import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.flights.FlightStatus;
+import net.simforge.networkview.flights.Flightplan;
 import net.simforge.networkview.flights.datasource.CsvDatasource;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights2.events.FlightStatusEvent;
@@ -11,8 +13,6 @@ import net.simforge.networkview.flights2.events.PilotKnownPositionEvent;
 import net.simforge.networkview.flights2.events.PilotUnknownPositionEvent;
 import net.simforge.networkview.flights2.events.TrackingEvent;
 import net.simforge.networkview.flights2.flight.Flight;
-import net.simforge.networkview.flights2.flight.FlightStatus;
-import net.simforge.networkview.flights2.flight.Flightplan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

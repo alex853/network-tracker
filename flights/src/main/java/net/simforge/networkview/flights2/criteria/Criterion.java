@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights2.criteria;
 
-import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights.Position;
 
 @Deprecated
 public interface Criterion {

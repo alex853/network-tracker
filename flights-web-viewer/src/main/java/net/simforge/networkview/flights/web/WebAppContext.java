@@ -1,7 +1,7 @@
 package net.simforge.networkview.flights.web;
 
 import net.simforge.networkview.datafeeder.SessionManager;
-import net.simforge.networkview.flights3.Flights;
+import net.simforge.networkview.flights.Flights;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;

@@ -1,6 +1,5 @@
 package net.simforge.networkview.flights2;
 
-import net.simforge.networkview.flights2.flight.FlightStatus;
 import org.junit.Ignore;
 import org.junit.Test;
 

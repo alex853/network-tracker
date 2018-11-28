@@ -3,12 +3,13 @@ package net.simforge.networkview.flights2;
 import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.flights.FlightStatus;
+import net.simforge.networkview.flights.Flightplan;
+import net.simforge.networkview.flights.Position;
 import net.simforge.networkview.flights2.criteria.TrackTrailCriterion;
 import net.simforge.networkview.flights2.events.*;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightDto;
-import net.simforge.networkview.flights2.flight.FlightStatus;
-import net.simforge.networkview.flights2.flight.Flightplan;
 
 import java.util.*;
 import java.util.stream.Collectors;

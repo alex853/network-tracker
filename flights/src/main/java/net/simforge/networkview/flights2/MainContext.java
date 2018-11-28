@@ -4,6 +4,7 @@ import net.simforge.commons.legacy.BM;
 import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.flights.Position;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

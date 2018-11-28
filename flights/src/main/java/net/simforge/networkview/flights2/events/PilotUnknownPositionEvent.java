@@ -1,7 +1,7 @@
 package net.simforge.networkview.flights2.events;
 
+import net.simforge.networkview.flights.Position;
 import net.simforge.networkview.flights2.PilotContext;
-import net.simforge.networkview.flights2.Position;
 
 @Deprecated
 public class PilotUnknownPositionEvent extends PilotEvent {
