@@ -12,8 +12,6 @@ import java.util.stream.Collectors;
 
 public class PilotContext {
 
-    public static final int RECENT_FLIGHTS_TIME_LIMIT_HOURS = 36;
-
     private final int pilotNumber;
     protected Flight currFlight;
     protected Position lastProcessedPosition;

@@ -1,11 +1,8 @@
 package net.simforge.networkview.flights3;
 
-import net.simforge.commons.hibernate.SessionFactoryBuilder;
 import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.flights2.flight.FlightStatus;
-import net.simforge.networkview.flights3.persistence.DBFlight;
 import net.simforge.networkview.flights3.persistence.DBPersistenceLayer;
-import net.simforge.networkview.flights3.persistence.DBPilotStatus;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Before;
@@ -61,7 +58,7 @@ public abstract class DbBaseTest extends BaseTest {
         PilotContext pilotContext = persistenceLayer.loadContext(pilotNumber);
         Flight currFlight = pilotContext.getCurrFlight();
         assertNotNull(currFlight);
-        assertEquals(expectedStatus, currFlight.getStatus());
+        assertTrue(currFlight.getStatus().is(expectedStatus));
         logger.info("\tOK:DB Flight Status is " + expectedStatus);
     }
 

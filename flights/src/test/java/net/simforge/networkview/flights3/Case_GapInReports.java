@@ -25,7 +25,7 @@ public class Case_GapInReports extends BaseTest {
     public void report_1000620_1000640() {
         checkFlight();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightCallsign("SHT26");
+        checkCallsign("SHT26");
         checkFlightRoute(null, null);
         checkFlightplanData("B773", "EGKK", "EGPH");
     }
@@ -39,7 +39,7 @@ public class Case_GapInReports extends BaseTest {
     public void report_1000641_1000645() {
         checkFlight();
         checkFlightStatus(FlightStatus.Flying);
-        checkFlightCallsign("EZY29");
+        checkCallsign("EZY29");
         checkFlightRoute(null, null);
         checkFlightplanData("B738", "EGPH", "LFPG");
     }

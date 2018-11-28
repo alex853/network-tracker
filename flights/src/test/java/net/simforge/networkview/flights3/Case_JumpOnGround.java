@@ -32,7 +32,7 @@ public class Case_JumpOnGround extends BaseTest {
         checkFlightRoute(terminatedFlight, null, null);
         checkFlightLastSeenIcao(terminatedFlight, "UUDD");
 
-        Flight nextFlight = getFlightFromStatusEvent(FlightStatus.Departure);
+        Flight nextFlight = getFlightFromStatusEvent(FlightStatus.Preparing);
         checkFlightRoute(nextFlight, null, null);
         checkFlightLastSeenIcao(nextFlight, "UWWW");
     }

@@ -346,7 +346,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 dbFlight.setTakeoffDt(null);
                 dbFlight.setTakeoffLatitude(null);
                 dbFlight.setTakeoffLongitude(null);
-                dbFlight.setTakeoffType(null);
+//                dbFlight.setTakeoffType(null);
                 dbFlight.setTakeoffIcao(null);
             }
 
@@ -362,7 +362,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                 dbFlight.setLandingDt(null);
                 dbFlight.setLandingLatitude(null);
                 dbFlight.setLandingLongitude(null);
-                dbFlight.setLandingType(null);
+//                dbFlight.setLandingType(null);
                 dbFlight.setLandingIcao(null);
             }
 

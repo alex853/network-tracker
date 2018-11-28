@@ -9,8 +9,8 @@ import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 import net.simforge.networkview.flights2.flight.Flightplan;
 import net.simforge.networkview.flights3.events.TrackingEvent;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -223,8 +223,17 @@ public class BaseTest {
     protected void checkNoPilotContext() {
         countCheckMethod();
 
-// todo       assertNull(pilotContext);
-//        logger.info("\tOK No Pilot Context");
+        assertNull(pilotContext);
+        logger.info("\tOK No Pilot Context");
+    }
+
+    protected void checkNoPilotContextOrPositionUnknown() {
+        countCheckMethod();
+
+        if (pilotContext != null) {
+            checkPositionUnknown();
+        }
+        logger.info("\tOK No Pilot Context Or Position Unknown");
     }
 
     protected void checkPositionKnown() {
@@ -294,12 +303,12 @@ public class BaseTest {
         logger.info("\tOK No flight");
     }
 
-    protected void checkFlightStatus(FlightStatus status) {
+    protected void checkFlightStatus(FlightStatus expectedStatus) {
         countCheckMethod();
 
         checkFlight();
-        assertEquals(status, flight.getStatus());
-        logger.info(String.format("\tOK Flight status: %s", status));
+        assertTrue(flight.getStatus().is(expectedStatus));
+        logger.info(String.format("\tOK Flight status: %s", expectedStatus));
     }
 
     protected void checkFlightRoute(String expectedTakeoff, String expectedLanding) {
@@ -372,17 +381,15 @@ public class BaseTest {
         logger.info(String.format("\tOK Flightplan: %s, %s-%s", fpAircraftType, fpDeparture, fpDestination));
     }
 
-    protected void checkFlightCallsign(String callsign) {
+    protected void checkCallsign(String callsign) {
         countCheckMethod();
 
-        /* todo Flightplan flightplan = flight.getFlightplan();
-        assertNotNull(flightplan);
-        assertEquals(callsign, flightplan.getCallsign());
-        logger.info("\tOK Callsign");*/
+        assertEquals(callsign, flight.getCallsign());
+        logger.info("\tOK Callsign");
     }
 
     protected Flight getFlightFromStatusEvent(FlightStatus status) {
-        if (hasEvent(flight, status)) {
+        if (flight != null && hasEvent(flight, status)) {
             return flight;
         }
 

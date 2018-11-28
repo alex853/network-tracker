@@ -27,6 +27,8 @@ public class Position {
     private boolean inAirport;
     private String airportIcao;
 
+    private short groundspeed;
+
     private String callsign;
     private String regNo;
     private String fpAircraftType;
@@ -65,6 +67,8 @@ public class Position {
                 && nearestAirport != null
                 && nearestAirport.isWithinBoundary(result.coords);
         result.airportIcao = result.inAirport ? nearestAirport.getIcao() : null;
+
+        result.groundspeed = reportPilotPosition.getGroundspeed().shortValue();
 
         result.callsign = limit10(reportPilotPosition.getCallsign());
         result.regNo = limit10(reportPilotPosition.getParsedRegNo());
@@ -167,6 +171,11 @@ public class Position {
         return airportIcao;
     }
 
+    public short getGroundspeed() {
+        checkPositionKnown();
+        return groundspeed;
+    }
+
     private void checkPropertyUsage() {
         if (Math.random() >= 0) {
             throw new UnsupportedOperationException(); // todo check every method you use!
@@ -188,22 +197,27 @@ public class Position {
     }
 
     public String getCallsign() {
+        checkPositionKnown();
         return callsign;
     }
 
     public String getRegNo() {
+        checkPositionKnown();
         return regNo;
     }
 
     public String getFpAircraftType() {
+        checkPositionKnown();
         return fpAircraftType;
     }
 
     public String getFpDeparture() {
+        checkPositionKnown();
         return fpDeparture;
     }
 
     public String getFpDestination() {
+        checkPositionKnown();
         return fpDestination;
     }
 

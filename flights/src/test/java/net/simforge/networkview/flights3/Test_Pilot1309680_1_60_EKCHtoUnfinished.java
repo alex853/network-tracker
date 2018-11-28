@@ -48,7 +48,7 @@ public class Test_Pilot1309680_1_60_EKCHtoUnfinished extends BaseTest {
         checkFlight();
         checkFlightStatus(FlightStatus.Flying);
         checkFlightRoute("EKCH", null);
-        checkFlightCallsign("DAL21");
+        checkCallsign("DAL21");
     }
 
     public void report_38() {

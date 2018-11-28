@@ -17,6 +17,7 @@ public class Flightplan {
         this.destination = destination;
     }
 
+    @Deprecated
     public String getCallsign() {
         return callsign;
     }

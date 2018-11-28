@@ -39,11 +39,13 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
 
     private Integer status;
 
+    // todo expand first_seen_XXX
     @Column(name = "first_seen_report_id")
     private Long firstSeenReportId;
     @Column(name = "first_seen_dt")
     private LocalDateTime firstSeenDt;
 
+    // todo expand last_seen_XXX
     @Column(name = "last_seen_report_id")
     private Long lastSeenReportId;
     @Column(name = "last_seen_dt")
@@ -57,8 +59,8 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     private Double takeoffLatitude;
     @Column(name = "takeoff_longitude")
     private Double takeoffLongitude;
-    @Column(name = "takeoff_type")
-    private Integer takeoffType; // ICAO, InAir, Other
+    //    @Column(name = "takeoff_type")
+//    private Integer takeoffType; // ICAO, InAir, Other
     @Column(name = "takeoff_icao")
     private String takeoffIcao;
 
@@ -70,8 +72,8 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
     private Double landingLatitude;
     @Column(name = "landing_longitude")
     private Double landingLongitude;
-    @Column(name = "landing_type")
-    private Integer landingType; // ICAO, InAir, Other
+    //    @Column(name = "landing_type")
+//    private Integer landingType; // ICAO, InAir, Other
     @Column(name = "landing_icao")
     private String landingIcao;
 
@@ -251,13 +253,13 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
         this.takeoffLongitude = takeoffLongitude;
     }
 
-    public Integer geTakeoffType() {
-        return takeoffType;
-    }
+//    public Integer geTakeoffType() {
+//        return takeoffType;
+//    }
 
-    public void setTakeoffType(Integer originType) {
-        this.takeoffType = originType;
-    }
+//    public void setTakeoffType(Integer originType) {
+//        this.takeoffType = originType;
+//    }
 
     public String getTakeoffIcao() {
         return takeoffIcao;
@@ -299,13 +301,13 @@ public class DBFlight implements BaseEntity, Auditable/*, EventLog.Loggable*/ {
         this.landingLongitude = landingLongitude;
     }
 
-    public Integer getLandingType() {
-        return landingType;
-    }
+//    public Integer getLandingType() {
+//        return landingType;
+//    }
 
-    public void setLandingType(Integer landingType) {
-        this.landingType = landingType;
-    }
+//    public void setLandingType(Integer landingType) {
+//        this.landingType = landingType;
+//    }
 
     public String getLandingIcao() {
         return landingIcao;

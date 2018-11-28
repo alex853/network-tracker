@@ -11,10 +11,12 @@ import net.simforge.networkview.flights3.criteria.TrackTrailCriterion;
 import net.simforge.networkview.flights3.events.*;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Flight {
+
     private final int pilotNumber;
     private FlightStatus status;
     private String callsign;
@@ -35,7 +37,7 @@ public class Flight {
         this.pilotNumber = pilotNumber;
     }
 
-    public boolean offerPosition(Position position) {
+    boolean offerPosition(Position position) {
         Position prevPosition = track.getLast();
 
         boolean wentOnline = !prevPosition.isPositionKnown() && position.isPositionKnown();
@@ -44,9 +46,6 @@ public class Flight {
 
         boolean takeoff = isOnline && prevPosition.isOnGround() && !position.isOnGround();
         boolean landing = isOnline && !prevPosition.isOnGround() && position.isOnGround();
-
-        boolean aircraftTypeEnduranceExceeded = false; // todo
-        boolean trackTrailCorrupted = true; // todo
 
         switch (status) {
             case Departure:
@@ -63,7 +62,7 @@ public class Flight {
                     return false;
                 }
 
-                boolean moving = false; // todo
+                boolean moving = position.getGroundspeed() >= Consts.MOVING_GROUNDSPEED_LIMIT_KTS;
                 if (takeoff) {
                     takeoffFlight(position, prevPosition);
                     collectFlightplan();
@@ -106,29 +105,34 @@ public class Flight {
             case Arrival:
             case Arriving:
             case Arrived:
-                boolean callsignChanged = false; // todo
-                boolean flightplanChanged = false; // todo
-                boolean tooMuchTimeSinceLanding = JavaTime.hoursBetween(this.landing.getReportInfo().getDt(), position.getReportInfo().getDt()) > 0.5; // todo test for this condition
+                boolean callsignChanged = position.isPositionKnown() && prevPosition.isPositionKnown()
+                        && !position.getCallsign().equals(prevPosition.getCallsign());
+                // todo boolean flightplanChanged = false;
+                boolean tooMuchTimeSinceLanding = JavaTime.hoursBetween(this.landing.getReportInfo().getDt(), position.getReportInfo().getDt()) > Consts.FROM_LANDING_TO_ARRIVED_MAX_TIME_HRS;
                 if (wentOffline
                         || OnGroundJumpCriterion.get(this).meets(position)
                         || callsignChanged
-                        || flightplanChanged
+                        // todo || flightplanChanged
                         || tooMuchTimeSinceLanding) {
                     finishFlight(position);
                     return false;
                 }
 
-                boolean stoppedForSomeTime = false; // todo test for this condition
-                if (stoppedForSomeTime && (status == FlightStatus.Arrival || status == FlightStatus.Arriving)) {
+                boolean stoppedRightNow = position.getGroundspeed() == 0;
+                double distanceInLastMinutes = calcDistanceInLastMinutes(position, Consts.TIME_TO_PARK_AFTER_ARRIVAL_MINUTES);
+                boolean parked = stoppedRightNow && distanceInLastMinutes <= Consts.DISTANCE_TO_PARK_AFTER_ARRIVAL_NM;
+                if (parked && (status == FlightStatus.Arrival || status == FlightStatus.Arriving)) {
                     setStatus(FlightStatus.Arrived, position.getReportInfo().getReport());
                     continueFlight(position);
                     return true;
                 }
 
-                continueFlight(position); // todo test for this line
+                continueFlight(position);
                 return true;
 
             case Lost:
+                boolean aircraftTypeEnduranceExceeded = false; // todo
+
                 // todo the condition below should be replaced by normal endurance condition
                 if (JavaTime.hoursBetween(lastSeen.getReportInfo().getDt(), position.getReportInfo().getDt()) > 6.0) {
                     terminateFlight(position);
@@ -160,6 +164,30 @@ public class Flight {
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    private double calcDistanceInLastMinutes(Position position, int minutes) {
+        double result = 0;
+
+        Position prev = position;
+        Iterator<Position> it = track.descendingIterator();
+        while (it.hasNext()) {
+            Position curr = it.next();
+
+            if (JavaTime.hoursBetween(curr.getReportInfo().getDt(), position.getReportInfo().getDt()) > minutes / 60.0) {
+                break;
+            }
+
+            if (!curr.isPositionKnown()) {
+                continue;
+            }
+
+            result += Geo.distance(prev.getCoords(), curr.getCoords());
+
+            prev = curr;
+        }
+
+        return result;
     }
 
     private void increaseDistanceAndTime(Position position, Position prevPosition) {
@@ -197,7 +225,12 @@ public class Flight {
         flight.lastSeen = firstSeen;
 
         if (firstSeen.isOnGround()) {
-            flight.setStatus(FlightStatus.Departure, firstSeen.getReportInfo().getReport()); // todo which status?
+            boolean moving = firstSeen.getGroundspeed() >= Consts.MOVING_GROUNDSPEED_LIMIT_KTS;
+            if (!moving) {
+                flight.setStatus(FlightStatus.Preparing, firstSeen.getReportInfo().getReport());
+            } else {
+                flight.setStatus(FlightStatus.Departing, firstSeen.getReportInfo().getReport());
+            }
         } else {
             flight.setStatus(FlightStatus.Flying, firstSeen.getReportInfo().getReport());
         }
@@ -225,7 +258,7 @@ public class Flight {
         } else if (status.is(FlightStatus.Flying) || status.is(FlightStatus.Departure)) {
             terminateFlight(position);
         } else {
-            throw new IllegalStateException(); // todo message
+            throw new IllegalStateException("Can't finish/terminate flight in inappropriate status, flight status is " + status.toString());
         }
     }
 
@@ -275,7 +308,7 @@ public class Flight {
     private void landFlight(Position position) {
         addEvent(new PilotLandingEvent(pilotNumber, position.getReportInfo().getReport()));
 
-        setStatus(FlightStatus.Arrival, position.getReportInfo().getReport());
+        setStatus(FlightStatus.Arriving, position.getReportInfo().getReport());
 
         landing = position;
         lastSeen = position;
@@ -350,10 +383,12 @@ public class Flight {
         return dirty;
     }
 
+    @SuppressWarnings("WeakerAccess")
     public List<TrackingEvent> getRecentEvents() {
         return Collections.unmodifiableList(recentEvents);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Flight makeCopy() {
         Flight copy = new Flight(pilotNumber);
         copy.status = status;
