@@ -67,7 +67,7 @@ public class Airport {
             return;
         }
 
-        String[] lines = boundaryData.split("\n");
+        String[] lines = boundaryData.split("[;\n]");
         int length = lines.length;
         circlesBoundaryCoords = new Geo.Coords[length];
         circlesBoundaryRadiuses = new double[length];
