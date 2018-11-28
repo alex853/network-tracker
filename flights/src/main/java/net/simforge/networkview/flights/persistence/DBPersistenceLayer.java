@@ -278,7 +278,7 @@ public class DBPersistenceLayer implements PersistenceLayer {
                     Position.create(reportDatasource.loadPilotPosition(dbFlight.getLastSeenReportId(), pilotNumber)),
                     dbFlight.getTakeoffReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getTakeoffReportId(), pilotNumber)) : null,
                     dbFlight.getLandingReportId() != null ? Position.create(reportDatasource.loadPilotPosition(dbFlight.getLandingReportId(), pilotNumber)) : null,
-                    new Flightplan(dbFlight.getCallsign(), dbFlight.getAircraftType(), dbFlight.getRegNo(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination()),
+                    new Flightplan(dbFlight.getAircraftType(), dbFlight.getRegNo(), dbFlight.getPlannedDeparture(), dbFlight.getPlannedDestination()),
                     dbFlight.getDistanceFlown(),
                     dbFlight.getFlightTime(),
                     track

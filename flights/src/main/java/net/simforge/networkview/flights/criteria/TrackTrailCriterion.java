@@ -42,7 +42,7 @@ public class TrackTrailCriterion implements Criterion {
         }
 
         Position lastSeenPosition = trackLastSeen;
-        double timeSinceLastSeen = JavaTime.hoursBetween(lastSeenPosition.getDt(), position.getDt());
+        double timeSinceLastSeen = JavaTime.hoursBetween(lastSeenPosition.getReportInfo().getDt(), position.getReportInfo().getDt());
         double distanceFromLastSeenPosition = trackSpeed * timeSinceLastSeen;
 
         Geo.Coords expectedAreaCenter = Geo.destination(lastSeenPosition.getCoords(), trackBearing, distanceFromLastSeenPosition);
@@ -95,7 +95,7 @@ public class TrackTrailCriterion implements Criterion {
             p1 = p;
 
             trackLength += Geo.distance(p1.getCoords(), p2.getCoords());
-            trackTime += JavaTime.hoursBetween(p1.getDt(), p2.getDt());
+            trackTime += JavaTime.hoursBetween(p1.getReportInfo().getDt(), p2.getReportInfo().getDt());
             bearingSum += Geo.bearing(p1.getCoords(), p2.getCoords());
 
             if (trackSegmentsConsidered >= maxTrackLength) {

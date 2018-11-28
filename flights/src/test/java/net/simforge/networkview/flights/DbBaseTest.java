@@ -88,7 +88,7 @@ public abstract class DbBaseTest extends BaseTest {
         Flight currFlight = pilotContext.getCurrFlight();
         assertNotNull(currFlight);
 
-        assertEquals(callsign, currFlight.getFlightplan().getCallsign());
+        assertEquals(callsign, currFlight.getCallsign());
         logger.info("\tOK:DB Callsign");
     }
 

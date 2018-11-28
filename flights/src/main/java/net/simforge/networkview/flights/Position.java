@@ -124,21 +124,6 @@ public class Position {
         return reportInfo;
     }
 
-    @Deprecated
-    public long getReportId() {
-        return reportId;
-    }
-
-    @Deprecated
-    public String getReport() {
-        return report;
-    }
-
-    @Deprecated
-    public LocalDateTime getDt() {
-        return getReportInfo().getDt();
-    }
-
     public Geo.Coords getCoords() {
         checkPositionKnown();
         return coords;

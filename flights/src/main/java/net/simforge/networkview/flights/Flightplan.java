@@ -1,23 +1,16 @@
 package net.simforge.networkview.flights;
 
 public class Flightplan {
-    private String callsign;
     private String aircraftType;
     private String regNo;
     private String departure;
     private String destination;
 
-    public Flightplan(String callsign, String aircraftType, String regNo, String departure, String destination) {
-        this.callsign = callsign;
+    public Flightplan(String aircraftType, String regNo, String departure, String destination) {
         this.aircraftType = aircraftType;
         this.regNo = regNo;
         this.departure = departure;
         this.destination = destination;
-    }
-
-    @Deprecated
-    public String getCallsign() {
-        return callsign;
     }
 
     public String getAircraftType() {
@@ -38,7 +31,7 @@ public class Flightplan {
 
     public static Flightplan fromPosition(Position position) {
         if (position.hasFlightplan()) {
-            return new Flightplan(position.getCallsign(), position.getFpAircraftType(), position.getRegNo(), position.getFpDeparture(), position.getFpDestination());
+            return new Flightplan(position.getFpAircraftType(), position.getRegNo(), position.getFpDeparture(), position.getFpDestination());
         } else {
             return null;
         }
@@ -51,7 +44,6 @@ public class Flightplan {
 
         Flightplan that = (Flightplan) o;
 
-        if (callsign != null ? !callsign.equals(that.callsign) : that.callsign != null) return false;
         if (aircraftType != null ? !aircraftType.equals(that.aircraftType) : that.aircraftType != null) return false;
         if (regNo != null ? !regNo.equals(that.regNo) : that.regNo != null) return false;
         if (departure != null ? !departure.equals(that.departure) : that.departure != null) return false;
@@ -62,8 +54,7 @@ public class Flightplan {
 
     @Override
     public int hashCode() {
-        int result = callsign != null ? callsign.hashCode() : 0;
-        result = 31 * result + (aircraftType != null ? aircraftType.hashCode() : 0);
+        int result = aircraftType != null ? aircraftType.hashCode() : 0;
         result = 31 * result + (regNo != null ? regNo.hashCode() : 0);
         result = 31 * result + (departure != null ? departure.hashCode() : 0);
         result = 31 * result + (destination != null ? destination.hashCode() : 0);
