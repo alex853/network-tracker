@@ -79,6 +79,7 @@ public class BaseTest {
                 flight = pilotContext.getCurrFlight();
 
                 List<TrackingEvent> events = new LinkedList<>();
+                events.addAll(pilotContext.getRecentEvents());
                 if (flight != null) {
                     events.addAll(flight.getRecentEvents());
                 }
@@ -267,13 +268,13 @@ public class BaseTest {
     protected void checkOnlineEvent() {
         countCheckMethod();
 
-        // todo checkEvent("pilot/online");
+        checkEvent("pilot/online");
     }
 
     protected void checkOfflineEvent() {
         countCheckMethod();
 
-        // todo checkEvent("pilot/offline");
+        checkEvent("pilot/offline");
     }
 
     protected void checkTakeoffEvent() {

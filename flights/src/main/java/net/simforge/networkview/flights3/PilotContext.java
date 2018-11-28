@@ -3,6 +3,8 @@ package net.simforge.networkview.flights3;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights2.Position;
+import net.simforge.networkview.flights3.events.PilotOfflineEvent;
+import net.simforge.networkview.flights3.events.PilotOnlineEvent;
 import net.simforge.networkview.flights3.events.TrackingEvent;
 
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class PilotContext {
 
     private int positionsWithoutCurrFlight = 0;
     private final List<Flight> recentFlights = new ArrayList<>();
-//    private final List<TrackingEvent> recentEvents = new ArrayList<>();
+    private final List<TrackingEvent> recentEvents = new ArrayList<>();
 
 //    private boolean dirty = false;
 
@@ -39,6 +41,15 @@ public class PilotContext {
         } else {
             position = Position.createOfflinePosition(report);
         }
+
+        boolean wentOnline = position.isPositionKnown() && (lastProcessedPosition == null || !lastProcessedPosition.isPositionKnown());
+        boolean wentOffline = !position.isPositionKnown() && (lastProcessedPosition == null || lastProcessedPosition.isPositionKnown());
+        if (wentOnline) {
+            addEvent(new PilotOnlineEvent(pilotNumber, position.getReportInfo().getReport()));
+        } else if (wentOffline) {
+            addEvent(new PilotOfflineEvent(pilotNumber, position.getReportInfo().getReport()));
+        }
+
         this.lastProcessedPosition = position;
 
         boolean consumed = false;
@@ -83,13 +94,12 @@ public class PilotContext {
     }
 
     public List<TrackingEvent> getRecentEvents() {
-        throw new UnsupportedOperationException("PilotContext.getRecentEvents");
-//        return Collections.unmodifiableList(recentEvents);
+        return Collections.unmodifiableList(recentEvents);
     }
 
-//    void addEvent(TrackingEvent event) {
-//        recentEvents.add(event);
-//    }
+    private void addEvent(TrackingEvent event) {
+        recentEvents.add(event);
+    }
 
     public boolean isActive() {
         return currFlight != null || positionsWithoutCurrFlight < 10;
