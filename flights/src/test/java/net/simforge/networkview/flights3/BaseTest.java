@@ -59,7 +59,6 @@ public class BaseTest {
 
         for (int i = 0; i < reportsToProcess; i++) {
             if (needReset) {
-//                pilotContext = new PilotContext(pilotNumber);
                 mainContext = new RecognitionContext(reportDatasource, persistenceLayer, report);
                 mainContext.loadActivePilotContexts();
                 pilotContext = null;
@@ -68,10 +67,6 @@ public class BaseTest {
             }
 
             mainContext.processNextReport();
-//            report = reportDatasource.loadNextReport(this.report.getReport());
-//            ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(report.getId(), pilotNumber);
-//
-//            pilotContext = pilotContext.processPosition(report, reportPilotPosition);
 
             this.report = mainContext.getLastProcessedReport();
             pilotContext = mainContext.getPilotContext(pilotNumber);

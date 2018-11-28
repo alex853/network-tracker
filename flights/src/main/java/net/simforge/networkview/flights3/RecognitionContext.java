@@ -24,7 +24,7 @@ public class RecognitionContext {
     private Report lastProcessedReport;
     private Map<Integer, PilotContext> pilotContexts = new HashMap<>();
 
-    public RecognitionContext(ReportDatasource reportDatasource, PersistenceLayer persistenceLayer, Report lastProcessedReport) {
+    RecognitionContext(ReportDatasource reportDatasource, PersistenceLayer persistenceLayer, Report lastProcessedReport) {
         this.reportDatasource = reportDatasource;
         this.persistenceLayer = persistenceLayer;
         this.lastProcessedReport = lastProcessedReport;
@@ -178,34 +178,6 @@ public class RecognitionContext {
                     pilotContext = dirtyPilotContext;
                 }
             }
-
-/*            Report currReport = reportDatasource.loadReport(lastProcessedPosition.getReportId());
-            while (true) {
-                currReport = reportDatasource.loadNextReport(currReport.getReport());
-
-                if (currReport == null) {
-                    throw new IllegalStateException("Unable to complete a processing of missing positions");
-                }
-
-                ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(currReport.getId(), pilotContext.getPilotNumber());
-
-                PilotContext dirtyPilotContext = pilotContext.processPosition(currReport, reportPilotPosition);
-
-                boolean stopNow = currReport.getId().equals(lastProcessedReport.getId());
-
-                if (dirtyPilotContext.isDirty() || stopNow) {
-                    pilotContext = persistenceLayer.saveChanges(dirtyPilotContext);
-                } else {
-                    pilotContext = dirtyPilotContext;
-                }
-
-                if (stopNow) {
-                    // yeah, we've done!
-                    break;
-                }
-            }*/
-//        } catch (IOException e) {
-//            logger.error("Error on a processing of missing positions", e);
         } finally {
             BM.stop();
         }

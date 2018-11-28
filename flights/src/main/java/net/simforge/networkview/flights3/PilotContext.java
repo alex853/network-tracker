@@ -28,7 +28,7 @@ public class PilotContext {
         this.pilotNumber = pilotNumber;
     }
 
-    public PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
+    PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
         PilotContext copy = makeCopy();
         copy._processPosition(report, reportPilotPosition);
         return copy;
@@ -93,7 +93,7 @@ public class PilotContext {
         return Collections.unmodifiableList(recentFlights);
     }
 
-    public List<TrackingEvent> getRecentEvents() {
+    List<TrackingEvent> getRecentEvents() {
         return Collections.unmodifiableList(recentEvents);
     }
 
@@ -105,7 +105,7 @@ public class PilotContext {
         return currFlight != null || positionsWithoutCurrFlight < 10;
     }
 
-    public boolean isDirty() {
+    boolean isDirty() {
         boolean recentFlightsDirty = recentFlights.stream().anyMatch(Flight::isDirty);
         boolean currFlightDirty = currFlight != null && currFlight.isDirty();
         return /*dirty ||*/ currFlightDirty || recentFlightsDirty;
@@ -119,7 +119,6 @@ public class PilotContext {
 
         copy.positionsWithoutCurrFlight = positionsWithoutCurrFlight;
         copy.recentFlights.addAll(recentFlights.stream().map(Flight::makeCopy).collect(Collectors.toList()));
-//        copy.recentEvents.addAll(recentEvents);
 
         return copy;
     }
