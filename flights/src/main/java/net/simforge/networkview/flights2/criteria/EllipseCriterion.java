@@ -7,6 +7,7 @@ import net.simforge.networkview.flights2.flight.Flightplan;
 import net.simforge.networkview.world.airports.Airport;
 import net.simforge.networkview.world.airports.Airports;
 
+@Deprecated
 public class EllipseCriterion implements Criterion {
     private Flight flight;
 

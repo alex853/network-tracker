@@ -7,6 +7,7 @@ import net.simforge.networkview.flights2.flight.Flight;
 
 import java.util.LinkedList;
 
+@Deprecated
 public class TrackTrailCriterion implements Criterion {
     private Flight flight;
 

@@ -6,6 +6,7 @@ import net.simforge.networkview.flights2.criteria.OnGroundJumpCriterion;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
+@Deprecated
 public class PilotKnownPositionEvent extends PilotEvent {
 
     private Position prevPosition;

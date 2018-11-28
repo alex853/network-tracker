@@ -1,5 +1,6 @@
 package net.simforge.networkview.flights2.events;
 
+@Deprecated
 public class BaseEvent implements TrackingEvent {
     private int pilotNumber;
     private String report;

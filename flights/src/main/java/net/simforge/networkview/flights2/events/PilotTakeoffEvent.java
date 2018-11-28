@@ -1,10 +1,11 @@
 package net.simforge.networkview.flights2.events;
 
+import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.Position;
 import net.simforge.networkview.flights2.flight.Flight;
-import net.simforge.networkview.flights2.PilotContext;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
+@Deprecated
 public class PilotTakeoffEvent extends PilotEvent {
     private Position onGroundPositionBeforeTakeoff;
 

@@ -59,6 +59,7 @@ public class Flight {
 
                 if (OnGroundJumpCriterion.get(this).meets(position)
                         || !TrackTrailCriterion.meetsOrInapplicable(this, position)) {
+                    // todo add event 'jump found!!!'
                     finishOrTerminateFlight(position);
                     return false;
                 }
@@ -148,6 +149,7 @@ public class Flight {
                 if (wentOnline) {
                     if (TrackTrailCriterion.meetsOrInapplicable(this, position)
                             && EllipseCriterion.get(this).meets(position)) {
+                        // todo add event 'flight resumed because of ellipse or track trail criterion'
                         Position prevSeenPosition = lastSeen;
                         resumeLostFlight(position);
                         collectFlightplan();

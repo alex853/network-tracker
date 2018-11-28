@@ -4,12 +4,7 @@ import net.simforge.networkview.datafeeder.ReportUtils;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights2.criteria.TrackTrailCriterion;
-import net.simforge.networkview.flights2.events.FlightStatusEvent;
-import net.simforge.networkview.flights2.events.FlightplanEvent;
-import net.simforge.networkview.flights2.events.PilotKnownPositionEvent;
-import net.simforge.networkview.flights2.events.PilotUnknownPositionEvent;
-import net.simforge.networkview.flights2.events.TrackingEvent;
-import net.simforge.networkview.flights2.events.TrackingEventHandler;
+import net.simforge.networkview.flights2.events.*;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightDto;
 import net.simforge.networkview.flights2.flight.FlightStatus;
@@ -18,6 +13,7 @@ import net.simforge.networkview.flights2.flight.Flightplan;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class PilotContext {
 
     public static final int RECENT_FLIGHTS_TIME_LIMIT_HOURS = 36;

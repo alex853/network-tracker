@@ -1,9 +1,10 @@
 package net.simforge.networkview.flights2.events;
 
-import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.PilotContext;
+import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
+@Deprecated
 public class PilotLandingEvent extends PilotEvent {
     public PilotLandingEvent(int pilotNumber, String report) {
         super(pilotNumber, report, "pilot/landing");

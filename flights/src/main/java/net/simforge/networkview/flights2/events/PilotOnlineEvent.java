@@ -7,6 +7,7 @@ import net.simforge.networkview.flights2.criteria.EllipseCriterion;
 import net.simforge.networkview.flights2.flight.Flight;
 import net.simforge.networkview.flights2.flight.FlightStatus;
 
+@Deprecated
 public class PilotOnlineEvent extends PilotEvent {
     public PilotOnlineEvent(int pilotNumber, String report) {
         super(pilotNumber, report, "pilot/online");

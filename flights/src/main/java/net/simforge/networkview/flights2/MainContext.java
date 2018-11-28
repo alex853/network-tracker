@@ -10,10 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 
-import static java.util.stream.Collectors.toMap;
-
+@Deprecated
 public class MainContext {
 
     private static Logger logger = LoggerFactory.getLogger(MainContext.class.getName());

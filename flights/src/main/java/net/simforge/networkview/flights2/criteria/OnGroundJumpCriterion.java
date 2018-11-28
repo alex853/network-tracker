@@ -5,6 +5,7 @@ import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.flights2.Position;
 import net.simforge.networkview.flights2.flight.Flight;
 
+@Deprecated
 public class OnGroundJumpCriterion implements Criterion {
     private Flight flight;
 

@@ -2,6 +2,7 @@ package net.simforge.networkview.flights2.flight;
 
 import net.simforge.networkview.flights2.Position;
 
+@Deprecated
 public interface Flight {
 
     FlightStatus getStatus();

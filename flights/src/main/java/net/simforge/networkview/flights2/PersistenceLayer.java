@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Deprecated
 public interface PersistenceLayer {
     List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) throws IOException; // todo remove exception
 
