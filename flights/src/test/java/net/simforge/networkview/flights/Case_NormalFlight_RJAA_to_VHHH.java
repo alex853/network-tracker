@@ -1,11 +1,10 @@
-package net.simforge.networkview.flights2;
+package net.simforge.networkview.flights;
 
-import net.simforge.networkview.flights.FlightStatus;
 import org.junit.Test;
 
 import java.io.IOException;
 
-public class Test_Pilot1045435_RJAAtoVHHH extends BaseTest {
+public class Case_NormalFlight_RJAA_to_VHHH extends BaseTest {
 
     @Test
     public void test() throws IOException {
