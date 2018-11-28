@@ -6,7 +6,11 @@ import org.junit.Test;
 import java.io.IOException;
 
 /**
- * TODO
+ * Pilot connected in one airport for few mins. Then disconnected and reconnected in another airport.
+ *
+ * Expected behaviour:
+ *   1) Flight for first connection terminated.
+ *   2) Flight for second connection started as it determines on-ground jump.
  */
 public class Case_JumpOnGround_Offline extends BaseTest {
 
