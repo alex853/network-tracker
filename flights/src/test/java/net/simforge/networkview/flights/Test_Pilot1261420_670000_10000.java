@@ -71,7 +71,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_670493() {
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("EPWA", null);
+        checkFlightRoute(null, null);
         checkFlightplanEvent();
         checkFlightplanData("T154", "EPWA", "LEAM");
     }
@@ -117,7 +117,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_670573() {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("ULLI", null);
+        checkFlightRoute(null, null);
         checkFlightplanEvent();
         checkFlightplanData("T154", "EPWA", "LEAM");
     }
@@ -129,7 +129,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_670589() {
         Flight flight = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(flight, "ULLI", null);
+        checkFlightRoute(flight, null, null);
         checkFlightplanData(flight, "T154", "ULLI", "USRR");
     }
 
@@ -139,7 +139,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_670591() {
         checkOnlineEvent();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("ULLI", null);
+        checkFlightRoute(null, null);
         checkFlightplanEvent();
         checkFlightplanData("T154", "ULLI", "USRR");
     }
@@ -167,7 +167,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 670702 UKBB-.... Short connection
     public void report_670705() {
         Flight flight = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(flight, "UKBB", null);
+        checkFlightLastSeenIcao(flight,"UKBB");
+        checkFlightRoute(flight, null, null);
         checkFlightplanData(flight, "T154", "ULLI", "USRR");
     }
 
@@ -176,7 +177,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 670706 UUDD-.... Short connection
     public void report_670717() {
         Flight flight = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(flight, "UUDD", null);
+        checkFlightLastSeenIcao(flight, "UUDD");
+        checkFlightRoute(flight, null, null);
         checkFlightplanData(flight, "T154", "ULLI", "USRR");
     }
 
@@ -185,7 +187,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 673328 EKYT-LDDU with disconnect
     public void report_673328() {
         checkOnlineEvent();
-        checkFlightRoute("EKYT", null);
+        checkFlightLastSeenIcao("EKYT");
+        checkFlightRoute(null, null);
     }
 
     public void report_673338() {
@@ -195,6 +198,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     public void report_673364() {
         checkTakeoffEvent();
+        checkFlightRoute("EKYT", null);
     }
 
     public void report_673405() {
@@ -226,7 +230,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 673464 URKK-UTAA with disconnect
     public void report_673464() {
         checkOnlineEvent();
-        checkFlightRoute("URKK", null);
+        checkFlightLastSeenIcao("URKK");
+        checkFlightRoute(null, null);
     }
 
     public void report_673490() {
@@ -267,7 +272,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 673566 UKFF-.... Short connection
     public void report_673568() {
         Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(terminated, "UKFF", null);
+        checkFlightLastSeenIcao(terminated,"UKFF");
+        checkFlightRoute(terminated, null, null);
         checkFlightplanData(terminated, "T154", "URKK", "UTAA");
     }
 
@@ -277,11 +283,13 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_674024() {
         checkOnlineEvent();
         checkFlight();
-        checkFlightRoute("CYVR", null);
+        checkFlightLastSeenIcao("CYVR");
+        checkFlightRoute(null, null);
     }
 
     public void report_674064() {
-        checkFlightRoute("CYVR", null);
+        checkFlightLastSeenIcao("CYVR");
+        checkFlightRoute(null, null);
         checkFlightplanEvent();
         checkFlightplanData("T154", "CYVR", "MMMX");
     }
@@ -298,22 +306,28 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkFlightRoute("CYVR", null);
     }
 
+    /**
+     * The previous flight terminates, Ellipse is OK, Track trail fails
+     * Positions do not seem well, I would accept the discontinuity in this case
+     * @see net.simforge.networkview.flights.criteria.EllipseCriterion
+     * @see net.simforge.networkview.flights.criteria.TrackTrailCriterion
+     */
     public void report_674195() {
         checkOnlineEvent();
         checkFlightStatusEvent(FlightStatus.Flying);
-        checkFlightRoute("CYVR", null);
+        checkFlightRoute(null, null);
     }
 
     public void report_674198() {
         checkOfflineEvent();
         checkFlightStatusEvent(FlightStatus.Lost);
-        checkFlightRoute("CYVR", null);
+        checkFlightRoute(null, null);
     }
 
     public void report_674314() {
         checkPositionUnknown();
         checkFlightStatus(FlightStatus.Lost);
-        checkFlightRoute("CYVR", null);
+        checkFlightRoute(null, null);
         checkFlightplanData("T154", "CYVR", "MMMX");
     }
 
@@ -323,14 +337,15 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     public void report_674315() {
         checkOnlineEvent();
         checkFlight();
-        checkFlightStatusEvent(FlightStatus.Departure);
+        checkFlightStatusEvent(FlightStatus.Preparing);
     }
 
     public void report_674315_674325() {
         checkPositionKnown();
         checkOnGround();
         checkFlightStatus(FlightStatus.Departure);
-        checkFlightRoute("UKHH", null);
+        checkFlightLastSeenIcao("UKHH");
+        checkFlightRoute(null, null);
     }
 
     public void report_674320() {
@@ -339,7 +354,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_674324() {
-        //checkflightStatusEvent("departure.departing"); // postponed departure.departing
+        checkFlightStatus(FlightStatus.Departing);
     }
 
     public void report_674326() {
@@ -359,7 +374,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
         checkLandingEvent();
         checkFlightStatus(FlightStatus.Arrival);
         checkFlightRoute("UKHH", "LGSA");
-        checkFlightStatusEvent(FlightStatus.Arrival);
+        checkFlightStatusEvent(FlightStatus.Arriving);
     }
 
     public void report_674398() {
@@ -369,7 +384,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     }
 
     public void report_674400_674804() {
-        checkPositionUnknown();
+        checkNoPilotContextOrPositionUnknown();
         checkNoFlight();
         checkNoEvents();
     }
@@ -379,7 +394,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 674805 UHMA-.... Short connection
     public void report_674811() {
         Flight terminated = getFlightFromStatusEvent(FlightStatus.Terminated);
-        checkFlightRoute(terminated, "UHMA", null);
+        checkFlightLastSeenIcao(terminated, "UHMA");
+        checkFlightRoute(terminated, null, null);
     }
 
 
@@ -387,7 +403,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 674817 UHMA-.... Non-finished flight
     public void report_674817() {
         checkOnlineEvent();
-        checkFlightRoute("UHMA", null);
+        checkFlightLastSeenIcao("UHMA");
+        checkFlightRoute(null, null);
     }
 
     public void report_674829() {
@@ -409,7 +426,8 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     // 674846 UUDD-UTTT Takeoff, several disconnections and reconnections, landing
     public void report_674846() {
         checkOnlineEvent();
-        checkFlightRoute("UUDD", null);
+        checkFlightLastSeenIcao("UUDD");
+        checkFlightRoute(null, null);
     }
 
     public void report_674860() {

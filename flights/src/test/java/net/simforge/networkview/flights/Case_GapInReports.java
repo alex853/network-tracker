@@ -29,6 +29,10 @@ public class Case_GapInReports extends BaseTest {
         checkFlightplanData("B773", "EGKK", "EGPH");
     }
 
+    /**
+     * @see net.simforge.networkview.flights.criteria.TrackTrailCriterion
+     * @see net.simforge.networkview.flights.criteria.EllipseCriterion
+     */
     public void report_1000641() {
         checkFlightStatusEvent(FlightStatus.Terminated);
         Flight terminatedFlight = getFlightFromStatusEvent(FlightStatus.Terminated);

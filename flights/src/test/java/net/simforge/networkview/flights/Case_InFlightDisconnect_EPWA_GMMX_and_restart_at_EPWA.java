@@ -40,6 +40,9 @@ public class Case_InFlightDisconnect_EPWA_GMMX_and_restart_at_EPWA extends BaseT
         checkFlightRoute("EPWA", null);
     }
 
+    /**
+     * @see net.simforge.networkview.flights.criteria.TrackTrailCriterion
+     */
     public void report_670491() {
         checkRecentFlightCount(1);
         Flight terminatedFlight = getFlightFromStatusEvent(FlightStatus.Terminated);

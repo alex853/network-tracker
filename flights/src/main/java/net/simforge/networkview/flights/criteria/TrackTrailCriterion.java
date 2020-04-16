@@ -32,7 +32,7 @@ public class TrackTrailCriterion implements Criterion {
             return false;
         }
 
-        return trackSegmentsConsidered > 0;
+        return trackSegmentsConsidered >= 10;
     }
 
     @Override
