@@ -7,7 +7,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url System.getenv('SIMFORGE_REPO_READ_URL')
+        url 'https://mymavenrepo.com/repo/9k6aQjU4o2RPUv5zfolv/' // simforge repo read url
     }
 }
 
@@ -22,8 +22,6 @@ dependencies {
 
     compile group: 'ch.qos.logback', name: 'logback-core', version: '1.1.7'
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
-
-//    testCompile 'junit:junit:4.11'
 }
 
 war {
