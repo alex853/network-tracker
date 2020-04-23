@@ -15,8 +15,8 @@ repositories {
 dependencies {
     compile project(':core')
 
-    compile group: 'net.simforge', name: 'simforge-commons', version: '1.0.1'
-    compile group: 'net.simforge', name: 'simforge-commons-ext', version: '1.0.1'
+    compile group: 'net.simforge', name: 'simforge-commons', version: '1.0.5'
+    compile group: 'net.simforge', name: 'simforge-commons-ext', version: '1.0.2'
 
     compile group: 'postgresql', name: 'postgresql', version: '9.1-901-1.jdbc4'
 
