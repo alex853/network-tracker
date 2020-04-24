@@ -16,3 +16,5 @@ data/
 *.lck
 tasks.properties
 simforge.properties
+markers/
+starts/
