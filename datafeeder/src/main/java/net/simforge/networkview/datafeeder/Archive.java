@@ -24,7 +24,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -44,10 +43,12 @@ public class Archive extends BaseTask {
     private Cache<String, Report> archivedReportsCache;
     private Cache<String, ReportPilotFpRemarks> archivedFpRemarksCache;
 
+    @SuppressWarnings("unused")
     public Archive(Properties properties) {
         this(DatafeederTasks.getSessionManager(), Network.valueOf(properties.getProperty(ARG_NETWORK)));
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Archive(SessionManager sessionManager, Network network) {
         super("Archive-" + network);
         this.sessionManager = sessionManager;
@@ -121,7 +122,7 @@ public class Archive extends BaseTask {
 
             logger.info(ReportOps.logMsg(report.getReport(), "Archived"));
 
-            cleanupObsolete(report);
+            cleanupObsolete();
 
             reportMarker.setString(report.getReport());
 
@@ -180,7 +181,6 @@ public class Archive extends BaseTask {
                 return archivedFpRemarks;
             }
 
-            //noinspection JpaQlInspection
             archivedFpRemarks = (ReportPilotFpRemarks) archiveSession
                     .createQuery("from ReportPilotFpRemarks where remarks = :remarks")
                     .setString("remarks", fpRemarks.getRemarks())
@@ -195,9 +195,9 @@ public class Archive extends BaseTask {
             archivedFpRemarksCopy.setId(null);
             archivedFpRemarksCopy.setVersion(null);
 
-            HibernateUtils.transaction(archiveSession, "Archive.getArchivedFpRemarks#save", () -> {
-                archiveSession.save(archivedFpRemarksCopy);
-            });
+            HibernateUtils.transaction(archiveSession,
+                    "Archive.getArchivedFpRemarks#save",
+                    () -> archiveSession.save(archivedFpRemarksCopy));
 
             archivedFpRemarksCache.put(reportYear + archivedFpRemarksCopy.getRemarks(), archivedFpRemarksCopy);
             return archivedFpRemarksCopy;
@@ -226,7 +226,6 @@ public class Archive extends BaseTask {
                     try (Session archiveSession = sessionManager.getSession(network, report)) {
                         Report archivedReport = getArchivedReport(archiveSession, report);
 
-                        //noinspection JpaQlInspection
                         ReportPilotPosition archivedPositionCopy = (ReportPilotPosition) archiveSession
                                 .createQuery("from ReportPilotPosition where report = :report and pilotNumber = :pilotNumber")
                                 .setEntity("report", archivedReport)
@@ -234,7 +233,7 @@ public class Archive extends BaseTask {
                                 .uniqueResult();
 
                         if (archivedPositionCopy != null) {
-                            position.setHasArchivedCopy(true);
+                            position.setHasArchivedCopy();
                             continue;
                         }
 
@@ -254,7 +253,7 @@ public class Archive extends BaseTask {
                         archiveSession.getTransaction().begin();
                         archiveSession.save(archivedPositionCopy);
                         archiveSession.getTransaction().commit();
-                        position.setHasArchivedCopy(true);
+                        position.setHasArchivedCopy();
                     }
                 }
             }
@@ -327,11 +326,9 @@ public class Archive extends BaseTask {
         return previousReports;
     }
 
-    private void cleanupObsolete(Report report) {
+    private void cleanupObsolete() {
         BM.start("Archive.cleanupObsolete");
         try {
-            LocalDateTime threshold = ReportUtils.fromTimestampJava(report.getReport()).minusHours(6);
-
             int totalPositions = 0;
 
             // to cut everything older than 24 days
@@ -346,11 +343,6 @@ public class Archive extends BaseTask {
                     totalPositions += pilotTrack.getPositions().size();
                     continue;
                 }
-
-//                if (lastSavedPosition.getPosition().getDt().isAfter(threshold)) {
-//                    totalPositions += pilotTrack.getPositions().size();
-//                    continue;
-//                }
 
                 List<PositionInfo> toRemove = new ArrayList<>();
                 List<PositionInfo> positions = pilotTrack.getPositions();
@@ -379,9 +371,6 @@ public class Archive extends BaseTask {
         }
     }
 
-    private Map<Cache, Long> cacheToLastTs = new HashMap<>();
-    private Map<Cache, Long> cacheToCount = new HashMap<>();
-
     private String getEstimatedCacheSize(Cache cache) {
         try {
             Field storeField = cache.getClass().getDeclaredField("store");
@@ -399,31 +388,6 @@ public class Archive extends BaseTask {
             return "?";
         }
 
-/*        Long lastTs = cacheToLastTs.get(cache);
-        if (lastTs != null && lastTs + 3 * 60 * 1000 > System.currentTimeMillis()) {
-            Long count = cacheToCount.get(cache);
-            if (count == null) {
-                count = 0L;
-            }
-
-            return String.format("~%s (%s mins ago)", count, (lastTs - System.currentTimeMillis()) / (60 * 1000));
-        }
-
-        long count = 0;
-        Iterator<Cache.Entry> iterator = cache.iterator();
-        while (iterator.hasNext()) {
-            Cache.Entry next = iterator.next();
-            if (next != null) {
-                count++;
-            }
-        }
-
-        cacheToLastTs.put(cache, System.currentTimeMillis());
-        cacheToCount.put(cache, count);
-
-        return Long.toString(count);*/
-
-
 /*        BM.start("Archive.getEstimatedCacheSize");
         try {
             MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
@@ -438,6 +402,7 @@ public class Archive extends BaseTask {
         }*/
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> T copy(T src) {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -449,7 +414,6 @@ public class Archive extends BaseTask {
 
             ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bytes));
             Object o = ois.readObject();
-            //noinspection unchecked
             return (T) o;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -460,11 +424,11 @@ public class Archive extends BaseTask {
         private int pilotNumber;
         private List<PositionInfo> positions = new ArrayList<>();
 
-        public PilotTrack(int pilotNumber) {
+        PilotTrack(int pilotNumber) {
             this.pilotNumber = pilotNumber;
         }
 
-        public void addPosition(ReportPilotPosition position) {
+        void addPosition(ReportPilotPosition position) {
             positions.add(new PositionInfo(position));
             updateStatuses();
         }
@@ -496,6 +460,9 @@ public class Archive extends BaseTask {
                 }
 
                 PositionInfo previousSaved = getLastIn(PositionStatus.TakeoffLanding, PositionStatus.PositionReport);
+                if (previousSaved == null) {
+                    throw new IllegalStateException("Could not find previous saved position");
+                }
                 Position previousSavedPP = previousSaved.getPosition();
 
                 Duration difference = Duration.between(previousSavedPP.getDt(), currentPP.getDt());
@@ -524,15 +491,15 @@ public class Archive extends BaseTask {
             return null;
         }
 
-        public void removePositions(List<PositionInfo> positions) {
+        void removePositions(List<PositionInfo> positions) {
             this.positions.removeAll(positions);
         }
 
-        public List<PositionInfo> getPositions() {
+        List<PositionInfo> getPositions() {
             return positions;
         }
 
-        public int getPilotNumber() {
+        int getPilotNumber() {
             return pilotNumber;
         }
     }
@@ -543,33 +510,33 @@ public class Archive extends BaseTask {
         private Position position;
         private boolean hasArchivedCopy;
 
-        public PositionInfo(ReportPilotPosition reportPilotPosition) {
+        PositionInfo(ReportPilotPosition reportPilotPosition) {
             this.reportPilotPosition = reportPilotPosition;
             this.position = Position.create(reportPilotPosition);
         }
 
-        public ReportPilotPosition getReportPilotPosition() {
+        ReportPilotPosition getReportPilotPosition() {
             return reportPilotPosition;
         }
 
-        public Position getPosition() {
+        Position getPosition() {
             return position;
         }
 
-        public PositionStatus getStatus() {
+        PositionStatus getStatus() {
             return status;
         }
 
-        public void setStatus(PositionStatus status) {
+        void setStatus(PositionStatus status) {
             this.status = status;
         }
 
-        public boolean hasArchivedCopy() {
+        boolean hasArchivedCopy() {
             return hasArchivedCopy;
         }
 
-        public void setHasArchivedCopy(boolean hasArchivedCopy) {
-            this.hasArchivedCopy = hasArchivedCopy;
+        void setHasArchivedCopy() {
+            this.hasArchivedCopy = true;
         }
 
         @Override
