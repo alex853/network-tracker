@@ -45,7 +45,7 @@ public class Archive extends BaseTask {
     private Cache<String, ReportPilotFpRemarks> archivedFpRemarksCache;
 
     public Archive(Properties properties) {
-        this(TrackerTasks.getSessionManager(), Network.valueOf(properties.getProperty(ARG_NETWORK)));
+        this(DatafeederTasks.getSessionManager(), Network.valueOf(properties.getProperty(ARG_NETWORK)));
     }
 
     public Archive(SessionManager sessionManager, Network network) {

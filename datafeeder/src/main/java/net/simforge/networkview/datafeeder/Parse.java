@@ -69,7 +69,7 @@ public class Parse extends BaseTask {
 
         storage = ReportStorage.getStorage(storageRoot, network);
         marker = new Marker(getTaskName());
-        sessionManager = TrackerTasks.getSessionManager();
+        sessionManager = DatafeederTasks.getSessionManager();
 
         setBaseSleepTime(10000L);
     }

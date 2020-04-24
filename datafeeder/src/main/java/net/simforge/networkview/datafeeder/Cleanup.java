@@ -23,7 +23,7 @@ public class Cleanup extends BaseTask {
     private Marker archivedReportMarker;
 
     public Cleanup(Properties properties) {
-        this(TrackerTasks.getSessionManager(), Network.valueOf(properties.getProperty(ARG_NETWORK)));
+        this(DatafeederTasks.getSessionManager(), Network.valueOf(properties.getProperty(ARG_NETWORK)));
     }
 
     public Cleanup(SessionManager sessionManager, Network network) {

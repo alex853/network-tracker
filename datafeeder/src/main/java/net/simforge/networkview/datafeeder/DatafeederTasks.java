@@ -3,8 +3,8 @@ package net.simforge.networkview.datafeeder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TrackerTasks {
-    private static Logger logger = LoggerFactory.getLogger(TrackerTasks.class.getName());
+public class DatafeederTasks {
+    private static Logger logger = LoggerFactory.getLogger(DatafeederTasks.class.getName());
 
     private static SessionManager sessionManager;
 
