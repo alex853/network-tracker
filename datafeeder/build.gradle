@@ -1,8 +1,8 @@
-version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
 
-//archivesBaseName = 'network-view-datafeeder'
+archivesBaseName = 'simforge-nv-datafeeder'
 
 repositories {
     mavenCentral()
@@ -31,4 +31,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
-//mainClassName = 'net.simforge.commons.legacy.runner.RunnerMT'
+application {
+    mainClassName = 'net.simforge.commons.runtime.TaskExecutor'
+}
