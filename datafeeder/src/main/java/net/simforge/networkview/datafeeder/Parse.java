@@ -1,5 +1,6 @@
 package net.simforge.networkview.datafeeder;
 
+import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
 import net.simforge.commons.io.Marker;
 import net.simforge.commons.runtime.BaseTask;
@@ -10,10 +11,15 @@ import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportLogEntry;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotFpRemarks;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.expiry.Expirations;
 import org.hibernate.Session;
 
 import java.io.IOException;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -33,6 +39,9 @@ public class Parse extends BaseTask {
     private Marker marker;
     private SessionManager sessionManager;
 
+    private CacheManager cacheManager;
+    private Cache<String, ReportPilotFpRemarks> fpRemarksCache;
+
     public Parse(Properties properties) {
         super("Parse-" + properties.getProperty(ARG_NETWORK));
         init(properties);
@@ -51,14 +60,26 @@ public class Parse extends BaseTask {
         storageRoot = properties.getProperty(ARG_STORAGE, storageRoot);
 
         singleRun = Boolean.parseBoolean(properties.getProperty(ARG_SINGLE, Boolean.toString(singleRun)));
+
+        cacheManager = CacheManagerBuilder.newCacheManagerBuilder().build(true);
+        fpRemarksCache = cacheManager.createCache("fpRemarksCache-" + network,
+                CacheConfigurationBuilder
+                        .newCacheConfigurationBuilder(
+                                String.class,
+                                ReportPilotFpRemarks.class,
+                                ResourcePoolsBuilder.heap(10000))
+                        .withExpiry(Expirations.timeToIdleExpiration(org.ehcache.expiry.Duration.of(10, TimeUnit.MINUTES)))
+                        .build());
+
+        setBaseSleepTime(1000);
     }
 
     @Override
     protected void startup() {
         super.startup();
 
-        BM.setLoggingPeriod(TimeUnit.HOURS.toMillis(1));
-//        BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(10));
+//        BM.setLoggingPeriod(TimeUnit.HOURS.toMillis(1));
+        BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(5));
 
         RunningMarker.lock(getTaskName());
 
@@ -71,7 +92,14 @@ public class Parse extends BaseTask {
         marker = new Marker(getTaskName());
         sessionManager = DatafeederTasks.getSessionManager();
 
-        setBaseSleepTime(10000L);
+        setBaseSleepTime(1000);
+    }
+
+    @Override
+    protected void shutdown() {
+        super.shutdown();
+
+        cacheManager.close();
     }
 
     @Override
@@ -117,7 +145,7 @@ public class Parse extends BaseTask {
     }
 
     private void processReport(String report)
-            throws IOException, SQLException {
+            throws IOException {
         BM.start("Parse.processReport");
         try (Session session = sessionManager.getSession(network)) {
 
@@ -132,7 +160,7 @@ public class Parse extends BaseTask {
             logger.debug(ReportOps.logMsg(report, "      Data parsed"));
 
 
-            Report _report = findReport(session, report);
+            Report _report = ReportOps.loadReport(session, report);
 
             if (_report == null) {
                 _report = new Report();
@@ -142,14 +170,29 @@ public class Parse extends BaseTask {
                 _report.setHasLogs(!logEntries.isEmpty());
                 _report.setParsed(false);
 
-                save(session, _report, "createReport");
+                HibernateUtils.saveAndCommit(session, "#createReport", _report);
 
                 logger.debug(ReportOps.logMsg(report, "      Report record inserted"));
             } else {
                 logger.debug(ReportOps.logMsg(report, "      Report already exists ==> Only absent records will be added"));
             }
 
+            saveLogEntries(session, _report, logEntries);
 
+            savePilotPositions(session, _report, pilotInfos);
+
+            markReportParsed(session, _report);
+
+            logger.info(ReportOps.logMsg(report, "\t\t\t\tStats | remarks " + CacheHelper.getEstimatedCacheSize(fpRemarksCache)));
+
+        } finally {
+            BM.stop();
+        }
+    }
+
+    private void saveLogEntries(Session session, Report _report, List<ReportFile.LogEntry> logEntries) {
+        BM.start("saveLogEntries");
+        try {
             List<ReportLogEntry> existingLogEntries = loadExistingLogEntries(session, _report);
 
             for (ReportFile.LogEntry logEntry : logEntries) {
@@ -168,7 +211,7 @@ public class Parse extends BaseTask {
                     continue;
                 }
 
-                logger.debug(ReportOps.logMsg(report, "        LogEntry - S: " + logEntry.getSection() + "; O: " + logEntry.getObject() + "; M: " + logEntry.getMsg() + "; V: " + logEntry.getValue()));
+                logger.debug(ReportOps.logMsg(_report.getReport(), "        LogEntry - S: " + logEntry.getSection() + "; O: " + logEntry.getObject() + "; M: " + logEntry.getMsg() + "; V: " + logEntry.getValue()));
                 ReportLogEntry l = new ReportLogEntry();
                 l.setReport(_report);
                 l.setSection(logEntry.getSection());
@@ -176,13 +219,20 @@ public class Parse extends BaseTask {
                 l.setMessage(logEntry.getMsg());
                 l.setValue(logEntry.getValue());
 
-                save(session, l, "createLogEntry");
+                HibernateUtils.saveAndCommit(session, "#createLogEntry", l);
 
                 existingLogEntries.add(l);
             }
-            logger.debug(ReportOps.logMsg(report, "      LogEntries added"));
 
+            logger.debug(ReportOps.logMsg(_report.getReport(), "      LogEntries added"));
+        } finally {
+            BM.stop();
+        }
+    }
 
+    private void savePilotPositions(Session session, Report _report, List<ReportFile.ClientInfo> pilotInfos) {
+        BM.start("savePilotPositions");
+        try {
             List<ReportPilotPosition> existingPositions = ReportOps.loadPilotPositions(session, _report);
 
             for (ReportFile.ClientInfo pilotInfo : pilotInfos) {
@@ -200,19 +250,10 @@ public class Parse extends BaseTask {
                         continue;
                     }
 
-                    ReportPilotFpRemarks fpRemarks = null;
                     String fpRemarksStr = pilotInfo.getPlannedRemarks();
                     fpRemarksStr = fpRemarksStr != null ? fpRemarksStr.trim() : null;
-                    if (fpRemarksStr != null && fpRemarksStr.trim().length() > 0) {
-                        fpRemarks = findFpRemarks(session, fpRemarksStr);
 
-                        if (fpRemarks == null) {
-                            fpRemarks = new ReportPilotFpRemarks();
-                            fpRemarks.setRemarks(fpRemarksStr);
-
-                            save(session, fpRemarks, "createFpRemarks");
-                        }
-                    }
+                    ReportPilotFpRemarks fpRemarks = getFpRemarks(session, fpRemarksStr);
 
                     ReportPilotPosition p = new ReportPilotPosition();
                     p.setReport(_report);
@@ -231,7 +272,7 @@ public class Parse extends BaseTask {
                     p.setQnhMb(pilotInfo.getQnhMb());
                     p.setOnGround(pilotInfo.isOnGround());
 
-                    save(session, p, "createPosition");
+                    HibernateUtils.saveAndCommit(session, "#createPosition", p);
 
                     existingPositions.add(p);
                 } catch (Exception e) {
@@ -240,28 +281,64 @@ public class Parse extends BaseTask {
                     throw new RuntimeException(msg, e);
                 }
             }
-            logger.debug(ReportOps.logMsg(report, "      Pilot positions inserted"));
 
-
-            _report.setParsed(true);
-
-            save(session, _report, "markReportParsed");
-
-            logger.info(ReportOps.logMsg(report, "Parsed"));
-
+            logger.debug(ReportOps.logMsg(_report.getReport(), "      Pilot positions inserted"));
         } finally {
             BM.stop();
         }
     }
 
-    private ReportPilotFpRemarks findFpRemarks(Session session, String fpRemarksStr) {
-        BM.start("Parse.findFpRemarks");
+    private ReportPilotFpRemarks getFpRemarks(Session session, String fpRemarksStr) {
+        BM.start("getFpRemarks");
         try {
-            //noinspection JpaQlInspection
-            return (ReportPilotFpRemarks) session
-                    .createQuery("select r from ReportPilotFpRemarks r where r.remarks = :remarks")
-                    .setString("remarks", fpRemarksStr)
-                    .uniqueResult();
+            if (fpRemarksStr == null || fpRemarksStr.length() == 0) {
+                // BM tag
+                BM.start("#empty");
+                BM.stop();
+
+                return null;
+            }
+
+            ReportPilotFpRemarks fpRemarks = fpRemarksCache.get(fpRemarksStr);
+            if (fpRemarks != null) {
+                // BM tag
+                BM.start("#cache-hit");
+                BM.stop();
+
+                return fpRemarks;
+            }
+
+            fpRemarks = ReportOps.loadFpRemarks(session, fpRemarksStr);
+            if (fpRemarks != null) {
+                // BM tag
+                BM.start("#loaded-from-db");
+                BM.stop();
+
+                fpRemarksCache.put(fpRemarksStr, fpRemarks);
+                return fpRemarks;
+            }
+
+            fpRemarks = new ReportPilotFpRemarks();
+            fpRemarks.setRemarks(fpRemarksStr);
+
+            HibernateUtils.saveAndCommit(session, "#save", fpRemarks);
+
+            fpRemarksCache.put(fpRemarksStr, fpRemarks);
+
+            return fpRemarks;
+        } finally {
+            BM.stop();
+        }
+    }
+
+    private void markReportParsed(Session session, Report _report) {
+        BM.start("markReportParsed");
+        try {
+            _report.setParsed(true);
+
+            HibernateUtils.saveAndCommit(session, _report);
+
+            logger.info(ReportOps.logMsg(_report.getReport(), "Parsed"));
         } finally {
             BM.stop();
         }
@@ -269,9 +346,8 @@ public class Parse extends BaseTask {
 
     @SuppressWarnings("unchecked")
     private List<ReportLogEntry> loadExistingLogEntries(Session session, Report _report) {
-        BM.start("Parse.loadExistingLogEntries");
+        BM.start("loadExistingLogEntries");
         try {
-            //noinspection JpaQlInspection
             return session
                     .createQuery("select l from ReportLogEntry l where l.report = :report")
                     .setEntity("report", _report)
@@ -281,29 +357,4 @@ public class Parse extends BaseTask {
         }
     }
 
-    private void save(Session session, Object entity, String stage) {
-        BM.start("Parse.save/" + stage);
-        try {
-            session.getTransaction().begin();
-            session.save(entity);
-            session.getTransaction().commit();
-        } finally {
-            BM.stop();
-        }
-    }
-
-    private Report findReport(Session session, String report) {
-        BM.start("Parse.findReport");
-        try {
-            // there is no condition for parsed because it can append records to partially parsed report
-
-            // noinspection JpaQlInspection
-            return (Report) session
-                    .createQuery("select r from Report r where r.report = :report")
-                    .setString("report", report)
-                    .uniqueResult();
-        } finally {
-            BM.stop();
-        }
-    }
 }

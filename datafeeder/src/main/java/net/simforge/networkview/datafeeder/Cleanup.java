@@ -19,13 +19,16 @@ public class Cleanup extends BaseTask {
 
     private SessionManager sessionManager;
     private Network network;
+    @SuppressWarnings("FieldCanBeLocal")
     private long keepDays = 30;
     private Marker archivedReportMarker;
 
+    @SuppressWarnings("unused")
     public Cleanup(Properties properties) {
         this(DatafeederTasks.getSessionManager(), Network.valueOf(properties.getProperty(ARG_NETWORK)));
     }
 
+    @SuppressWarnings("WeakerAccess")
     public Cleanup(SessionManager sessionManager, Network network) {
         super("Cleanup-" + network);
         this.sessionManager = sessionManager;
@@ -47,7 +50,7 @@ public class Cleanup extends BaseTask {
     protected void process() {
         BM.start("Cleanup.process");
         try (Session liveSession = sessionManager.getSession(network)) {
-            Report report = ReportOps.loadFirstReport(liveSession);;
+            Report report = ReportOps.loadFirstReport(liveSession);
             if (report == null) {
                 logger.debug("No reports found");
                 return; // standard sleep time
@@ -85,13 +88,11 @@ public class Cleanup extends BaseTask {
         BM.start("Cleanup.removeReport");
         try {
             HibernateUtils.transaction(liveSession, () -> {
-                //noinspection JpaQlInspection
                 liveSession
                         .createQuery("delete from ReportPilotPosition where report = :report")
                         .setEntity("report", report)
                         .executeUpdate();
 
-                //noinspection JpaQlInspection
                 liveSession
                         .createQuery("delete from ReportLogEntry where report = :report")
                         .setEntity("report", report)

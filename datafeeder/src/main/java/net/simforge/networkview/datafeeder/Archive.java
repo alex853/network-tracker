@@ -22,7 +22,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Field;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +59,7 @@ public class Archive extends BaseTask {
         super.startup();
 
         BM.setLoggingPeriod(TimeUnit.HOURS.toMillis(1));
+//        BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(5));
 
         RunningMarker.lock(getTaskName());
 
@@ -79,11 +79,11 @@ public class Archive extends BaseTask {
                         .newCacheConfigurationBuilder(
                                 String.class,
                                 ReportPilotFpRemarks.class,
-                                ResourcePoolsBuilder.heap(1000))
+                                ResourcePoolsBuilder.heap(10000))
                         .withExpiry(Expirations.timeToIdleExpiration(org.ehcache.expiry.Duration.of(10, TimeUnit.MINUTES)))
                         .build());
 
-        setBaseSleepTime(10000);
+        setBaseSleepTime(1000);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class Archive extends BaseTask {
 
             logger.info(ReportOps.logMsg(report.getReport(), "Archived"));
 
-            cleanupObsolete();
+            cleanupObsolete(report);
 
             reportMarker.setString(report.getReport());
 
@@ -137,11 +137,19 @@ public class Archive extends BaseTask {
         try {
             Report archivedReport = archivedReportsCache.get(report);
             if (archivedReport != null) {
+                // BM tag
+                BM.start("#cache-hit");
+                BM.stop();
+
                 return archivedReport;
             }
 
-            archivedReport = ReportOps.loadReport(archiveSession, report);
+            archivedReport = ReportOps.loadParsedReport(archiveSession, report);
             if (archivedReport != null) {
+                // BM tag
+                BM.start("#loaded-from-db");
+                BM.stop();
+
                 archivedReportsCache.put(report, archivedReport);
             }
 
@@ -178,15 +186,19 @@ public class Archive extends BaseTask {
         try {
             ReportPilotFpRemarks archivedFpRemarks = archivedFpRemarksCache.get(reportYear + fpRemarks.getRemarks());
             if (archivedFpRemarks != null) {
+                // BM tag
+                BM.start("#cache-hit");
+                BM.stop();
+
                 return archivedFpRemarks;
             }
 
-            archivedFpRemarks = (ReportPilotFpRemarks) archiveSession
-                    .createQuery("from ReportPilotFpRemarks where remarks = :remarks")
-                    .setString("remarks", fpRemarks.getRemarks())
-                    .setMaxResults(1)
-                    .uniqueResult();
+            archivedFpRemarks = ReportOps.loadFpRemarks(archiveSession, fpRemarks.getRemarks());
             if (archivedFpRemarks != null) {
+                // BM tag
+                BM.start("#loaded-from-db");
+                BM.stop();
+
                 archivedFpRemarksCache.put(reportYear + archivedFpRemarks.getRemarks(), archivedFpRemarks);
                 return archivedFpRemarks;
             }
@@ -195,9 +207,7 @@ public class Archive extends BaseTask {
             archivedFpRemarksCopy.setId(null);
             archivedFpRemarksCopy.setVersion(null);
 
-            HibernateUtils.transaction(archiveSession,
-                    "Archive.getArchivedFpRemarks#save",
-                    () -> archiveSession.save(archivedFpRemarksCopy));
+            HibernateUtils.saveAndCommit(archiveSession, "#save", archivedFpRemarksCopy);
 
             archivedFpRemarksCache.put(reportYear + archivedFpRemarksCopy.getRemarks(), archivedFpRemarksCopy);
             return archivedFpRemarksCopy;
@@ -226,11 +236,7 @@ public class Archive extends BaseTask {
                     try (Session archiveSession = sessionManager.getSession(network, report)) {
                         Report archivedReport = getArchivedReport(archiveSession, report);
 
-                        ReportPilotPosition archivedPositionCopy = (ReportPilotPosition) archiveSession
-                                .createQuery("from ReportPilotPosition where report = :report and pilotNumber = :pilotNumber")
-                                .setEntity("report", archivedReport)
-                                .setInteger("pilotNumber", pilotTrack.getPilotNumber())
-                                .uniqueResult();
+                        ReportPilotPosition archivedPositionCopy = ReportOps.loadPilotPosition(archiveSession, archivedReport, pilotTrack.getPilotNumber());
 
                         if (archivedPositionCopy != null) {
                             position.setHasArchivedCopy();
@@ -326,7 +332,7 @@ public class Archive extends BaseTask {
         return previousReports;
     }
 
-    private void cleanupObsolete() {
+    private void cleanupObsolete(Report report) {
         BM.start("Archive.cleanupObsolete");
         try {
             int totalPositions = 0;
@@ -359,47 +365,16 @@ public class Archive extends BaseTask {
                 totalPositions += pilotTrack.getPositions().size();
             }
 
-            logger.info("                                                         STATS | {} tracks, {} positions, avg {} per track, reports {}, remarks {}",
+            logger.info(ReportOps.logMsg(report.getReport(), "") + "\t\t\t\tStats | {} tracks, {} positions, avg {} per track, reports {}, remarks {}",
                     pilotTracks.size(),
                     totalPositions,
                     String.format("%.1f", totalPositions / (double) (pilotTracks.size() > 0 ? pilotTracks.size() : 1)),
-                    getEstimatedCacheSize(this.archivedReportsCache),
-                    getEstimatedCacheSize(this.archivedFpRemarksCache)
+                    CacheHelper.getEstimatedCacheSize(this.archivedReportsCache),
+                    CacheHelper.getEstimatedCacheSize(this.archivedFpRemarksCache)
             );
         } finally {
             BM.stop();
         }
-    }
-
-    private String getEstimatedCacheSize(Cache cache) {
-        try {
-            Field storeField = cache.getClass().getDeclaredField("store");
-            storeField.setAccessible(true);
-            Object store = storeField.get(cache);
-            Field mapField = store.getClass().getDeclaredField("map");
-            mapField.setAccessible(true);
-            Object map = mapField.get(store);
-            Field realMapField = map.getClass().getDeclaredField("realMap");
-            realMapField.setAccessible(true);
-            Object realMap = realMapField.get(map);
-            Map _map = (Map) realMap;
-            return Integer.toString(_map.size());
-        } catch (Exception e) {
-            return "?";
-        }
-
-/*        BM.start("Archive.getEstimatedCacheSize");
-        try {
-            MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-            ObjectName objectName = new ObjectName("javax.cache:type=CacheStatistics,CacheManager=" + cacheManager.getURI().toString().replaceAll(",|:|=|\n", ".") + ",Cache=" + cache.getName());
-            CacheStatisticsMXBean cacheStatisticsMXBean = JMX.newMBeanProxy(mBeanServer, objectName, CacheStatisticsMXBean.class);
-            return cacheStatisticsMXBean.getCachePuts() - cacheStatisticsMXBean.getCacheEvictions() - cacheStatisticsMXBean.getCacheRemovals();
-        } catch (MalformedObjectNameException e) {
-            logger.error("Unable to estimate cache size", e);
-            throw new RuntimeException("Unable to estimate cache size", e);
-        } finally {
-            BM.stop();
-        }*/
     }
 
     @SuppressWarnings("unchecked")
