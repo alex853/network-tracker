@@ -78,8 +78,8 @@ public class Parse extends BaseTask {
     protected void startup() {
         super.startup();
 
-//        BM.setLoggingPeriod(TimeUnit.HOURS.toMillis(1));
-        BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(5));
+        BM.setLoggingPeriod(TimeUnit.HOURS.toMillis(1));
+//        BM.setLoggingPeriod(TimeUnit.MINUTES.toMillis(5));
 
         RunningMarker.lock(getTaskName());
 
