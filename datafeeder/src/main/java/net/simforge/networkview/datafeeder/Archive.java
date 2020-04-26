@@ -25,6 +25,8 @@ import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Archive extends BaseTask {
     private static final String ARG_NETWORK = "network";
@@ -36,7 +38,6 @@ public class Archive extends BaseTask {
     private Marker reportMarker;
 
     private Map<Integer, PilotTrack> pilotTracks = new HashMap<>();
-    private boolean firstReport = true;
 
     private CacheManager cacheManager;
     private Cache<String, Report> archivedReportsCache;
@@ -112,17 +113,47 @@ public class Archive extends BaseTask {
 
             logger.debug(ReportOps.logMsg(report.getReport(), "Archiving..."));
 
-            buildPilotTracks(liveSession, report);
-
             try (Session archiveSession = sessionManager.getSession(network, report.getReport())) {
                 createArchivedReport(archiveSession, report);
             }
 
-            savePositionsToArchive();
+            List<ReportPilotPosition> currentPositions = ReportOps.loadPilotPositions(liveSession, report);
+            logger.debug(ReportOps.logMsg(report.getReport(), "    loaded {} positions"), currentPositions.size());
+
+            Map<Integer, ReportPilotPosition> pilotNumberToCurrentPosition = currentPositions
+                    .stream()
+                    .collect(Collectors.toMap(ReportPilotPosition::getPilotNumber, Function.identity()));
+
+            Queue<ProcessingData> queue = new LinkedList<>();
+            for (PilotTrack pilotTrack : pilotTracks.values()) {
+                ReportPilotPosition currentPosition = pilotNumberToCurrentPosition.remove(pilotTrack.getPilotNumber());
+                queue.add(new ProcessingData(pilotTrack.getPilotNumber(), pilotTrack, currentPosition));
+            }
+
+            for (ReportPilotPosition currentPosition : pilotNumberToCurrentPosition.values()) {
+                queue.add(new ProcessingData(currentPosition.getPilotNumber(), null, currentPosition));
+            }
+
+            long lastPrintStatusTs = System.currentTimeMillis();
+            int counter = 0;
+            int queueSize = queue.size();
+
+            while (!queue.isEmpty()) {
+                ProcessingData processingData = queue.poll();
+                processPilot(liveSession, report, processingData);
+
+                ThreadMonitor.alive();
+                counter++;
+                long now = System.currentTimeMillis();
+                if (now - lastPrintStatusTs > 10000L) {
+                    logger.info(ReportOps.logMsg(report.getReport(), "        " + counter + " of " + queueSize + " done"));
+                    lastPrintStatusTs = now;
+                }
+            }
 
             logger.info(ReportOps.logMsg(report.getReport(), "Archived"));
 
-            cleanupObsolete(report);
+            printStats(report);
 
             reportMarker.setString(report.getReport());
 
@@ -132,8 +163,73 @@ public class Archive extends BaseTask {
         }
     }
 
+    private static class ProcessingData {
+        private int pilotNumber;
+        private PilotTrack pilotTrack;
+        private ReportPilotPosition currentPosition;
+
+        ProcessingData(int pilotNumber, PilotTrack pilotTrack, ReportPilotPosition currentPosition) {
+            this.pilotNumber = pilotNumber;
+            this.pilotTrack = pilotTrack;
+            this.currentPosition = currentPosition;
+        }
+
+        int getPilotNumber() {
+            return pilotNumber;
+        }
+
+        PilotTrack getPilotTrack() {
+            return pilotTrack;
+        }
+
+        ReportPilotPosition getCurrentPosition() {
+            return currentPosition;
+        }
+    }
+
+    private void processPilot(Session liveSession, Report report, ProcessingData processingData) {
+        BM.start("processPilot");
+        try {
+            int pilotNumber = processingData.getPilotNumber();
+            PilotTrack pilotTrack = processingData.getPilotTrack();
+            ReportPilotPosition currentPosition = processingData.getCurrentPosition();
+
+            if (pilotTrack == null) {
+                List<ReportPilotPosition> previousReportPositions = loadPreviousLiveReports(liveSession, report, pilotNumber);
+
+                pilotTrack = new PilotTrack(currentPosition.getPilotNumber());
+
+                for (ReportPilotPosition position : previousReportPositions) {
+                    pilotTrack.addPosition(position);
+                }
+
+                pilotTracks.put(pilotNumber, pilotTrack);
+            }
+
+            if (currentPosition != null) { // there is an ability to add support for going offline / going online
+                pilotTrack.addPosition(currentPosition);
+            }
+
+            savePositionsToArchive(pilotTrack);
+
+            cleanupExcessivePositions(pilotTrack);
+
+            // dropping tracks without recent positions
+            PositionInfo last = pilotTrack.getLastIn(PositionStatus.Unknown, PositionStatus.Excessive, PositionStatus.PositionReport, PositionStatus.TakeoffLanding);
+            //noinspection ConstantConditions
+            Duration difference = Duration.between(last.getPosition().getDt(), ReportUtils.fromTimestampJava(report.getReport()));
+            long differenceMillis = difference.toMillis();
+
+            if (differenceMillis >= TimeUnit.MINUTES.toMillis(90)) {
+                pilotTracks.remove(pilotNumber);
+            }
+        } finally {
+            BM.stop();
+        }
+    }
+
     private Report getArchivedReport(Session archiveSession, String report) {
-        BM.start("Archive.getArchivedReport");
+        BM.start("getArchivedReport");
         try {
             Report archivedReport = archivedReportsCache.get(report);
             if (archivedReport != null) {
@@ -160,7 +256,7 @@ public class Archive extends BaseTask {
     }
 
     private void createArchivedReport(Session archiveSession, Report report) {
-        BM.start("Archive.createArchivedReport");
+        BM.start("createArchivedReport");
         try {
             Report archivedReport = getArchivedReport(archiveSession, report.getReport());
             if (archivedReport != null) {
@@ -171,9 +267,7 @@ public class Archive extends BaseTask {
             archivedReport.setId(null);
             archivedReport.setVersion(null);
 
-            archiveSession.getTransaction().begin();
-            archiveSession.save(archivedReport);
-            archiveSession.getTransaction().commit();
+            HibernateUtils.saveAndCommit(archiveSession, "#save", archivedReport);
 
             archivedReportsCache.put(report.getReport(), archivedReport);
         } finally {
@@ -182,7 +276,7 @@ public class Archive extends BaseTask {
     }
 
     private ReportPilotFpRemarks getArchivedFpRemarks(Session archiveSession, int reportYear, ReportPilotFpRemarks fpRemarks) {
-        BM.start("Archive.getArchivedFpRemarks");
+        BM.start("getArchivedFpRemarks");
         try {
             ReportPilotFpRemarks archivedFpRemarks = archivedFpRemarksCache.get(reportYear + fpRemarks.getRemarks());
             if (archivedFpRemarks != null) {
@@ -216,165 +310,112 @@ public class Archive extends BaseTask {
         }
     }
 
-    private void savePositionsToArchive() {
-        BM.start("Archive.savePositionsToArchive");
+    private void savePositionsToArchive(PilotTrack pilotTrack) {
+        BM.start("savePositionsToArchive");
         try {
-            for (PilotTrack pilotTrack : pilotTracks.values()) {
-                List<PositionInfo> positions = pilotTrack.getPositions();
-                for (PositionInfo position : positions) {
-                    PositionStatus status = position.getStatus();
+            List<PositionInfo> positions = pilotTrack.getPositions();
+            for (PositionInfo position : positions) {
+                PositionStatus status = position.getStatus();
 
-                    if (!(status == PositionStatus.PositionReport || status == PositionStatus.TakeoffLanding)) {
-                        continue;
-                    }
-
-                    if (position.hasArchivedCopy()) {
-                        continue;
-                    }
-
-                    String report = position.getReportPilotPosition().getReport().getReport();
-                    try (Session archiveSession = sessionManager.getSession(network, report)) {
-                        Report archivedReport = getArchivedReport(archiveSession, report);
-
-                        ReportPilotPosition archivedPositionCopy = ReportOps.loadPilotPosition(archiveSession, archivedReport, pilotTrack.getPilotNumber());
-
-                        if (archivedPositionCopy != null) {
-                            position.setHasArchivedCopy();
-                            continue;
-                        }
-
-                        archivedPositionCopy = copy(position.getReportPilotPosition());
-                        archivedPositionCopy.setId(null);
-                        archivedPositionCopy.setVersion(null);
-                        archivedPositionCopy.setReport(archivedReport);
-
-                        ReportPilotFpRemarks fpRemarks = position.getReportPilotPosition().getFpRemarks();
-                        if (fpRemarks != null) {
-                            int reportYear = ReportUtils.fromTimestampJava(report).getYear();
-                            archivedPositionCopy.setFpRemarks(getArchivedFpRemarks(archiveSession, reportYear, fpRemarks));
-                        } else {
-                            archivedPositionCopy.setFpRemarks(null);
-                        }
-
-                        archiveSession.getTransaction().begin();
-                        archiveSession.save(archivedPositionCopy);
-                        archiveSession.getTransaction().commit();
-                        position.setHasArchivedCopy();
-                    }
-                }
-            }
-        } finally {
-            BM.stop();
-        }
-    }
-
-    private void buildPilotTracks(Session session, Report currentReport) {
-        BM.start("Archive.buildPilotTracks");
-        try {
-            List<ReportPilotPosition> currentPositions = ReportOps.loadPilotPositions(session, currentReport);
-            logger.debug(ReportOps.logMsg(currentReport.getReport(), "    loaded {} positions"), currentPositions.size());
-
-            Map<Long, List<ReportPilotPosition>> previousReports = null;
-
-            for (ReportPilotPosition currentPosition : currentPositions) {
-                Integer pilotNumber = currentPosition.getPilotNumber();
-                PilotTrack pilotTrack = pilotTracks.get(pilotNumber);
-                if (pilotTrack == null) {
-                    if (firstReport) {
-                        previousReports = loadPreviousLiveReports(session, currentReport);
-
-                        firstReport = false;
-                    }
-
-                    pilotTrack = new PilotTrack(currentPosition.getPilotNumber());
-
-                    if (previousReports != null) {
-                        for (List<ReportPilotPosition> reportPilotPositions : previousReports.values()) {
-                            ReportPilotPosition position = reportPilotPositions.stream().filter(eachPosition -> eachPosition.getPilotNumber().equals(pilotNumber)).findFirst().orElse(null);
-                            if (position != null) {
-                                pilotTrack.addPosition(position);
-                            }
-                        }
-                    }
-
-                    pilotTracks.put(pilotNumber, pilotTrack);
-                }
-
-                pilotTrack.addPosition(currentPosition);
-
-                ThreadMonitor.alive();
-            }
-        } finally {
-            BM.stop();
-        }
-    }
-
-    private Map<Long, List<ReportPilotPosition>> loadPreviousLiveReports(Session session, Report currentReport) {
-        Map<Long, List<ReportPilotPosition>> previousReports = new TreeMap<>();
-
-        logger.debug("Loading bunch of previous reports...");
-        int previousReportsCounter = 180;
-        Report previousReport = currentReport;
-        while (previousReportsCounter > 0) {
-            previousReport = ReportOps.loadPrevReport(session, previousReport.getReport());
-            if (previousReport == null) {
-                break;
-            }
-            List<ReportPilotPosition> previousReportPositions = ReportOps.loadPilotPositions(session, previousReport);
-
-            previousReports.put(previousReport.getId(), previousReportPositions);
-            previousReportsCounter--;
-
-            ThreadMonitor.alive();
-        }
-        logger.debug("Loading done");
-
-        return previousReports;
-    }
-
-    private void cleanupObsolete(Report report) {
-        BM.start("Archive.cleanupObsolete");
-        try {
-            int totalPositions = 0;
-
-            // to cut everything older than 24 days
-            // however to remain at least 1 position in "confirmed" state - Waypoint, TakeoffLanding
-            // so most of tracks will have a state like:
-            //   Waypoint
-            //   Unknown (as last position is always in Unknown state)
-
-            for (PilotTrack pilotTrack : pilotTracks.values()) {
-                PositionInfo lastSavedPosition = pilotTrack.getLastIn(PositionStatus.PositionReport, PositionStatus.TakeoffLanding);
-                if (lastSavedPosition == null) {
-                    totalPositions += pilotTrack.getPositions().size();
+                if (!(status == PositionStatus.PositionReport || status == PositionStatus.TakeoffLanding)) {
                     continue;
                 }
 
-                List<PositionInfo> toRemove = new ArrayList<>();
-                List<PositionInfo> positions = pilotTrack.getPositions();
-                for (PositionInfo position : positions) {
-                    if (position == lastSavedPosition) {
-                        break;
-                    }
-
-                    toRemove.add(position);
+                if (position.hasArchivedCopy()) {
+                    continue;
                 }
 
-                pilotTrack.removePositions(toRemove);
+                String report = position.getReportPilotPosition().getReport().getReport();
+                try (Session archiveSession = sessionManager.getSession(network, report)) {
+                    Report archivedReport = getArchivedReport(archiveSession, report);
 
-                totalPositions += pilotTrack.getPositions().size();
+                    ReportPilotPosition archivedPositionCopy = ReportOps.loadPilotPosition(archiveSession, archivedReport, pilotTrack.getPilotNumber());
+
+                    if (archivedPositionCopy != null) {
+                        position.setHasArchivedCopy();
+                        continue;
+                    }
+
+                    archivedPositionCopy = copy(position.getReportPilotPosition());
+                    archivedPositionCopy.setId(null);
+                    archivedPositionCopy.setVersion(null);
+                    archivedPositionCopy.setReport(archivedReport);
+
+                    ReportPilotFpRemarks fpRemarks = position.getReportPilotPosition().getFpRemarks();
+                    if (fpRemarks != null) {
+                        int reportYear = ReportUtils.fromTimestampJava(report).getYear();
+                        archivedPositionCopy.setFpRemarks(getArchivedFpRemarks(archiveSession, reportYear, fpRemarks));
+                    } else {
+                        archivedPositionCopy.setFpRemarks(null);
+                    }
+
+                    HibernateUtils.saveAndCommit(archiveSession, "#save", archivedPositionCopy);
+
+                    position.setHasArchivedCopy();
+                }
             }
-
-            logger.info(ReportOps.logMsg(report.getReport(), "") + "\t\t\t\tStats | {} tracks, {} positions, avg {} per track, reports {}, remarks {}",
-                    pilotTracks.size(),
-                    totalPositions,
-                    String.format("%.1f", totalPositions / (double) (pilotTracks.size() > 0 ? pilotTracks.size() : 1)),
-                    CacheHelper.getEstimatedCacheSize(this.archivedReportsCache),
-                    CacheHelper.getEstimatedCacheSize(this.archivedFpRemarksCache)
-            );
         } finally {
             BM.stop();
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<ReportPilotPosition> loadPreviousLiveReports(Session session, Report currentReport, int pilotNumber) {
+        BM.start("loadPreviousLiveReports");
+        try {
+            return session
+                    .createQuery("from ReportPilotPosition " +
+                            "where pilotNumber = :pilotNumber" +
+                            "    and report.id between :fromReportId and :toReportId " +
+                            "order by report.id asc")
+                    .setInteger("pilotNumber", pilotNumber)
+                    .setLong("fromReportId", currentReport.getId() - 180)
+                    .setLong("toReportId", currentReport.getId() - 1)
+                    .list();
+        } finally {
+            BM.stop();
+        }
+    }
+
+    private void printStats(Report report) {
+        int totalPositions = 0;
+
+        for (PilotTrack pilotTrack : pilotTracks.values()) {
+            totalPositions += pilotTrack.getPositions().size();
+        }
+
+        logger.info(ReportOps.logMsg(report.getReport(), "") + "\t\t\t\tStats | {} tracks, {} positions, avg {} per track, reports {}, remarks {}",
+                pilotTracks.size(),
+                totalPositions,
+                String.format("%.1f", totalPositions / (double) (pilotTracks.size() > 0 ? pilotTracks.size() : 1)),
+                CacheHelper.getEstimatedCacheSize(this.archivedReportsCache),
+                CacheHelper.getEstimatedCacheSize(this.archivedFpRemarksCache)
+        );
+    }
+
+    private void cleanupExcessivePositions(PilotTrack pilotTrack) {
+        // to cut everything older than ???
+        // however to remain at least 1 position in "confirmed" state - Waypoint, TakeoffLanding
+        // so most of tracks will have a state like:
+        //   Waypoint
+        //   Unknown (as last position is always in Unknown state)
+
+        PositionInfo lastSavedPosition = pilotTrack.getLastIn(PositionStatus.PositionReport, PositionStatus.TakeoffLanding);
+        if (lastSavedPosition == null) {
+            return;
+        }
+
+        List<PositionInfo> toRemove = new ArrayList<>();
+        List<PositionInfo> positions = pilotTrack.getPositions();
+        for (PositionInfo position : positions) {
+            if (position == lastSavedPosition) {
+                break;
+            }
+
+            toRemove.add(position);
+        }
+
+        pilotTrack.removePositions(toRemove);
     }
 
     @SuppressWarnings("unchecked")
@@ -443,7 +484,7 @@ public class Archive extends BaseTask {
                 Duration difference = Duration.between(previousSavedPP.getDt(), currentPP.getDt());
                 long differenceMillis = difference.toMillis();
 
-                if (differenceMillis > TimeUnit.MINUTES.toMillis(REPORT_EVERY_N_MINUTES)) {
+                if (differenceMillis >= TimeUnit.SECONDS.toMillis(REPORT_EVERY_N_MINUTES * 60 - 30)) {
                     current.setStatus(PositionStatus.PositionReport);
                 } else {
                     current.setStatus(PositionStatus.Excessive);

@@ -67,6 +67,7 @@ public class ReportOps {
             BM.stop();
         }
     }
+
     public static Report loadFirstReport(Session session) {
         BM.start("ReportOps.loadFirstReport");
         try {
@@ -92,6 +93,7 @@ public class ReportOps {
         }
     }
 
+    @SuppressWarnings("unused")
     public static Report loadPrevReport(Session session, String report) {
         BM.start("ReportOps.loadPrevReport");
         try {
