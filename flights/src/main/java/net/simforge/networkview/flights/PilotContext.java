@@ -27,7 +27,7 @@ public class PilotContext {
         this.pilotNumber = pilotNumber;
     }
 
-    PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
+    public PilotContext processPosition(Report report, ReportPilotPosition reportPilotPosition) {
         if (lastProcessedPosition != null
                 && (report.getReport().equals(lastProcessedPosition.getReportInfo().getReport())
                 || report.getReport().compareTo(lastProcessedPosition.getReportInfo().getReport()) < 0)) {
@@ -69,7 +69,7 @@ public class PilotContext {
             }
 
             // if position is known - create new flight with that position
-            // if position is unknow - do not create new flight
+            // if position is unknown - do not create new flight
             currFlight = position.isPositionKnown()
                     ? Flight.start(pilotNumber, position)
                     : null;
@@ -128,4 +128,7 @@ public class PilotContext {
         return copy;
     }
 
+    public void clearRecentFlights() {
+        this.recentFlights.clear();
+    }
 }

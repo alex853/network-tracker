@@ -60,4 +60,9 @@ public class Flightplan {
         result = 31 * result + (destination != null ? destination.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "FP[" + aircraftType + "," + regNo + "," + departure + "-" + destination + "]";
+    }
 }

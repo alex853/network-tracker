@@ -1,0 +1,32 @@
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath('org.springframework.boot:spring-boot-gradle-plugin:2.2.2.RELEASE')
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url 'https://mymavenrepo.com/repo/9k6aQjU4o2RPUv5zfolv/' // simforge repo read url
+    }
+}
+
+dependencies {
+    compile project(':datafeeder')
+    compile project(':flights')
+
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.mongodb:mongo-java-driver:3.12.3'
+
+    compile 'com.google.code.gson:gson:2.8.6'
+}

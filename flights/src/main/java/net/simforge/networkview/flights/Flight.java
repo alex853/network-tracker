@@ -338,6 +338,10 @@ public class Flight {
         recentEvents.add(event);
     }
 
+    public int getPilotNumber() {
+        return pilotNumber;
+    }
+
     public FlightStatus getStatus() {
         return status;
     }
@@ -404,5 +408,4 @@ public class Flight {
         copy.dirty = false;
         return copy;
     }
-
 }
