@@ -19,6 +19,7 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings("WeakerAccess")
 public class BaseTest {
 
     protected static final String ON_GROUND = "[ON_GROUND]";
@@ -71,12 +72,11 @@ public class BaseTest {
             if (pilotContext != null) {
                 flight = pilotContext.getCurrFlight();
 
-                List<TrackingEvent> events = new LinkedList<>();
-                events.addAll(pilotContext.getRecentEvents());
+                List<TrackingEvent> events = new LinkedList<>(pilotContext.getRecentEvents());
                 if (flight != null) {
                     events.addAll(flight.getRecentEvents());
                 }
-                pilotContext.getRecentFlights().stream().forEach(f -> events.addAll(f.getRecentEvents()));
+                pilotContext.getRecentFlights().forEach(f -> events.addAll(f.getRecentEvents()));
 
                 eventHistory.put(this.report.getId(), events);
             } else {
@@ -152,8 +152,8 @@ public class BaseTest {
     protected void initNoOpPersistence() {
         persistenceLayer = new PersistenceLayer() {
             @Override
-            public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) throws IOException {
-                return Collections.EMPTY_LIST;
+            public List<PilotContext> loadActivePilotContexts(LocalDateTime lastProcessedReportDt) {
+                return new ArrayList<>();
             }
 
             @Override
@@ -254,7 +254,7 @@ public class BaseTest {
     protected void checkFlying() {
         countCheckMethod();
 
-        assertTrue(!pilotContext.getLastProcessedPosition().isOnGround());
+        assertFalse(pilotContext.getLastProcessedPosition().isOnGround());
         logger.info("\tOK Flying");
     }
 
@@ -315,14 +315,14 @@ public class BaseTest {
     protected void checkFlightRoute(Flight flight, String expectedTakeoff, String expectedLanding) {
         countCheckMethod();
 
-        if (expectedTakeoff == ON_GROUND) {
+        if (Objects.equals(expectedTakeoff, ON_GROUND)) {
             assertNotNull(flight.getTakeoff());
         } else if (expectedTakeoff != null) {
             assertEquals(expectedTakeoff, flight.getTakeoff() != null ? flight.getTakeoff().getAirportIcao() : null);
         } else {
             assertNull(flight.getTakeoff());
         }
-        if (expectedLanding == ON_GROUND) {
+        if (Objects.equals(expectedLanding, ON_GROUND)) {
             assertNotNull(flight.getLanding());
         } else if (expectedLanding != null) {
             assertEquals(expectedLanding, flight.getLanding() != null ? flight.getLanding().getAirportIcao() : null);
