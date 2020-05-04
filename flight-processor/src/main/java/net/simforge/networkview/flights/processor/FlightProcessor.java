@@ -102,9 +102,8 @@ public class FlightProcessor {
         }
 
         // removing inactive contexts (which were offline for some time)
-        Set<PilotContext> inactivePilotNumbers = nextPilotContexts.values().parallelStream().filter(pc -> !pc.isActive()).collect(Collectors.toSet());
-        //noinspection SuspiciousMethodCalls
-        inactivePilotNumbers.forEach(nextPilotContexts::remove);
+        Set<Integer> inactivePilotNumbers = nextPilotContexts.values().parallelStream().filter(pc -> !pc.isActive()).map(PilotContext::getPilotNumber).collect(Collectors.toSet());
+        nextPilotContexts.keySet().removeAll(inactivePilotNumbers);
 
         // clearing recent flights to prevent useless memory usage
         nextPilotContexts.values().parallelStream().forEach(PilotContext::clearRecentFlights);
