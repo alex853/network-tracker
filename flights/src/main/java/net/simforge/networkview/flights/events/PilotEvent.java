@@ -2,9 +2,10 @@ package net.simforge.networkview.flights.events;
 
 import net.simforge.networkview.datafeeder.ReportInfo;
 
-public class PilotEvent extends BaseEvent {
+@SuppressWarnings("WeakerAccess")
+public abstract class PilotEvent extends BaseEvent {
 
-    protected PilotEvent(int pilotNumber, ReportInfo reportInfo, String type) {
+    PilotEvent(int pilotNumber, ReportInfo reportInfo, String type) {
         super(pilotNumber, reportInfo, type);
     }
 

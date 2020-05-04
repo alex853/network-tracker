@@ -6,7 +6,7 @@ import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.flights.datasource.CsvDatasource;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
-import net.simforge.networkview.flights.events.TrackingEvent;
+import net.simforge.networkview.flights.events.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,25 +261,31 @@ public class BaseTest {
     protected void checkOnlineEvent() {
         countCheckMethod();
 
-        checkEvent("pilot/online");
+        checkEvent(PilotOnlineEvent.NAME);
     }
 
     protected void checkOfflineEvent() {
         countCheckMethod();
 
-        checkEvent("pilot/offline");
+        checkEvent(PilotOfflineEvent.NAME);
     }
 
     protected void checkTakeoffEvent() {
         countCheckMethod();
 
-        checkEvent("pilot/takeoff");
+        checkEvent(PilotTakeoffEvent.NAME);
     }
 
     protected void checkLandingEvent() {
         countCheckMethod();
 
-        checkEvent("pilot/landing");
+        checkEvent(PilotLandingEvent.NAME);
+    }
+
+    protected void checkTouchAndGoEvent() {
+        countCheckMethod();
+
+        checkEvent(PilotTouchAndGoEvent.NAME);
     }
 
     // === Flight checks ===============================================================================================
@@ -332,6 +338,13 @@ public class BaseTest {
         logger.info(String.format("\tOK Flight route: %s-%s", Misc.mn(expectedTakeoff, "[--]"), Misc.mn(expectedLanding, "[--]")));
     }
 
+    protected void checkFlightTimeMins(Flight flight, @SuppressWarnings("SameParameterValue") int expectedFlightTimeInMins) {
+        countCheckMethod();
+
+        int actualFlightTimeInMins = (int) Math.round(flight.getFlightTime() * 60);
+        assertEquals(expectedFlightTimeInMins, actualFlightTimeInMins);
+    }
+
     protected void checkFlightLastSeenIcao(String expectedLastSeenIcao) {
         countCheckMethod();
 
@@ -354,7 +367,7 @@ public class BaseTest {
     protected void checkFlightplanEvent() {
         countCheckMethod();
 
-        checkEvent("flight/flightplan");
+        checkEvent(FlightplanEvent.NAME);
     }
 
     protected void checkFlightplanData(String fpAircraft, String fpDep, String fpDest) {

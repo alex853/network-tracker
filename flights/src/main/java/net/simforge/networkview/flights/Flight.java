@@ -102,6 +102,7 @@ public class Flight {
                 return true;
 
             case Arrival:
+            case TouchedDown:
             case Arriving:
             case Arrived:
                 boolean callsignChanged = position.isPositionKnown() && prevPosition.isPositionKnown()
@@ -115,6 +116,15 @@ public class Flight {
                         || tooMuchTimeSinceLanding) {
                     finishFlight(position);
                     return false;
+                }
+
+                if (status == FlightStatus.TouchedDown) {
+                    if (takeoff) {
+                        touchAndGoFlight(position, prevPosition);
+                        return true;
+                    } else {
+                        setStatus(FlightStatus.Arriving, position.getReportInfo());
+                    }
                 }
 
                 boolean stoppedRightNow = position.getGroundspeed() == 0;
@@ -308,9 +318,22 @@ public class Flight {
     private void landFlight(Position position) {
         addEvent(new PilotLandingEvent(pilotNumber, position.getReportInfo()));
 
-        setStatus(FlightStatus.Arriving, position.getReportInfo());
+        setStatus(FlightStatus.TouchedDown, position.getReportInfo());
 
         landing = position;
+        lastSeen = position;
+
+        track.add(position);
+
+        dirty = true;
+    }
+
+    private void touchAndGoFlight(Position position, Position prevPosition) {
+        addEvent(new PilotTouchAndGoEvent(pilotNumber, position.getReportInfo()));
+
+        setStatus(FlightStatus.Flying, position.getReportInfo());
+
+        landing = null;
         lastSeen = position;
 
         track.add(position);

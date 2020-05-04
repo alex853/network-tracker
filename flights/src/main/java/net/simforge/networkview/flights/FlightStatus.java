@@ -7,7 +7,8 @@ public enum FlightStatus {
     Flying(200, null),
       Lost(299, Flying),
     Arrival(300, null),
-      Arriving(310, Arrival),
+      TouchedDown(310, Arrival),
+      Arriving(330, Arrival),
       Arrived(370, Arrival),
     Finished(400, null),
     Terminated(499, null);

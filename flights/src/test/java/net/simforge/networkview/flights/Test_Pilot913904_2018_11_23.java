@@ -62,7 +62,7 @@ public class Test_Pilot913904_2018_11_23 extends BaseTest {
     // Landing event
     public void report_1016645() {
         checkLandingEvent();
-        checkFlightStatus(FlightStatus.Arriving);
+        checkFlightStatus(FlightStatus.TouchedDown);
     }
 
     // Arrival section
@@ -123,7 +123,7 @@ public class Test_Pilot913904_2018_11_23 extends BaseTest {
     // Landing event
     public void report_1016685() {
         checkLandingEvent();
-        checkFlightStatus(FlightStatus.Arriving);
+        checkFlightStatus(FlightStatus.TouchedDown);
     }
 
     // Arrival section
@@ -195,7 +195,7 @@ public class Test_Pilot913904_2018_11_23 extends BaseTest {
     // Landing event
     public void report_1016789() {
         checkLandingEvent();
-        checkFlightStatus(FlightStatus.Arriving);
+        checkFlightStatus(FlightStatus.TouchedDown);
     }
 
     // Arrival section
@@ -262,7 +262,7 @@ public class Test_Pilot913904_2018_11_23 extends BaseTest {
     // Landing event
     public void report_1016831() {
         checkLandingEvent();
-        checkFlightStatus(FlightStatus.Arriving);
+        checkFlightStatus(FlightStatus.TouchedDown);
     }
 
     // Arrival section
