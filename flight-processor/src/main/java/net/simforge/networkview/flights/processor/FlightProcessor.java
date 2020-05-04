@@ -9,6 +9,8 @@ import net.simforge.networkview.datafeeder.persistence.Report;
 import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.Flight;
 import net.simforge.networkview.flights.PilotContext;
+import net.simforge.networkview.flights.processor.dto.FlightDto;
+import net.simforge.networkview.flights.processor.dto.PilotContextDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +37,7 @@ public class FlightProcessor {
     private Map<Integer, PilotContext> pilotContexts = new HashMap<>();
 //    private Network network = Network.VATSIM;
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 10)
     public void scheduled() {
         if (previousProcessedReport == null) {
             previousProcessedReport = flightPersistenceService.loadLastProcessedReport();

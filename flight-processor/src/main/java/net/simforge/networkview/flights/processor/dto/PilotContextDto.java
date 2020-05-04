@@ -1,4 +1,4 @@
-package net.simforge.networkview.flights.processor;
+package net.simforge.networkview.flights.processor.dto;
 
 import net.simforge.networkview.core.report.ReportInfoDto;
 

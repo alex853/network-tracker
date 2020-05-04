@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import net.simforge.commons.io.IOHelper;
 import net.simforge.networkview.core.report.ReportInfoDto;
 import net.simforge.networkview.datafeeder.ReportInfo;
+import net.simforge.networkview.flights.processor.dto.FlightDto;
+import net.simforge.networkview.flights.processor.dto.PilotContextDto;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
