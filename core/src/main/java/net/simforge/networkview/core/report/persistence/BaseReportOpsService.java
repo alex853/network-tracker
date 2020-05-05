@@ -9,11 +9,18 @@ import java.util.List;
 public class BaseReportOpsService implements ReportOpsService {
     private final ReportSessionManager reportSessionManager;
     private final Network network;
-    private final Integer year = null;
+    private final Integer year;
 
     public BaseReportOpsService(ReportSessionManager reportSessionManager, Network network) {
         this.reportSessionManager = reportSessionManager;
         this.network = network;
+        this.year = null;
+    }
+
+    public BaseReportOpsService(ReportSessionManager reportSessionManager, Network network, int year) {
+        this.reportSessionManager = reportSessionManager;
+        this.network = network;
+        this.year = year;
     }
 
     private Session getSession() {
