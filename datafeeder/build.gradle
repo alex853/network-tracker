@@ -24,10 +24,6 @@ dependencies {
 
     compile group: 'org.ehcache', name: 'ehcache', version: '3.3.1'
 
-    // transitive dependencies caused by Gradle 5
-    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.0.1.Final'
-    compile group: 'org.hibernate', name: 'hibernate-java8', version: '5.0.1.Final'
-
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 

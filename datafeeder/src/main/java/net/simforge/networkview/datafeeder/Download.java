@@ -1,19 +1,22 @@
 package net.simforge.networkview.datafeeder;
 
+import net.simforge.commons.io.IOHelper;
+import net.simforge.commons.legacy.BM;
+import net.simforge.commons.misc.Misc;
+import net.simforge.commons.runtime.BaseTask;
+import net.simforge.commons.runtime.RunningMarker;
+import net.simforge.commons.runtime.ThreadMonitor;
+import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.ReportUtils;
+import net.simforge.networkview.core.report.file.ReportFile;
+import net.simforge.networkview.core.report.file.ReportStorage;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-
-import net.simforge.commons.io.IOHelper;
-import net.simforge.commons.legacy.BM;
-import net.simforge.commons.runtime.BaseTask;
-import net.simforge.commons.runtime.RunningMarker;
-import net.simforge.commons.misc.Misc;
-import net.simforge.commons.runtime.ThreadMonitor;
-import net.simforge.networkview.Network;
 
 public class Download extends BaseTask {
 
@@ -170,15 +173,15 @@ public class Download extends BaseTask {
                 }
 
                 String update = reportFile.getSection("GENERAL").getValue("UPDATE");
-                logger.info(ReportOps.logMsg(update, "Downloaded"));
+                logger.info(ReportUtils.log(update) + " - Downloaded");
                 if (lastReport != null && !ReportUtils.isTimestampGreater(update, lastReport)) {
-                    logger.warn(ReportOps.logMsg(update, "Downloaded data is not actual. Trying again..."));
+                    logger.warn(ReportUtils.log(update) + " - Downloaded data is not actual. Trying again...");
                     Misc.sleepBM(10000);
                     continue;
                 }
 
                 storage.saveReport(update, data);
-                logger.debug(ReportOps.logMsg(update, "Downloaded data saved"));
+                logger.debug(ReportUtils.log(update) + " - Downloaded data saved");
                 lastReport = update;
 
                 break;

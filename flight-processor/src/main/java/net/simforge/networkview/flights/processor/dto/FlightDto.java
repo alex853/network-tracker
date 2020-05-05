@@ -1,11 +1,11 @@
 package net.simforge.networkview.flights.processor.dto;
 
-import net.simforge.commons.misc.Str;
 import net.simforge.networkview.flights.Flight;
 import net.simforge.networkview.flights.FlightStatus;
 import net.simforge.networkview.flights.Flightplan;
 import net.simforge.networkview.flights.Position;
 
+@SuppressWarnings("unused")
 public class FlightDto {
     private int pilotNumber;
     private FlightStatus status;

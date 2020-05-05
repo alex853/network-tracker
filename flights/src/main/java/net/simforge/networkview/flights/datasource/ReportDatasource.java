@@ -1,7 +1,7 @@
 package net.simforge.networkview.flights.datasource;
 
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 
 import java.io.IOException;
 import java.util.List;

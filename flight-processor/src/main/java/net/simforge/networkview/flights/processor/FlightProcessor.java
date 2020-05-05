@@ -1,12 +1,11 @@
 package net.simforge.networkview.flights.processor;
 
-import net.simforge.commons.misc.JavaTime;
-import net.simforge.networkview.core.report.ReportOpsService;
+import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.core.report.ReportInfoDto;
-import net.simforge.networkview.datafeeder.ReportInfo;
-import net.simforge.networkview.datafeeder.ReportUtils;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.ReportUtils;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportOpsService;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.Flight;
 import net.simforge.networkview.flights.PilotContext;
 import net.simforge.networkview.flights.processor.dto.FlightDto;
@@ -17,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -58,7 +60,7 @@ public class FlightProcessor {
             return;
         }
 
-        logger.info("{} - Processing...", reportLogHeader(currentReport));
+        logger.info("{} - Processing...", ReportUtils.log(currentReport));
 
         List<ReportPilotPosition> currentPositions = reportOpsService.loadPilotPositions(currentReport);
         Map<Integer, ReportPilotPosition> currentPositionsMap = currentPositions.parallelStream().collect(Collectors.toMap(ReportPilotPosition::getPilotNumber, Function.identity()));
@@ -80,7 +82,7 @@ public class FlightProcessor {
             counter++;
             long now = System.currentTimeMillis();
             if (now - lastPrintTs >= 10000) {
-                logger.info("{} -     Contexts : {} of {} done", reportLogHeader(currentReport), counter, pilotContexts.size());
+                logger.info("{} -     Contexts : {} of {} done", ReportUtils.log(currentReport), counter, pilotContexts.size());
                 lastPrintTs = now;
             }
         }
@@ -98,7 +100,7 @@ public class FlightProcessor {
             counter++;
             long now = System.currentTimeMillis();
             if (now - lastPrintTs >= 10000) {
-                logger.info("{} -     Positions: {} of {} done", reportLogHeader(currentReport), counter, currentPositions.size());
+                logger.info("{} -     Positions: {} of {} done", ReportUtils.log(currentReport), counter, currentPositions.size());
                 lastPrintTs = now;
             }
         }
@@ -114,7 +116,7 @@ public class FlightProcessor {
         previousProcessedReport = currentReport;
         pilotContexts = nextPilotContexts;
 
-        logger.info("{} - Processing completed | Contexts {}", reportLogHeader(currentReport), pilotContexts.size());
+        logger.info("{} - Processing completed | Contexts {}", ReportUtils.log(currentReport), pilotContexts.size());
     }
 
     private PilotContext processPilotPosition(int pilotNumber, Report currentReport, ReportPilotPosition currentPosition) {
@@ -244,7 +246,4 @@ public class FlightProcessor {
         flightPersistenceService.upsertPilotContextInfo(pilotContextInfo);
     }
 
-    private String reportLogHeader(ReportInfo reportInfo) {
-        return JavaTime.yMdHms.format(reportInfo.getDt()) ;
-    }
 }

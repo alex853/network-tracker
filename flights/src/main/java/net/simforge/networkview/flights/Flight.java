@@ -2,7 +2,7 @@ package net.simforge.networkview.flights;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;
-import net.simforge.networkview.datafeeder.ReportInfo;
+import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.flights.criteria.EllipseCriterion;
 import net.simforge.networkview.flights.criteria.OnGroundJumpCriterion;
 import net.simforge.networkview.flights.criteria.TrackTrailCriterion;

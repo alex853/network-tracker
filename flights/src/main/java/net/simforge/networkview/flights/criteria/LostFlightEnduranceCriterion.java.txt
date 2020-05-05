@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights3.criteria;
 
-import net.simforge.networkview.datafeeder.ParsingLogics;
+import net.simforge.networkview.core.report.ParsingLogics;
 import net.simforge.networkview.flights.Position;
 import net.simforge.networkview.flights3.Flight;
 import net.simforge.networkview.world.ReferenceData;

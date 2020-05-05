@@ -1,7 +1,7 @@
 package net.simforge.tracker.webapp.dto;
 
 import net.simforge.commons.misc.JavaTime;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.model.Flight;
 import net.simforge.networkview.flights.model.PilotContext;
 import net.simforge.tracker.world.Position;

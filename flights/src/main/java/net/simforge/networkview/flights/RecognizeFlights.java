@@ -4,9 +4,9 @@ import net.simforge.commons.io.Marker;
 import net.simforge.commons.legacy.BM;
 import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
-import net.simforge.networkview.Network;
-import net.simforge.networkview.datafeeder.SessionManager;
-import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportSessionManager;
 import net.simforge.networkview.flights.datasource.DBReportDatasource;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights.persistence.DBPersistenceLayer;
@@ -53,8 +53,8 @@ public class RecognizeFlights extends BaseTask {
 
             marker = new Marker(getTaskName());
 
-            SessionManager datafeederSessionManager = new SessionManager();
-            reportDatasource = new DBReportDatasource(network, datafeederSessionManager);
+            ReportSessionManager datafeederReportSessionManager = new ReportSessionManager();
+            reportDatasource = new DBReportDatasource(network, datafeederReportSessionManager);
 
             SessionFactory flightsSessionFactory = Flights.buildSessionFactory("flights." + network.name());
             persistenceLayer = new DBPersistenceLayer(flightsSessionFactory, reportDatasource);

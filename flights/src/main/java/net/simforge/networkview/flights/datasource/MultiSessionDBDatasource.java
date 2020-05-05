@@ -1,17 +1,17 @@
 package net.simforge.networkview.flights.datasource;
 
-import net.simforge.networkview.datafeeder.SessionManager;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.ReportSessionManager;
 
 import java.io.IOException;
 import java.util.List;
 
 public class MultiSessionDBDatasource implements ReportDatasource {
-    private SessionManager sessionManager;
+    private ReportSessionManager reportSessionManager;
 
-    public MultiSessionDBDatasource(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
+    public MultiSessionDBDatasource(ReportSessionManager reportSessionManager) {
+        this.reportSessionManager = reportSessionManager;
     }
 
     @Override

@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights.processor;
 
-import net.simforge.networkview.datafeeder.ReportInfo;
+import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.flights.processor.dto.FlightDto;
 import net.simforge.networkview.flights.processor.dto.PilotContextDto;
 

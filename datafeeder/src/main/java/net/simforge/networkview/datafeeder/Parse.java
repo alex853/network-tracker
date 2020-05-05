@@ -1,16 +1,17 @@
 package net.simforge.networkview.datafeeder;
 
 import net.simforge.commons.hibernate.HibernateUtils;
-import net.simforge.commons.legacy.BM;
 import net.simforge.commons.io.Marker;
+import net.simforge.commons.legacy.BM;
+import net.simforge.commons.misc.Misc;
 import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
-import net.simforge.commons.misc.Misc;
-import net.simforge.networkview.Network;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportLogEntry;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotFpRemarks;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.ParsingLogics;
+import net.simforge.networkview.core.report.ReportUtils;
+import net.simforge.networkview.core.report.file.ReportFile;
+import net.simforge.networkview.core.report.file.ReportStorage;
+import net.simforge.networkview.core.report.persistence.*;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -37,7 +38,7 @@ public class Parse extends BaseTask {
     private boolean singleRun = false;
     @SuppressWarnings("FieldCanBeLocal")
     private Marker marker;
-    private SessionManager sessionManager;
+    private ReportSessionManager reportSessionManager;
 
     private CacheManager cacheManager;
     private Cache<String, ReportPilotFpRemarks> fpRemarksCache;
@@ -90,7 +91,7 @@ public class Parse extends BaseTask {
 
         storage = ReportStorage.getStorage(storageRoot, network);
         marker = new Marker(getTaskName());
-        sessionManager = DatafeederTasks.getSessionManager();
+        reportSessionManager = DatafeederTasks.getSessionManager();
 
         setBaseSleepTime(1000);
     }
@@ -147,17 +148,17 @@ public class Parse extends BaseTask {
     private void processReport(String report)
             throws IOException {
         BM.start("Parse.processReport");
-        try (Session session = sessionManager.getSession(network)) {
+        try (Session session = reportSessionManager.getSession(network)) {
 
-            logger.debug(ReportOps.logMsg(report, "Parsing started..."));
+            logger.debug(ReportUtils.log(report) + " - Parsing started...");
 
             ReportFile reportFile = storage.getReportFile(report);
-            logger.debug(ReportOps.logMsg(report, "      Data splitted"));
+            logger.debug(ReportUtils.log(report) + " -       Data splitted");
 
             List<ReportFile.ClientInfo> clientInfos = reportFile.getClientInfos();
             List<ReportFile.ClientInfo> pilotInfos = reportFile.getClientInfos(ReportFile.ClientType.PILOT);
             List<ReportFile.LogEntry> logEntries = new ArrayList<>(reportFile.getLog());
-            logger.debug(ReportOps.logMsg(report, "      Data parsed"));
+            logger.debug(ReportUtils.log(report) + " -       Data parsed");
 
 
             Report _report = ReportOps.loadReport(session, report);
@@ -172,9 +173,9 @@ public class Parse extends BaseTask {
 
                 HibernateUtils.saveAndCommit(session, "#createReport", _report);
 
-                logger.debug(ReportOps.logMsg(report, "      Report record inserted"));
+                logger.debug(ReportUtils.log(report) + " -       Report record inserted");
             } else {
-                logger.debug(ReportOps.logMsg(report, "      Report already exists ==> Only absent records will be added"));
+                logger.debug(ReportUtils.log(report) + " -       Report already exists ==> Only absent records will be added");
             }
 
             saveLogEntries(session, _report, logEntries);
@@ -183,7 +184,7 @@ public class Parse extends BaseTask {
 
             markReportParsed(session, _report);
 
-            logger.info(ReportOps.logMsg(report, "\t\t\t\tStats | remarks " + CacheHelper.getEstimatedCacheSize(fpRemarksCache)));
+            logger.info(ReportUtils.log(report) + " - \t\t\t\tStats | remarks " + CacheHelper.getEstimatedCacheSize(fpRemarksCache));
 
         } finally {
             BM.stop();
@@ -211,7 +212,7 @@ public class Parse extends BaseTask {
                     continue;
                 }
 
-                logger.debug(ReportOps.logMsg(_report.getReport(), "        LogEntry - S: " + logEntry.getSection() + "; O: " + logEntry.getObject() + "; M: " + logEntry.getMsg() + "; V: " + logEntry.getValue()));
+                logger.debug(ReportUtils.log(_report) + " -         LogEntry - S: " + logEntry.getSection() + "; O: " + logEntry.getObject() + "; M: " + logEntry.getMsg() + "; V: " + logEntry.getValue());
                 ReportLogEntry l = new ReportLogEntry();
                 l.setReport(_report);
                 l.setSection(logEntry.getSection());
@@ -224,7 +225,7 @@ public class Parse extends BaseTask {
                 existingLogEntries.add(l);
             }
 
-            logger.debug(ReportOps.logMsg(_report.getReport(), "      LogEntries added"));
+            logger.debug(ReportUtils.log(_report) + " -       LogEntries added");
         } finally {
             BM.stop();
         }
@@ -282,7 +283,7 @@ public class Parse extends BaseTask {
                 }
             }
 
-            logger.debug(ReportOps.logMsg(_report.getReport(), "      Pilot positions inserted"));
+            logger.debug(ReportUtils.log(_report) + " -       Pilot positions inserted");
         } finally {
             BM.stop();
         }
@@ -338,7 +339,7 @@ public class Parse extends BaseTask {
 
             HibernateUtils.saveAndCommit(session, _report);
 
-            logger.info(ReportOps.logMsg(_report.getReport(), "Parsed"));
+            logger.info(ReportUtils.log(_report) + " - Parsed");
         } finally {
             BM.stop();
         }

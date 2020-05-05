@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights.events;
 
-import net.simforge.networkview.datafeeder.ReportInfo;
+import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.flights.FlightStatus;
 
 public class FlightStatusEvent extends BaseEvent {

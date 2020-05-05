@@ -1,11 +1,11 @@
 package net.simforge.networkview.flights;
 
 import net.simforge.commons.misc.Str;
-import net.simforge.networkview.Network;
-import net.simforge.networkview.datafeeder.ReportOps;
-import net.simforge.networkview.datafeeder.SessionManager;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportOps;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.ReportSessionManager;
 import org.hibernate.Session;
 
 import java.io.File;
@@ -38,7 +38,7 @@ public class BruteforceProcessingTask {
         // event - exists with same time/type - ok, skip
         //         else - save it
 
-        SessionManager sessionManager = new SessionManager();
+        ReportSessionManager reportSessionManager = new ReportSessionManager();
 
         DateTimeFormatter HHMM = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -46,7 +46,7 @@ public class BruteforceProcessingTask {
         root.mkdirs();
 
         Report firstReport;
-        try (Session session = sessionManager.getSession(Network.VATSIM)) {
+        try (Session session = reportSessionManager.getSession(Network.VATSIM)) {
             firstReport = ReportOps.loadFirstReport(session);
         }
 
@@ -56,7 +56,7 @@ public class BruteforceProcessingTask {
         while (report != null) {
 
             List<ReportPilotPosition> pilotPositions;
-            try (Session session = sessionManager.getSession(Network.VATSIM)) {
+            try (Session session = reportSessionManager.getSession(Network.VATSIM)) {
                 pilotPositions = ReportOps.loadPilotPositions(session, report);
             }
 
@@ -71,7 +71,7 @@ public class BruteforceProcessingTask {
             for (Integer pilotNumber : pilotsToProcess) {
                 PilotContext context = new PilotContext(pilotNumber);
 
-                try (Session session = sessionManager.getSession(Network.VATSIM)) {
+                try (Session session = reportSessionManager.getSession(Network.VATSIM)) {
                     List<ReportPilotPosition> allPositions = loadPilotPositions(session, pilotNumber);
 
                     for (ReportPilotPosition position : allPositions) {
@@ -118,12 +118,12 @@ public class BruteforceProcessingTask {
             }
 
 
-            try (Session session = sessionManager.getSession(Network.VATSIM)) {
+            try (Session session = reportSessionManager.getSession(Network.VATSIM)) {
                 report = ReportOps.loadNextReport(session, report.getReport());
             }
         }
 
-        sessionManager.dispose();
+        reportSessionManager.dispose();
     }
 
     private static List<ReportPilotPosition> loadPilotPositions(Session session, Integer pilotNumber) {

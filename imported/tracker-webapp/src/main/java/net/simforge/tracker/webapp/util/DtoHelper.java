@@ -1,6 +1,6 @@
 package net.simforge.tracker.webapp.util;
 
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import net.simforge.tracker.tools.ParsingLogics;
 import net.simforge.tracker.webapp.dto.PilotPositionDto;
 import net.simforge.tracker.world.Position;

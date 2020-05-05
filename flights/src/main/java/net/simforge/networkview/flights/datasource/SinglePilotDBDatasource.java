@@ -1,12 +1,15 @@
 package net.simforge.networkview.flights.datasource;
 
 import net.simforge.commons.legacy.BM;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import org.hibernate.Session;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SinglePilotDBDatasource implements ReportDatasource {
 

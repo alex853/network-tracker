@@ -1,10 +1,10 @@
 package net.simforge.networkview.flights.processor;
 
-import net.simforge.networkview.Network;
-import net.simforge.networkview.core.report.BaseReportOpsService;
-import net.simforge.networkview.core.report.ReportOpsService;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.persistence.BaseReportOpsService;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportOpsService;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class ReportOpsServiceBean implements ReportOpsService {
     @Autowired
-    private SessionManagerBean sessionManager;
+    private ReportSessionManagerBean sessionManager;
 
     private ReportOpsService reportOpsService;
 

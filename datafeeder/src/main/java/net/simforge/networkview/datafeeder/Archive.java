@@ -1,15 +1,14 @@
 package net.simforge.networkview.datafeeder;
 
 import net.simforge.commons.hibernate.HibernateUtils;
-import net.simforge.commons.legacy.BM;
 import net.simforge.commons.io.Marker;
+import net.simforge.commons.legacy.BM;
 import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
 import net.simforge.commons.runtime.ThreadMonitor;
-import net.simforge.networkview.Network;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotFpRemarks;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.ReportUtils;
+import net.simforge.networkview.core.report.persistence.*;
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
@@ -33,7 +32,7 @@ public class Archive extends BaseTask {
 
     private static final int REPORT_EVERY_N_MINUTES = 10;
 
-    private SessionManager sessionManager;
+    private ReportSessionManager reportSessionManager;
     private Network network;
     private Marker reportMarker;
 
@@ -49,9 +48,9 @@ public class Archive extends BaseTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public Archive(SessionManager sessionManager, Network network) {
+    public Archive(ReportSessionManager reportSessionManager, Network network) {
         super("Archive-" + network);
-        this.sessionManager = sessionManager;
+        this.reportSessionManager = reportSessionManager;
         this.network = network;
     }
 
@@ -97,7 +96,7 @@ public class Archive extends BaseTask {
     @Override
     protected void process() {
         BM.start("Archive.process");
-        try (Session liveSession = sessionManager.getSession(network)) {
+        try (Session liveSession = reportSessionManager.getSession(network)) {
             Report report;
 
             String lastProcessedReport = reportMarker.getString();
@@ -111,14 +110,14 @@ public class Archive extends BaseTask {
                 return; // standard sleep time
             }
 
-            logger.debug(ReportOps.logMsg(report.getReport(), "Archiving..."));
+            logger.debug(ReportUtils.log(report) + " - Archiving...");
 
-            try (Session archiveSession = sessionManager.getSession(network, report.getReport())) {
+            try (Session archiveSession = reportSessionManager.getSession(network, report.getReport())) {
                 createArchivedReport(archiveSession, report);
             }
 
             List<ReportPilotPosition> currentPositions = ReportOps.loadPilotPositions(liveSession, report);
-            logger.debug(ReportOps.logMsg(report.getReport(), "    loaded {} positions"), currentPositions.size());
+            logger.debug(ReportUtils.log(report) + " -     loaded {} positions", currentPositions.size());
 
             Map<Integer, ReportPilotPosition> pilotNumberToCurrentPosition = currentPositions
                     .stream()
@@ -146,12 +145,12 @@ public class Archive extends BaseTask {
                 counter++;
                 long now = System.currentTimeMillis();
                 if (now - lastPrintStatusTs > 10000L) {
-                    logger.info(ReportOps.logMsg(report.getReport(), "        " + counter + " of " + queueSize + " done"));
+                    logger.info(ReportUtils.log(report) + " -         " + counter + " of " + queueSize + " done");
                     lastPrintStatusTs = now;
                 }
             }
 
-            logger.info(ReportOps.logMsg(report.getReport(), "Archived"));
+            logger.info(ReportUtils.log(report) + " - Archived");
 
             printStats(report);
 
@@ -326,7 +325,7 @@ public class Archive extends BaseTask {
                 }
 
                 String report = position.getReportPilotPosition().getReport().getReport();
-                try (Session archiveSession = sessionManager.getSession(network, report)) {
+                try (Session archiveSession = reportSessionManager.getSession(network, report)) {
                     Report archivedReport = getArchivedReport(archiveSession, report);
 
                     ReportPilotPosition archivedPositionCopy = ReportOps.loadPilotPosition(archiveSession, archivedReport, pilotTrack.getPilotNumber());
@@ -384,7 +383,7 @@ public class Archive extends BaseTask {
             totalPositions += pilotTrack.getPositions().size();
         }
 
-        logger.info(ReportOps.logMsg(report.getReport(), "") + "\t\t\t\tStats | {} tracks, {} positions, avg {} per track, reports {}, remarks {}",
+        logger.info(ReportUtils.log(report) + " - \t\t\t\tStats | {} tracks, {} positions, avg {} per track, reports {}, remarks {}",
                 pilotTracks.size(),
                 totalPositions,
                 String.format("%.1f", totalPositions / (double) (pilotTracks.size() > 0 ? pilotTracks.size() : 1)),

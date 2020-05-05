@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights;
 
-import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.core.report.persistence.Report;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights.events;
 
-import net.simforge.networkview.datafeeder.ReportInfo;
+import net.simforge.networkview.core.report.ReportInfo;
 
 public abstract class BaseEvent implements TrackingEvent {
     private int pilotNumber;

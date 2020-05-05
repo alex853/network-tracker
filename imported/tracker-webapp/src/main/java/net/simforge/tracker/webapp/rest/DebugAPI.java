@@ -3,7 +3,7 @@ package net.simforge.tracker.webapp.rest;
 import net.simforge.commons.misc.Misc;
 import net.simforge.commons.misc.RestUtils;
 import net.simforge.tracker.Network;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.datasource.ReportDatasource;
 import net.simforge.networkview.flights.datasource.SinglePilotDBDatasource;
 import net.simforge.networkview.flights.model.MainContext;

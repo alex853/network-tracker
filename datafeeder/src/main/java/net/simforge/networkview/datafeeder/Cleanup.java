@@ -1,13 +1,16 @@
 package net.simforge.networkview.datafeeder;
 
 import net.simforge.commons.hibernate.HibernateUtils;
-import net.simforge.commons.legacy.BM;
 import net.simforge.commons.io.Marker;
+import net.simforge.commons.legacy.BM;
 import net.simforge.commons.misc.JavaTime;
 import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
-import net.simforge.networkview.Network;
-import net.simforge.networkview.datafeeder.persistence.Report;
+import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.ReportUtils;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportOps;
+import net.simforge.networkview.core.report.persistence.ReportSessionManager;
 import org.hibernate.Session;
 
 import java.time.LocalDateTime;
@@ -17,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class Cleanup extends BaseTask {
     private static final String ARG_NETWORK = "network";
 
-    private SessionManager sessionManager;
+    private ReportSessionManager reportSessionManager;
     private Network network;
     @SuppressWarnings("FieldCanBeLocal")
     private long keepDays = 30;
@@ -29,9 +32,9 @@ public class Cleanup extends BaseTask {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public Cleanup(SessionManager sessionManager, Network network) {
+    public Cleanup(ReportSessionManager reportSessionManager, Network network) {
         super("Cleanup-" + network);
-        this.sessionManager = sessionManager;
+        this.reportSessionManager = reportSessionManager;
         this.network = network;
     }
 
@@ -49,7 +52,7 @@ public class Cleanup extends BaseTask {
     @Override
     protected void process() {
         BM.start("Cleanup.process");
-        try (Session liveSession = sessionManager.getSession(network)) {
+        try (Session liveSession = reportSessionManager.getSession(network)) {
             Report report = ReportOps.loadFirstReport(liveSession);
             if (report == null) {
                 logger.debug("No reports found");
@@ -57,26 +60,26 @@ public class Cleanup extends BaseTask {
             }
 
             LocalDateTime reportDt = ReportUtils.fromTimestampJava(report.getReport());
-            logger.debug(ReportOps.logMsg(report.getReport(), "Cleanup started"));
+            logger.debug(ReportUtils.log(report) + " - Cleanup started");
 
             String lastProcessedReport = archivedReportMarker.getString();
             if (lastProcessedReport == null) {
-                logger.warn(ReportOps.logMsg(report.getReport(), "    Archived report marker is empty"));
+                logger.warn(ReportUtils.log(report) + " -     Archived report marker is empty");
                 return; // standard sleep time
             }
 
             LocalDateTime lastProcessedReportDt = ReportUtils.fromTimestampJava(lastProcessedReport);
             LocalDateTime threshold = lastProcessedReportDt.minusDays(keepDays);
-            logger.debug(ReportOps.logMsg(report.getReport(), "    Threshold is {}"), JavaTime.yMdHms.format(threshold));
+            logger.debug(ReportUtils.log(report) + " -     Threshold is {}", JavaTime.yMdHms.format(threshold));
 
             if (reportDt.isAfter(threshold)) {
-                logger.debug(ReportOps.logMsg(report.getReport(), "    Report is after threshold"));
+                logger.debug(ReportUtils.log(report) + " -     Report is after threshold");
                 return; // standard sleep time
             }
 
             removeReport(liveSession, report);
 
-            logger.info(ReportOps.logMsg(report.getReport(), "Cleanup complete"));
+            logger.info(ReportUtils.log(report) + " - Cleanup complete");
 
             setNextSleepTime(1000); // short sleep time
         } finally {

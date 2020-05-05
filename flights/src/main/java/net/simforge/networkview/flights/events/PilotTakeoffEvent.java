@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights.events;
 
-import net.simforge.networkview.datafeeder.ReportInfo;
+import net.simforge.networkview.core.report.ReportInfo;
 
 public class PilotTakeoffEvent extends PilotEvent {
 

@@ -1,6 +1,6 @@
 package net.simforge.networkview.flights.web;
 
-import net.simforge.networkview.datafeeder.SessionManager;
+import net.simforge.networkview.core.report.persistence.ReportSessionManager;
 import net.simforge.networkview.flights.Flights;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,7 +15,7 @@ public class WebAppContext {
     private static final String ATTRIBUTE_NAME = WebAppContext.class.getName();
 
     private SessionFactory flightsSessionFactory;
-    private SessionManager reportsSessionManager;
+    private ReportSessionManager reportsReportSessionManager;
 
     protected static void create(ServletContext servletContext) {
         servletContext.setAttribute(ATTRIBUTE_NAME, new WebAppContext());
@@ -29,7 +29,7 @@ public class WebAppContext {
         logger.info("creating session factory");
 
         flightsSessionFactory = Flights.buildSessionFactory("flights.VATSIM");
-        reportsSessionManager = new SessionManager();
+        reportsReportSessionManager = new ReportSessionManager();
 
         logger.info("session factory has been built");
     }
@@ -40,8 +40,8 @@ public class WebAppContext {
         flightsSessionFactory.close();
         flightsSessionFactory = null;
 
-        reportsSessionManager.dispose();
-        reportsSessionManager = null;
+        reportsReportSessionManager.dispose();
+        reportsReportSessionManager = null;
 
         logger.info("session manager is closed");
     }
@@ -50,7 +50,7 @@ public class WebAppContext {
         return flightsSessionFactory.openSession();
     }
 
-    public SessionManager getReportsSessionManager() {
-        return reportsSessionManager;
+    public ReportSessionManager getReportsSessionManager() {
+        return reportsReportSessionManager;
     }
 }

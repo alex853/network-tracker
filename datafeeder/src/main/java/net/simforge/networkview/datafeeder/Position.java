@@ -2,8 +2,9 @@ package net.simforge.networkview.datafeeder;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Str;
-import net.simforge.networkview.datafeeder.persistence.Report;
-import net.simforge.networkview.datafeeder.persistence.ReportPilotPosition;
+import net.simforge.networkview.core.report.ReportUtils;
+import net.simforge.networkview.core.report.persistence.Report;
+import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import net.simforge.networkview.world.airports.Airport;
 import net.simforge.networkview.world.airports.Airports;
 import net.simforge.networkview.world.atmosphere.ActualAltitude;
@@ -12,6 +13,7 @@ import net.simforge.networkview.world.atmosphere.AltimeterRules;
 
 import java.time.LocalDateTime;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Position {
 
     private long reportId;
