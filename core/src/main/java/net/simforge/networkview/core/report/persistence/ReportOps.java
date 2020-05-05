@@ -5,10 +5,9 @@ import org.hibernate.Session;
 
 import java.util.List;
 
-@Deprecated
-@SuppressWarnings("WeakerAccess")
 public class ReportOps {
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     public static List<ReportPilotPosition> loadPilotPositions(Session session, Report report) {
         BM.start("ReportOps.loadPilotPositions");
@@ -61,6 +60,7 @@ public class ReportOps {
         }
     }
 
+    @Deprecated
     public static Report loadFirstReport(Session session) {
         BM.start("ReportOps.loadFirstReport");
         try {
@@ -73,6 +73,7 @@ public class ReportOps {
         }
     }
 
+    @Deprecated
     public static Report loadNextReport(Session session, String report) {
         BM.start("ReportOps.loadNextReport");
         try {

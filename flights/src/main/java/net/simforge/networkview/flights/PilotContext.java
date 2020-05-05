@@ -107,7 +107,7 @@ public class PilotContext {
     }
 
     public boolean isActive() {
-        return currFlight != null || positionsWithoutCurrFlight < 10;
+        return currFlight != null || positionsWithoutCurrFlight < 20;
     }
 
     boolean isDirty() {

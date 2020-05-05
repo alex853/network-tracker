@@ -26,7 +26,14 @@ public class ReportSessionManager {
 
     // It opens session to archive DB.
     public synchronized Session getSession(Network network, String report) {
-        String databaseName = network.name() + ReportUtils.fromTimestampJava(report).getYear();
+        int year = ReportUtils.fromTimestampJava(report).getYear();
+
+        return getSession(network, year);
+    }
+
+    // It opens session to archive DB.
+    public synchronized Session getSession(Network network, int year) {
+        String databaseName = network.name() + year;
 
         return getSession(databaseName);
     }
