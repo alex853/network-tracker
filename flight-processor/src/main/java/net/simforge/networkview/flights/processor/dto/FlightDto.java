@@ -43,7 +43,7 @@ public class FlightDto {
         String arrIcao = flight.getLanding() != null ? flight.getLanding().getStatus() : flight.getLastSeen().getStatus();
 
         return depIcao + (depIcao.equals(fpDepIcao) ? "" : " (Plan: " + fpDepIcao + ")")
-                + " -=-=- "
+                + " --- "
                 + arrIcao + (arrIcao.equals(fpArrIcao) ? "" : " (Plan: " + fpArrIcao + ")");
     }
 
