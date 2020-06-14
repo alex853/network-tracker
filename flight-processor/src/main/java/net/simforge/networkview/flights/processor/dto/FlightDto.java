@@ -1,9 +1,9 @@
 package net.simforge.networkview.flights.processor.dto;
 
-import net.simforge.networkview.flights.Flight;
-import net.simforge.networkview.flights.FlightStatus;
-import net.simforge.networkview.flights.Flightplan;
-import net.simforge.networkview.flights.Position;
+import net.simforge.networkview.flights.processors.eventbased.Flight;
+import net.simforge.networkview.flights.processors.eventbased.FlightStatus;
+import net.simforge.networkview.flights.processors.eventbased.Flightplan;
+import net.simforge.networkview.flights.processors.eventbased.Position;
 
 @SuppressWarnings("unused")
 public class FlightDto {

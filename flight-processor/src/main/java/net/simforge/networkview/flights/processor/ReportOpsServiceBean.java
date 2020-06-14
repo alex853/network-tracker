@@ -54,4 +54,14 @@ public class ReportOpsServiceBean implements ReportOpsService {
     public List<Report> loadReports(String sinceReport, String tillReport) {
         return reportOpsService.loadReports(sinceReport, tillReport);
     }
+
+    @Override
+    public List<Report> loadAllReports() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<ReportPilotPosition> loadPilotPositions(int pilotNumber) {
+        return null;
+    }
 }
