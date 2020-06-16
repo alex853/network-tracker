@@ -14,10 +14,16 @@ jobs:
           path: core/build/test-results/test
       - store_artifacts:
           path: core/build/reports/tests
+      - store_test_results:
+          path: datafeeder/build/test-results/test
       - store_artifacts:
           path: datafeeder/build/reports/tests
+      - store_test_results:
+          path: flights/build/test-results/test
       - store_artifacts:
           path: flights/build/reports/tests
+      - store_test_results:
+          path: flight-processor/build/test-results/test
       - store_artifacts:
           path: flight-processor/build/reports/tests
 workflows:
