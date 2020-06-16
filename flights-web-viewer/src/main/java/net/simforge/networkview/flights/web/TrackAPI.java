@@ -8,10 +8,10 @@ import net.simforge.networkview.core.Network;
 import net.simforge.networkview.core.report.ReportUtils;
 import net.simforge.networkview.core.report.persistence.Report;
 import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
-import net.simforge.networkview.flights1.processors.eventbased.Position;
-import net.simforge.networkview.flights1.processors.eventbased.datasource.DBReportDatasource;
-import net.simforge.networkview.flights1.processors.eventbased.datasource.ReportDatasource;
-import net.simforge.networkview.flights1.processors.eventbased.persistence.DBFlight;
+import net.simforge.networkview.flights.method.eventbased.Position;
+import net.simforge.networkview.flights.method.eventbased.datasource.DBReportDatasource;
+import net.simforge.networkview.flights.method.eventbased.datasource.ReportDatasource;
+import net.simforge.networkview.flights.method.eventbased.persistence.DBFlight;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
-import static net.simforge.networkview.flights1.processors.eventbased.FlightStatus.Lost;
+import static net.simforge.networkview.flights.method.eventbased.FlightStatus.Lost;
 
 @Path("track")
 public class TrackAPI {

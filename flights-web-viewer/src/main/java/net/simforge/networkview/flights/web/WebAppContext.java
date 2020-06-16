@@ -1,7 +1,7 @@
 package net.simforge.networkview.flights.web;
 
 import net.simforge.networkview.core.report.persistence.ReportSessionManager;
-import net.simforge.networkview.flights1.processors.eventbased.Flights;
+import net.simforge.networkview.flights.method.eventbased.Flights;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
