@@ -26,6 +26,10 @@ jobs:
           path: flight-processor/build/test-results/test
       - store_artifacts:
           path: flight-processor/build/reports/tests
+      - store_test_results:
+          path: flights-web-viewer/build/test-results/test
+      - store_artifacts:
+          path: flights-web-viewer/build/reports/tests
 workflows:
   version: 2
   workflow:
