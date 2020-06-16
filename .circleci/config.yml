@@ -11,9 +11,15 @@ jobs:
       - run:
           command: ./gradlew test
       - store_test_results:
-          path: core/build/reports/tests
+          path: core/build/test-results/test
       - store_artifacts:
           path: core/build/reports/tests
+      - store_artifacts:
+          path: datafeeder/build/reports/tests
+      - store_artifacts:
+          path: flights/build/reports/tests
+      - store_artifacts:
+          path: flight-processor/build/reports/tests
 workflows:
   version: 2
   workflow:
