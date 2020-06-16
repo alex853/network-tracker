@@ -1,5 +1,6 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.io.IOException;
  *   1) The first flight terminates.
  *   2) The second flight starts as "in air" flight.
  */
+@Ignore
 public class Case_GapInReports extends BaseTest {
 
     @Test

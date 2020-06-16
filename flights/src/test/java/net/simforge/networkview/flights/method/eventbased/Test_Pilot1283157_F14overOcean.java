@@ -1,9 +1,11 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
+@Ignore
 public class Test_Pilot1283157_F14overOcean extends BaseTest {
 
     @Test

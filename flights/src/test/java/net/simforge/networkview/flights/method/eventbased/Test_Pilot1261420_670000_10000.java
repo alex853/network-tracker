@@ -1,10 +1,12 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
 @SuppressWarnings("UnusedDeclaration")
+@Ignore
 public class Test_Pilot1261420_670000_10000 extends BaseTest {
 
     @Test

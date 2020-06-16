@@ -1,11 +1,13 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
 
+@Ignore
 public class Test_Pilot913904_2018_11_23 extends BaseTest {
 
     @Test

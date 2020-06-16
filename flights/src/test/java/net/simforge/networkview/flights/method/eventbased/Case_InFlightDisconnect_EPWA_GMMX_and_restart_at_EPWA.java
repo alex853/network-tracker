@@ -1,5 +1,6 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.io.IOException;
  *   1) The first flight is terminated.
  *   2) The second flight is started.
  */
+@Ignore
 public class Case_InFlightDisconnect_EPWA_GMMX_and_restart_at_EPWA extends BaseTest {
 
     @Test
