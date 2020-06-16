@@ -4,12 +4,12 @@ jobs:
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
-      docker:
-        - image: circleci/openjdk:11.0.3-jdk-stretch
-      steps:
-        - checkout
-        - run:
-            command: ./gradlew test
+    docker:
+      - image: circleci/openjdk:11.0.3-jdk-stretch
+    steps:
+      - checkout
+      - run:
+          command: ./gradlew test
 workflows:
   version: 2
   workflow:
