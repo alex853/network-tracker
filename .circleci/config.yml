@@ -1,17 +1,21 @@
 version: 2
 jobs:
-  build:
+  test:
     environment:
       _JAVA_OPTIONS: "-Xmx3g"
       GRADLE_OPTS: "-Dorg.gradle.daemon=false"
     docker:
-      - image: circleci/openjdk:11.0.3-jdk-stretch
+      - image: circleci/openjdk:8-jdk
     steps:
       - checkout
       - run:
           command: ./gradlew test
+      - store_test_results:
+          path: core/build/reports/tests
+      - store_artifacts:
+          path: core/build/reports/tests
 workflows:
   version: 2
   workflow:
     jobs:
-      - build
+      - test
