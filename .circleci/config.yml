@@ -8,7 +8,7 @@ jobs:
         - image: circleci/openjdk:11.0.3-jdk-stretch
       steps:
         - checkout
-        - run
+        - run:
             command: ./gradlew test
 workflows:
   version: 2
