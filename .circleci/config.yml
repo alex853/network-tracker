@@ -9,8 +9,7 @@ jobs:
       steps:
         - checkout
         - run
-          command: |
-            ./gradlew test
+          command: ./gradlew test
 workflows:
   version: 2
   workflow:
