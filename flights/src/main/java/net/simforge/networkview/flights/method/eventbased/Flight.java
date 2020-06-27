@@ -6,7 +6,7 @@ import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.flights.method.eventbased.criteria.OnGroundJumpCriterion;
 import net.simforge.networkview.flights.method.eventbased.criteria.TrackTrailCriterion;
 import net.simforge.networkview.flights.method.eventbased.events.*;
-import net.simforge.torework.EllipseCriterion;
+import net.simforge.networkview.flights.EllipseCriterion;
 
 import java.util.Collections;
 import java.util.Iterator;

@@ -1,5 +1,6 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import net.simforge.networkview.flights.EllipseCriterion;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -33,7 +34,7 @@ public class Case_GapInReports extends BaseTest {
 
     /**
      * @see net.simforge.networkview.flights.method.eventbased.criteria.TrackTrailCriterion
-     * @see net.simforge.torework.EllipseCriterion
+     * @see EllipseCriterion
      */
     public void report_1000641() {
         checkFlightStatusEvent(FlightStatus.Terminated);

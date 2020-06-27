@@ -1,9 +1,8 @@
-package net.simforge.torework;
+package net.simforge.networkview.flights;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.networkview.flights.method.eventbased.Flightplan;
 import net.simforge.networkview.flights.method.eventbased.Position;
-import net.simforge.networkview.flights.method.eventbased.criteria.Criterion;
 import net.simforge.networkview.world.airports.Airport;
 import net.simforge.networkview.world.airports.Airports;
 

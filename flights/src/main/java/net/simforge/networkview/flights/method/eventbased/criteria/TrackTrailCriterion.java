@@ -2,6 +2,7 @@ package net.simforge.networkview.flights.method.eventbased.criteria;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;
+import net.simforge.networkview.flights.Criterion;
 import net.simforge.networkview.flights.method.eventbased.Flight;
 import net.simforge.networkview.flights.method.eventbased.Position;
 
