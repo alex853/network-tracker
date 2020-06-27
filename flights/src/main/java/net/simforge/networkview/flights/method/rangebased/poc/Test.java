@@ -1,4 +1,4 @@
-package net.simforge.networkview.flights.method.rangebased;
+package net.simforge.networkview.flights.method.rangebased.poc;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;

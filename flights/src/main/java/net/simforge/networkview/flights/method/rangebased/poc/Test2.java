@@ -1,4 +1,4 @@
-package net.simforge.networkview.flights.method.rangebased;
+package net.simforge.networkview.flights.method.rangebased.poc;
 
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;
@@ -7,6 +7,7 @@ import net.simforge.networkview.core.report.ReportUtils;
 import net.simforge.networkview.core.report.persistence.*;
 import net.simforge.networkview.flights.method.eventbased.Flightplan;
 import net.simforge.networkview.flights.method.eventbased.Position;
+import net.simforge.networkview.flights.EllipseCriterion;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -87,59 +88,9 @@ public class Test2 {
 
     private static class Track {
         private List<Position> trackData = new ArrayList<>();
-        private Map<String, Set<EventType>> eventsByTime = new TreeMap<>();
 
         public void add(Position position) {
             trackData.add(position);
-        }
-
-        public void recognizeTakeoffsLandings() {
-            for (int i = 1; i < trackData.size(); i++) {
-                Position prevPosition = trackData.get(i - 1);
-                Position position = trackData.get(i);
-
-//            boolean wentOnline = !prevPosition.isPositionKnown() && position.isPositionKnown();
-//            boolean wentOffline = prevPosition.isPositionKnown() && !position.isPositionKnown();
-                boolean bothPositionsKnown = prevPosition.isPositionKnown() && position.isPositionKnown();
-
-                boolean takeoff = bothPositionsKnown && prevPosition.isOnGround() && !position.isOnGround();
-                boolean landing = bothPositionsKnown && !prevPosition.isOnGround() && position.isOnGround();
-
-                if (takeoff) {
-                    Set<EventType> events = this.eventsByTime.computeIfAbsent(
-                            prevPosition.getReportInfo().getReport(),
-                            set -> new TreeSet<>());
-                    events.add(EventType.Takeoff);
-                }
-
-                if (landing) {
-                    Set<EventType> eventList = this.eventsByTime.computeIfAbsent(
-                            position.getReportInfo().getReport(),
-                            set -> new TreeSet<>());
-                    eventList.add(EventType.Landing);
-                }
-            }
-        }
-
-        public void recognizeTouchAndGoes() {
-            for (Map.Entry<String, Set<EventType>> entry : eventsByTime.entrySet()) {
-                Set<EventType> events = entry.getValue();
-                if (events.contains(EventType.Takeoff) && events.contains(EventType.Landing)) {
-                    events.remove(EventType.Takeoff);
-                    events.remove(EventType.Landing);
-                    events.add(EventType.TouchAndGo);
-                }
-            }
-        }
-
-        public void printEvents() {
-            for (Map.Entry<String, Set<EventType>> entry : eventsByTime.entrySet()) {
-                Position position = trackDataByReport(entry.getKey());
-                System.out.println(ReportUtils.log(entry.getKey())
-                        + " -> " + entry.getValue()
-                        + " | " + position.getStatus()
-                        + " " + Flightplan.fromPosition(position));
-            }
         }
 
         private Position trackDataByReport(String report) {
