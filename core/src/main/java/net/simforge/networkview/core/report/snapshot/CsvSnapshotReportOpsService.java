@@ -6,7 +6,6 @@ import net.simforge.networkview.core.report.persistence.Report;
 import net.simforge.networkview.core.report.persistence.ReportOpsService;
 import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -112,9 +111,8 @@ public class CsvSnapshotReportOpsService implements ReportOpsService {
     }
 
     @Override
-    public List<Report> loadReports(String sinceReport, String tillReport) {
-        throw new UnsupportedOperationException();
-//        return reports.stream().filter(r -> fromReportId <= r.getId() && r.getId() <= toReportId).collect(Collectors.toList());
+    public List<Report> loadReports(ReportInfo sinceReport, ReportInfo tillReport) {
+        return reports.stream().filter(r -> sinceReport.getId() <= r.getId() && r.getId() <= tillReport.getId()).collect(Collectors.toList());
     }
 
     @Override
@@ -135,9 +133,8 @@ public class CsvSnapshotReportOpsService implements ReportOpsService {
     }
 
     @Override
-    public List<ReportPilotPosition> loadPilotPositionsSinceTill(int pilotNumber, String sinceReport, String tillReport) {
-        throw new UnsupportedOperationException();
-//        return positions.entrySet().stream().filter(e -> fromReportId <= e.getKey() && e.getKey() <= toReportId).map(Map.Entry::getValue).collect(Collectors.toList());
+    public List<ReportPilotPosition> loadPilotPositionsSinceTill(int pilotNumber, ReportInfo sinceReport, ReportInfo tillReport) {
+        return positions.entrySet().stream().filter(e -> sinceReport.getId() <= e.getKey() && e.getKey() <= tillReport.getId()).map(Map.Entry::getValue).collect(Collectors.toList());
     }
 
     @Override

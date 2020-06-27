@@ -77,13 +77,13 @@ public class BaseReportOpsService implements ReportOpsService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<Report> loadReports(String sinceReport, String tillReport) {
+    public List<Report> loadReports(ReportInfo sinceReport, ReportInfo tillReport) {
         BM.start("BaseReportOpsService.loadReports");
         try (Session session = getSession()) {
             return session
                     .createQuery("from Report where report between :sinceReport and :tillReport order by report")
-                    .setString("sinceReport", sinceReport)
-                    .setString("tillReport", tillReport)
+                    .setString("sinceReport", sinceReport.getReport())
+                    .setString("tillReport", tillReport.getReport())
                     .list();
         } finally {
             BM.stop();
@@ -135,7 +135,7 @@ public class BaseReportOpsService implements ReportOpsService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<ReportPilotPosition> loadPilotPositionsSinceTill(int pilotNumber, String sinceReport, String tillReport) {
+    public List<ReportPilotPosition> loadPilotPositionsSinceTill(int pilotNumber, ReportInfo sinceReport, ReportInfo tillReport) {
         BM.start("BaseReportOpsService.loadPilotPositionsSinceTill");
         try (Session session = getSession()) {
             return session
@@ -144,8 +144,8 @@ public class BaseReportOpsService implements ReportOpsService {
                             "  and report.report between :sinceReport and :tillReport " +
                             "order by report.report")
                     .setInteger("pilotNumber", pilotNumber)
-                    .setString("sinceReport", sinceReport)
-                    .setString("tillReport", tillReport)
+                    .setString("sinceReport", sinceReport.getReport())
+                    .setString("tillReport", tillReport.getReport())
                     .list();
         } finally {
             BM.stop();

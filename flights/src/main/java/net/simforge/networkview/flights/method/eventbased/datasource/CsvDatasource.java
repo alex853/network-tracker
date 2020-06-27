@@ -28,7 +28,7 @@ public class CsvDatasource implements ReportDatasource {
 
     @Override
     public List<Report> loadReports(long fromReportId, long toReportId) {
-        throw new UnsupportedOperationException();
+        return reportOpsService.loadReports(new ReportInfoDto(fromReportId, null), new ReportInfoDto(toReportId, null));
     }
 
     @Override
@@ -48,6 +48,6 @@ public class CsvDatasource implements ReportDatasource {
 
     @Override
     public List<ReportPilotPosition> loadPilotPositions(int pilotNumber, long fromReportId, long toReportId) {
-        throw new UnsupportedOperationException();
+        return reportOpsService.loadPilotPositionsSinceTill(pilotNumber, new ReportInfoDto(fromReportId, null), new ReportInfoDto(toReportId, null));
     }
 }

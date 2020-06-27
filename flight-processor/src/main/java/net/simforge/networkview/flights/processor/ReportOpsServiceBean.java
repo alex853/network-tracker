@@ -47,7 +47,7 @@ public class ReportOpsServiceBean implements ReportOpsService {
     }
 
     @Override
-    public List<Report> loadReports(String sinceReport, String tillReport) {
+    public List<Report> loadReports(ReportInfo sinceReport, ReportInfo tillReport) {
         return reportOpsService.loadReports(sinceReport, tillReport);
     }
 
@@ -67,7 +67,7 @@ public class ReportOpsServiceBean implements ReportOpsService {
     }
 
     @Override
-    public List<ReportPilotPosition> loadPilotPositionsSinceTill(int pilotNumber, String sinceReport, String tillReport) {
+    public List<ReportPilotPosition> loadPilotPositionsSinceTill(int pilotNumber, ReportInfo sinceReport, ReportInfo tillReport) {
         return reportOpsService.loadPilotPositionsSinceTill(pilotNumber, sinceReport, tillReport);
     }
 

@@ -163,12 +163,12 @@ public class FlightProcessor {
         List<ReportPilotPosition> positions;
         List<Report> reports;
         if (sinceReport != null) {
-            positions = reportOpsService.loadPilotPositionsSinceTill(pilotNumber, sinceReport.getReport(), tillReport.getReport());
-            reports = reportOpsService.loadReports(sinceReport.getReport(), tillReport.getReport());
+            positions = reportOpsService.loadPilotPositionsSinceTill(pilotNumber, sinceReport, tillReport);
+            reports = reportOpsService.loadReports(sinceReport, tillReport);
         } else {
             positions = reportOpsService.loadPilotPositionsTill(pilotNumber, tillReport.getReport());
             sinceReport = positions.get(0).getReport(); // todo check null
-            reports = reportOpsService.loadReports(sinceReport.getReport(), tillReport.getReport());
+            reports = reportOpsService.loadReports(sinceReport, tillReport);
         }
 
         Map<Long, ReportPilotPosition> reportToPosition = positions.parallelStream().collect(Collectors.toMap(p -> p.getReport().getId(), Function.identity()));
