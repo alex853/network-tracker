@@ -1,6 +1,7 @@
 package net.simforge.networkview.flights.processor;
 
 import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.core.report.persistence.BaseReportOpsService;
 import net.simforge.networkview.core.report.persistence.Report;
 import net.simforge.networkview.core.report.persistence.ReportOpsService;
@@ -36,8 +37,33 @@ public class ReportOpsServiceBean implements ReportOpsService {
     }
 
     @Override
-    public List<ReportPilotPosition> loadPilotPositions(Report report) {
-        return reportOpsService.loadPilotPositions(report);
+    public Report loadReport(long reportId) {
+        return null;
+    }
+
+    @Override
+    public List<Report> loadAllReports() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<Report> loadReports(String sinceReport, String tillReport) {
+        return reportOpsService.loadReports(sinceReport, tillReport);
+    }
+
+    @Override
+    public List<ReportPilotPosition> loadPilotPositions(ReportInfo reportInfo) {
+        return reportOpsService.loadPilotPositions(reportInfo);
+    }
+
+    @Override
+    public List<ReportPilotPosition> loadPilotPositions(int pilotNumber) {
+        return null;
+    }
+
+    @Override
+    public ReportPilotPosition loadPilotPosition(int pilotNumber, ReportInfo reportInfo) {
+        return null;
     }
 
     @Override
@@ -50,18 +76,4 @@ public class ReportOpsServiceBean implements ReportOpsService {
         return reportOpsService.loadPilotPositionsTill(pilotNumber, tillReport);
     }
 
-    @Override
-    public List<Report> loadReports(String sinceReport, String tillReport) {
-        return reportOpsService.loadReports(sinceReport, tillReport);
-    }
-
-    @Override
-    public List<Report> loadAllReports() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<ReportPilotPosition> loadPilotPositions(int pilotNumber) {
-        return null;
-    }
 }
