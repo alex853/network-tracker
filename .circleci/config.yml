@@ -30,6 +30,14 @@ jobs:
           path: flights-web-viewer/build/test-results/test
       - store_artifacts:
           path: flights-web-viewer/build/reports/tests
+      - store_test_results:
+          path: atmosphere/build/test-results/test
+      - store_artifacts:
+          path: atmosphere/build/reports/tests
+      - store_test_results:
+          path: refdata-aircrafts/build/test-results/test
+      - store_artifacts:
+          path: refdata-aircrafts/build/reports/tests
 workflows:
   version: 2
   workflow:

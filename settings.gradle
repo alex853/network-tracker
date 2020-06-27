@@ -4,3 +4,6 @@ include 'datafeeder'
 include 'flights'
 include 'flight-processor'
 include 'flights-web-viewer'
+
+include 'atmosphere'
+include 'refdata-aircrafts'

@@ -1,4 +1,4 @@
-package net.simforge.networkview.world.atmosphere;
+package net.simforge.atmosphere;
 
 public class Atmosphere {
     public static final int QNH_STD = 1013;

@@ -1,6 +1,7 @@
-package net.simforge.networkview.world.atmosphere;
+package net.simforge.networkview.world;
 
 import junit.framework.TestCase;
+import net.simforge.atmosphere.Atmosphere;
 import net.simforge.commons.misc.Geo;
 
 public class AltimeterRulesTest extends TestCase {

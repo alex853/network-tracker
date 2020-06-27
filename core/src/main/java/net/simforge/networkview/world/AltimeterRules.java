@@ -1,5 +1,7 @@
-package net.simforge.networkview.world.atmosphere;
+package net.simforge.networkview.world;
 
+import net.simforge.atmosphere.ActualAltitude;
+import net.simforge.atmosphere.AltimeterMode;
 import net.simforge.commons.misc.Geo;
 import net.simforge.networkview.world.airports.Airport;
 import net.simforge.networkview.world.airports.Airports;

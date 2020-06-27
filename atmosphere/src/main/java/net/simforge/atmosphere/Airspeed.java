@@ -1,4 +1,4 @@
-package net.simforge.networkview.world.atmosphere;
+package net.simforge.atmosphere;
 
 public class Airspeed {
     public static int iasToTas(int ias, int altitude) {

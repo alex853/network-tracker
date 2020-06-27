@@ -1,4 +1,4 @@
-package net.simforge.networkview.world.atmosphere;
+package net.simforge.atmosphere;
 
 import junit.framework.TestCase;
 
