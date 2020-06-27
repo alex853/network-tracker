@@ -1,13 +1,9 @@
-package net.simforge.networkview.flights.method.eventbased.tools;
+package net.simforge.networkview.core.report.snapshot;
 
 import net.simforge.commons.io.Csv;
 import net.simforge.commons.io.IOHelper;
 import net.simforge.networkview.core.Network;
-import net.simforge.networkview.core.report.persistence.Report;
-import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
-import net.simforge.networkview.core.report.persistence.ReportSessionManager;
-import net.simforge.networkview.flights.method.eventbased.datasource.CsvDatasource;
-import net.simforge.networkview.flights.method.eventbased.datasource.DBReportDatasource;
+import net.simforge.networkview.core.report.persistence.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,21 +16,21 @@ public class MakeSnapshot {
         int pilotNumber = in.nextInt();
 
         Csv csv = new Csv();
-        CsvDatasource.addColumns(csv);
+        CsvSnapshotReportOpsService.addColumns(csv);
 
         ReportSessionManager reportSessionManager = new ReportSessionManager();
-        DBReportDatasource reportDatasource = new DBReportDatasource(Network.VATSIM, reportSessionManager);
+        ReportOpsService reportOpsService = new BaseReportOpsService(reportSessionManager, Network.VATSIM);
 
-        Report fromReport = reportDatasource.loadNextReport(null);
+        Report fromReport = reportOpsService.loadFirstReport();
         Report currentReport = fromReport;
 
         int reportsAmount = 0;
         while (currentReport != null) {
             System.out.println("    Report " + currentReport.getReport());
             reportsAmount++;
-            ReportPilotPosition reportPilotPosition = reportDatasource.loadPilotPosition(currentReport.getId(), pilotNumber);
-            CsvDatasource.addRow(csv, currentReport, reportPilotPosition);
-            currentReport = reportDatasource.loadNextReport(currentReport.getReport());
+            ReportPilotPosition reportPilotPosition = reportOpsService.loadPilotPosition(pilotNumber, currentReport);
+            CsvSnapshotReportOpsService.addRow(csv, currentReport, reportPilotPosition);
+            currentReport = reportOpsService.loadNextReport(currentReport.getReport());
         }
         reportSessionManager.dispose();
 

@@ -12,3 +12,4 @@ out/
 .classpath
 gckls2com.csv
 logs/
+simforge.properties

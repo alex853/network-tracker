@@ -2,6 +2,7 @@ package net.simforge.networkview.core.report.persistence;
 
 import net.simforge.commons.legacy.BM;
 import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.report.ReportInfo;
 import org.hibernate.Session;
 
 import java.util.List;
@@ -56,6 +57,11 @@ public class BaseReportOpsService implements ReportOpsService {
         }
     }
 
+    @Override
+    public Report loadReport(long reportId) {
+        throw new UnsupportedOperationException();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public List<Report> loadAllReports() {
@@ -86,12 +92,12 @@ public class BaseReportOpsService implements ReportOpsService {
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<ReportPilotPosition> loadPilotPositions(Report report) {
+    public List<ReportPilotPosition> loadPilotPositions(ReportInfo reportInfo) {
         BM.start("BaseReportOpsService.loadPilotPositions");
         try (Session session = getSession()) {
             return session
-                    .createQuery("from ReportPilotPosition where report = :report")
-                    .setEntity("report", report)
+                    .createQuery("from ReportPilotPosition where report.id = :reportId")
+                    .setLong("reportId", reportInfo.getId())
                     .list();
         } finally {
             BM.stop();
@@ -107,6 +113,21 @@ public class BaseReportOpsService implements ReportOpsService {
                     .createQuery("from ReportPilotPosition where pilotNumber = :pilotNumber")
                     .setInteger("pilotNumber", pilotNumber)
                     .list();
+        } finally {
+            BM.stop();
+        }
+    }
+
+    @Override
+    public ReportPilotPosition loadPilotPosition(int pilotNumber, ReportInfo reportInfo) {
+        BM.start("BaseReportOpsService.loadPilotPosition");
+        try (Session session = getSession()) {
+            return (ReportPilotPosition) session
+                    .createQuery("from ReportPilotPosition where pilotNumber = :pilotNumber and report.id = :reportId")
+                    .setInteger("pilotNumber", pilotNumber)
+                    .setLong("reportId", reportInfo.getId())
+                    .setMaxResults(1)
+                    .uniqueResult();
         } finally {
             BM.stop();
         }
