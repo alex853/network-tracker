@@ -38,6 +38,24 @@ public class ReportUtilsTest extends TestCase {
         }
     }
 
+    public void testIsTimestampGreaterOrEqual() throws Exception {
+        assertTrue (ReportUtils.isTimestampGreaterOrEqual("20151202000000", "20151201000000")); // greater
+        assertTrue (ReportUtils.isTimestampGreaterOrEqual("20151201000000", "20151201000000")); // same timestamp
+        assertFalse(ReportUtils.isTimestampGreaterOrEqual("20151130000000", "20151201000000")); // less
+    }
+
+    public void testIsTimestampLess() throws Exception {
+        assertFalse(ReportUtils.isTimestampLess("20151202000000", "20151201000000")); // greater
+        assertFalse(ReportUtils.isTimestampLess("20151201000000", "20151201000000")); // same timestamp
+        assertTrue (ReportUtils.isTimestampLess("20151130000000", "20151201000000")); // less
+    }
+
+    public void testIsTimestampLessOrEqual() throws Exception {
+        assertFalse(ReportUtils.isTimestampLessOrEqual("20151202000000", "20151201000000")); // greater
+        assertTrue (ReportUtils.isTimestampLessOrEqual("20151201000000", "20151201000000")); // same timestamp
+        assertTrue (ReportUtils.isTimestampLessOrEqual("20151130000000", "20151201000000")); // less
+    }
+
     public void testToTimestamp_java() {
         LocalDateTime dateTime = LocalDateTime.of(2015, 12, 1, 1, 2, 3);
         String timestamp = ReportUtils.toTimestamp(dateTime);

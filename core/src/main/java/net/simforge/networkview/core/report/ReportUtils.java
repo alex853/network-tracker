@@ -15,14 +15,34 @@ public class ReportUtils {
         return timestampDateFormat_java.format(dt);
     }
 
-    public static boolean isTimestampGreater(String timestamp1, String timestamp2) {
-        if (!isTimestamp(timestamp1)) {
-            throw new IllegalArgumentException("Wrong timestamp provided: " + timestamp1);
+    public static boolean isTimestampGreater(String greaterTimestamp, String anotherTimestamp) {
+        assertTimestamp(greaterTimestamp);
+        assertTimestamp(anotherTimestamp);
+        return greaterTimestamp.compareTo(anotherTimestamp) > 0;
+    }
+
+    public static boolean isTimestampGreaterOrEqual(String greaterTimestamp, String anotherTimestamp) {
+        assertTimestamp(greaterTimestamp);
+        assertTimestamp(anotherTimestamp);
+        return greaterTimestamp.compareTo(anotherTimestamp) >= 0;
+    }
+
+    public static boolean isTimestampLess(String lowerTimestamp, String anotherTimestamp) {
+        assertTimestamp(lowerTimestamp);
+        assertTimestamp(anotherTimestamp);
+        return lowerTimestamp.compareTo(anotherTimestamp) < 0;
+    }
+
+    public static boolean isTimestampLessOrEqual(String lowerTimestamp, String anotherTimestamp) {
+        assertTimestamp(lowerTimestamp);
+        assertTimestamp(anotherTimestamp);
+        return lowerTimestamp.compareTo(anotherTimestamp) <= 0;
+    }
+
+    private static void assertTimestamp(String timestamp) {
+        if (!isTimestamp(timestamp)) {
+            throw new IllegalArgumentException("Wrong timestamp provided: " + timestamp);
         }
-        if (!isTimestamp(timestamp2)) {
-            throw new IllegalArgumentException("Wrong timestamp provided: " + timestamp2);
-        }
-        return timestamp1.compareTo(timestamp2) > 0;
     }
 
     public static boolean isTimestamp(String str) {
