@@ -1,16 +1,16 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import net.simforge.atmosphere.ActualAltitude;
+import net.simforge.atmosphere.AltimeterMode;
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Str;
 import net.simforge.networkview.core.report.ParsingLogics;
 import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.core.report.persistence.Report;
 import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
+import net.simforge.networkview.world.AltimeterRules;
 import net.simforge.networkview.world.airports.Airport;
 import net.simforge.networkview.world.airports.Airports;
-import net.simforge.networkview.world.atmosphere.ActualAltitude;
-import net.simforge.networkview.world.atmosphere.AltimeterMode;
-import net.simforge.networkview.world.atmosphere.AltimeterRules;
 
 public class Position {
 
