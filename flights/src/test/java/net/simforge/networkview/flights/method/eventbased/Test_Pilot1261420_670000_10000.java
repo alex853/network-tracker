@@ -311,7 +311,7 @@ public class Test_Pilot1261420_670000_10000 extends BaseTest {
     /**
      * The previous flight terminates, Ellipse is OK, Track trail fails
      * Positions do not seem well, I would accept the discontinuity in this case
-     * @see net.simforge.networkview.flights.method.eventbased.criteria.EllipseCriterion
+     * @see net.simforge.torework.EllipseCriterion
      * @see net.simforge.networkview.flights.method.eventbased.criteria.TrackTrailCriterion
      */
     public void report_674195() {

@@ -3,10 +3,10 @@ package net.simforge.networkview.flights.method.eventbased;
 import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;
 import net.simforge.networkview.core.report.ReportInfo;
-import net.simforge.networkview.flights.method.eventbased.criteria.EllipseCriterion;
 import net.simforge.networkview.flights.method.eventbased.criteria.OnGroundJumpCriterion;
 import net.simforge.networkview.flights.method.eventbased.criteria.TrackTrailCriterion;
 import net.simforge.networkview.flights.method.eventbased.events.*;
+import net.simforge.torework.EllipseCriterion;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -83,7 +83,7 @@ public class Flight {
                 }
 
                 if (!TrackTrailCriterion.meetsOrInapplicable(this, position)
-                        && !EllipseCriterion.get(this).meets(position)) {
+                        && !meetsEllipseCriterion(position)) {
                     terminateFlight(position);
                     return false;
                 }
@@ -155,7 +155,7 @@ public class Flight {
 
                 if (wentOnline) {
                     if (TrackTrailCriterion.meetsOrInapplicable(this, position)
-                            && EllipseCriterion.get(this).meets(position)) {
+                            && meetsEllipseCriterion(position)) {
                         // todo add event 'flight resumed because of ellipse or track trail criterion'
                         Position prevSeenPosition = lastSeen;
                         resumeLostFlight(position);
@@ -174,6 +174,10 @@ public class Flight {
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    private boolean meetsEllipseCriterion(Position position) {
+        return new EllipseCriterion(takeoff, flightplan).meets(position);
     }
 
     private double calcDistanceInLastMinutes(Position position, int minutes) {
