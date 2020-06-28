@@ -4,7 +4,7 @@ import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.JavaTime;
 import net.simforge.networkview.flights.Criterion;
 import net.simforge.networkview.flights.method.eventbased.Flight;
-import net.simforge.networkview.flights.method.eventbased.Position;
+import net.simforge.networkview.core.Position;
 
 import java.util.Iterator;
 import java.util.LinkedList;

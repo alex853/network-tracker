@@ -8,7 +8,7 @@ import net.simforge.networkview.core.Network;
 import net.simforge.networkview.core.report.ReportUtils;
 import net.simforge.networkview.core.report.persistence.Report;
 import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
-import net.simforge.networkview.flights.method.eventbased.Position;
+import net.simforge.networkview.core.Position;
 import net.simforge.networkview.flights.method.eventbased.datasource.DBReportDatasource;
 import net.simforge.networkview.flights.method.eventbased.datasource.ReportDatasource;
 import net.simforge.networkview.flights.method.eventbased.persistence.DBFlight;

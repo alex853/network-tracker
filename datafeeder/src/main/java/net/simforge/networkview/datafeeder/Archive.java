@@ -7,6 +7,7 @@ import net.simforge.commons.runtime.BaseTask;
 import net.simforge.commons.runtime.RunningMarker;
 import net.simforge.commons.runtime.ThreadMonitor;
 import net.simforge.networkview.core.Network;
+import net.simforge.networkview.core.Position;
 import net.simforge.networkview.core.report.ReportUtils;
 import net.simforge.networkview.core.report.persistence.*;
 import org.ehcache.Cache;
@@ -216,7 +217,7 @@ public class Archive extends BaseTask {
             // dropping tracks without recent positions
             PositionInfo last = pilotTrack.getLastIn(PositionStatus.Unknown, PositionStatus.Excessive, PositionStatus.PositionReport, PositionStatus.TakeoffLanding);
             //noinspection ConstantConditions
-            Duration difference = Duration.between(last.getPosition().getDt(), ReportUtils.fromTimestampJava(report.getReport()));
+            Duration difference = Duration.between(last.getPosition().getReportInfo().getDt(), ReportUtils.fromTimestampJava(report.getReport()));
             long differenceMillis = difference.toMillis();
 
             if (differenceMillis >= TimeUnit.MINUTES.toMillis(90)) {
@@ -480,7 +481,7 @@ public class Archive extends BaseTask {
                 }
                 Position previousSavedPP = previousSaved.getPosition();
 
-                Duration difference = Duration.between(previousSavedPP.getDt(), currentPP.getDt());
+                Duration difference = Duration.between(previousSavedPP.getReportInfo().getDt(), currentPP.getReportInfo().getDt());
                 long differenceMillis = difference.toMillis();
 
                 if (differenceMillis >= TimeUnit.SECONDS.toMillis(REPORT_EVERY_N_MINUTES * 60 - 30)) {
@@ -556,7 +557,7 @@ public class Archive extends BaseTask {
 
         @Override
         public String toString() {
-            return "Position " + position.getDt() + ", " + (position.isOnGround() ? "On Ground" : "Flying") + ", " + status;
+            return "Position " + position.getReportInfo().getDt() + ", " + (position.isOnGround() ? "On Ground" : "Flying") + ", " + status;
         }
     }
 

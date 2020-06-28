@@ -2,6 +2,7 @@ package net.simforge.networkview.flights.method.eventbased.persistence;
 
 import net.simforge.commons.hibernate.HibernateUtils;
 import net.simforge.commons.legacy.BM;
+import net.simforge.networkview.core.Position;
 import net.simforge.networkview.core.report.persistence.Report;
 import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import net.simforge.networkview.flights.method.eventbased.*;

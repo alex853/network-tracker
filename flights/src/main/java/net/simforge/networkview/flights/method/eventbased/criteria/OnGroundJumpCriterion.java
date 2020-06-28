@@ -4,7 +4,7 @@ import net.simforge.commons.misc.Geo;
 import net.simforge.commons.misc.Misc;
 import net.simforge.networkview.flights.Criterion;
 import net.simforge.networkview.flights.method.eventbased.Flight;
-import net.simforge.networkview.flights.method.eventbased.Position;
+import net.simforge.networkview.core.Position;
 
 public class OnGroundJumpCriterion implements Criterion {
     private Flight flight;

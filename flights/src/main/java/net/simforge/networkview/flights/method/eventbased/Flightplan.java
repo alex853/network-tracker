@@ -1,5 +1,7 @@
 package net.simforge.networkview.flights.method.eventbased;
 
+import net.simforge.networkview.core.Position;
+
 public class Flightplan {
     private String aircraftType;
     private String regNo;

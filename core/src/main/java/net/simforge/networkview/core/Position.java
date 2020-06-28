@@ -1,4 +1,4 @@
-package net.simforge.networkview.flights.method.eventbased;
+package net.simforge.networkview.core;
 
 import net.simforge.atmosphere.ActualAltitude;
 import net.simforge.atmosphere.AltimeterMode;
