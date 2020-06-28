@@ -6,7 +6,7 @@ import net.simforge.networkview.core.Network;
 import net.simforge.networkview.core.report.ReportUtils;
 import net.simforge.networkview.core.report.persistence.*;
 import net.simforge.networkview.flights.method.eventbased.Flightplan;
-import net.simforge.networkview.flights.method.eventbased.Position;
+import net.simforge.networkview.core.Position;
 
 import java.io.IOException;
 import java.text.DecimalFormat;

@@ -87,15 +87,6 @@ public class Position {
         return s.substring(0, 10);
     }
 
-/*    public static Position createOfflinePosition() {
-        Position result = new Position();
-
-        result.reportId = 0;
-        result.dt = LocalDateTime.of(2000, 1, 1, 0, 0);
-
-        return result;
-    }*/
-
     public static Position createOfflinePosition(Report report) {
         Position result = new Position();
 
@@ -128,13 +119,11 @@ public class Position {
     }
 
     public int getActualAltitude() {
-//        checkPropertyUsage();
         checkPositionKnown();
         return actualAltitude;
     }
 
     public String getActualFL() {
-        checkPropertyUsage();
         checkPositionKnown();
         return actualFL;
     }
@@ -157,12 +146,6 @@ public class Position {
     public short getGroundspeed() {
         checkPositionKnown();
         return groundspeed;
-    }
-
-    private void checkPropertyUsage() {
-        if (Math.random() >= 0) {
-            throw new UnsupportedOperationException(); // todo check every method you use!
-        }
     }
 
     private void checkPositionKnown() {
