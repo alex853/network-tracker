@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
 
-@Ignore
 public class Test_Pilot913904_2018_11_23 extends BaseTest {
 
     @Test
@@ -15,10 +14,6 @@ public class Test_Pilot913904_2018_11_23 extends BaseTest {
         initCsvSnapshot("/snapshots/pilot-913904_2018-11-23.csv");
         initNoOpPersistence();
         doTest(913904, 1016600, 1016849);
-    }
-
-    public void report_1016850_1016851() {
-        checkNoPilotContext();
     }
 
     // EGKK-EGJJ
