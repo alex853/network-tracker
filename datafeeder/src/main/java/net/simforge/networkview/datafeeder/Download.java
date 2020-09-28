@@ -157,7 +157,11 @@ public class Download extends BaseTask {
                 try {
                     reportFile = new ReportFile(network, data);
                 } catch (Exception e) {
-                    logger.error("Error on parsing downloaded report", e);
+                    logger.error("Error on parsing downloaded report, URL was " + url, e);
+
+                    IOHelper.saveFile(new File("./Download-" + network + "-FAILED-REPORT-DATA.txt"), data);
+                    logger.warn("FAILED-REPORT-DATA file has been saved");
+
                     Misc.sleepBM(500L);
                     continue;
                 }

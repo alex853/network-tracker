@@ -44,7 +44,7 @@ public class ReportFile {
             }
 
             if (line.startsWith("!")) {
-                String sectionName = line.substring(1, line.length());
+                String sectionName = line.substring(1);
                 if (sectionName.endsWith(":")) {
                     sectionName = sectionName.substring(0, sectionName.length() - 1);
                 }
@@ -55,7 +55,7 @@ public class ReportFile {
             }
 
             if (currentSection == null) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Current section is null, line index is " + i);
             }
 
             currentSection.addLine(line);
