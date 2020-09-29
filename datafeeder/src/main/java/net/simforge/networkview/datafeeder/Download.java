@@ -13,6 +13,9 @@ import net.simforge.networkview.core.report.file.ReportStorage;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -145,7 +148,8 @@ public class Download extends BaseTask {
                 String data;
                 try {
                     logger.debug("Downloading from " + url + "...");
-                    data = IOHelper.download(url);
+//                    data = IOHelper.download(url);
+                    data = download(url);
                 } catch (IOException e) {
                     logger.error("Can't download report", e);
                     Misc.sleepBM(500L);
@@ -213,7 +217,7 @@ public class Download extends BaseTask {
                 logger.info("Status file downloading...");
                 while (true) {
                     try {
-                        statusContent = IOHelper.download(networkStatusUrl);
+                        statusContent = download(networkStatusUrl);
                         break;
                     } catch (IOException e) {
                         logger.error("Can't download status file", e);
@@ -254,5 +258,32 @@ public class Download extends BaseTask {
         }
 
         return result;
+    }
+
+    private String download(String urlStr) throws IOException {
+        URL url = new URL(urlStr);
+        HttpURLConnection urlConnx = (HttpURLConnection) url.openConnection();
+        urlConnx.setConnectTimeout(120000);
+        urlConnx.setReadTimeout(120000);
+
+        int responseCode = urlConnx.getResponseCode();
+        boolean redirect = false;
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            if (responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+                    || responseCode == HttpURLConnection.HTTP_MOVED_PERM
+                    || responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
+                redirect = true;
+            }
+        }
+
+        if (redirect) {
+            String newUrl = urlConnx.getHeaderField("Location");
+            logger.warn("Redirected to URL : " + newUrl);
+            urlConnx = (HttpURLConnection) new URL(newUrl).openConnection();
+        }
+
+        InputStream urlInputStream = urlConnx.getInputStream();
+//        return readInputStreamWithTimeout(urlInputStream);
+        return IOHelper.readInputStream(urlInputStream);
     }
 }
