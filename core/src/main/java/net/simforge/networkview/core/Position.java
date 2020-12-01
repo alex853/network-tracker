@@ -9,8 +9,8 @@ import net.simforge.networkview.core.report.ReportInfo;
 import net.simforge.networkview.core.report.persistence.Report;
 import net.simforge.networkview.core.report.persistence.ReportPilotPosition;
 import net.simforge.networkview.world.AltimeterRules;
-import net.simforge.networkview.world.airports.Airport;
-import net.simforge.networkview.world.airports.Airports;
+import net.simforge.refdata.airports.Airport;
+import net.simforge.refdata.airports.Airports;
 
 public class Position {
 

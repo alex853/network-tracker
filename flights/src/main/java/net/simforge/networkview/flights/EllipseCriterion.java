@@ -3,8 +3,8 @@ package net.simforge.networkview.flights;
 import net.simforge.commons.misc.Geo;
 import net.simforge.networkview.flights.method.eventbased.Flightplan;
 import net.simforge.networkview.core.Position;
-import net.simforge.networkview.world.airports.Airport;
-import net.simforge.networkview.world.airports.Airports;
+import net.simforge.refdata.airports.Airport;
+import net.simforge.refdata.airports.Airports;
 
 public class EllipseCriterion implements Criterion {
 
