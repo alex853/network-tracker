@@ -3,6 +3,8 @@ package net.simforge.networkview.core.report.file;
 import net.simforge.commons.misc.Str;
 import net.simforge.networkview.core.Network;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 public class ReportFile {
@@ -361,6 +363,13 @@ public class ReportFile {
 
     private double parseCoord(String value, String callsign, String coordName, double min, double max) {
         double coord = parseDouble(value, callsign, coordName + " is incorrect");
+
+        BigDecimal bigDecimalCoord = BigDecimal.valueOf(coord);
+        if (bigDecimalCoord.scale() > 6) {
+            log.add(new LogEntry("Clients", callsign, coordName + " has too high scale, limiting to scale 6", value));
+            coord = bigDecimalCoord.setScale(6, RoundingMode.HALF_UP).doubleValue();
+        }
+
         if(Double.isNaN(coord))
             return coord;
         if(coord > max) {
