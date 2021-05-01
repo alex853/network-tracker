@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    compile project(':core')
+    compile 'net.simforge:network-view-core:latest.release'
     compile project(':flights')
 
     compile 'org.springframework.boot:spring-boot-starter-web'
