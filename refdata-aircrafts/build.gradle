@@ -12,9 +12,8 @@ repositories {
 }
 
 dependencies {
-    compile project(':atmosphere')
-
-    compile group: 'net.simforge', name: 'simforge-commons', version: '1.0.5'
+    compile 'net.simforge:simforge-commons:latest.release'
+    compile 'net.simforge:simforge-atmosphere:latest.release'
 
     compile group: 'com.google.guava', name: 'guava', version: '21.0'
 
