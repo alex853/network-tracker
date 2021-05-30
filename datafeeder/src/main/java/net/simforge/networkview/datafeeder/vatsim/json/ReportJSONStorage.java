@@ -4,7 +4,6 @@ import net.simforge.commons.io.IOHelper;
 import net.simforge.commons.legacy.BM;
 import net.simforge.networkview.core.Network;
 import net.simforge.networkview.core.report.ReportUtils;
-import net.simforge.networkview.core.report.file.ReportFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,12 +86,12 @@ public class ReportJSONStorage {
         return allReports.get(allReports.size() - 1);
     }
 
-    public net.simforge.networkview.core.report.file.ReportFile getReportFile(String report) throws IOException {
+    public ReportJSONFile getReportFile(String report) throws IOException {
         String filename = reportToFullPath(report);
         File file = new File(root, filename);
         String content = IOHelper.loadFile(file);
         //noinspection UnnecessaryLocalVariable
-        net.simforge.networkview.core.report.file.ReportFile reportFile = new ReportFile(network, content);
+        ReportJSONFile reportFile = new ReportJSONFile(network, content);
         return reportFile;
     }
 

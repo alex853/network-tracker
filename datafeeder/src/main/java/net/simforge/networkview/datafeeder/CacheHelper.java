@@ -5,8 +5,8 @@ import org.ehcache.Cache;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-class CacheHelper {
-    static String getEstimatedCacheSize(Cache cache) {
+public class CacheHelper {
+    public static String getEstimatedCacheSize(Cache cache) {
         try {
             Field storeField = cache.getClass().getDeclaredField("store");
             storeField.setAccessible(true);
