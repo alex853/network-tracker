@@ -67,7 +67,12 @@ public class ReportJSONFile {
         clientInfo.altitude                 = parseAltitude(pilotJson, callsign);
         clientInfo.groundspeed              = parseGroundspeed(pilotJson, callsign);
         clientInfo.heading                  = parseHeading(pilotJson, callsign);
+
         clientInfo.qnhMb                    = parseInt(pilotJson, "qnh_mb", callsign, "QNH Mb is incorrect: " + pilotJson.get("qnh_mb"), 0);
+        if (clientInfo.qnhMb < 0 || clientInfo.qnhMb > 2000) {
+            log.add(new LogEntry(CLIENTS, callsign, "QNH MB is out of range", String.valueOf(clientInfo.qnhMb)));
+            clientInfo.qnhMb = 0;
+        }
 
         Map flightplanJson = (Map) pilotJson.get("flight_plan");
         if (flightplanJson != null) {
