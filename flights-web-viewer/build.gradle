@@ -12,7 +12,6 @@ repositories {
 }
 
 dependencies {
-    compile project(':datafeeder')
     compile project(':flights')
 
     compileOnly group: 'javax.servlet', name: 'servlet-api', version: '2.5'

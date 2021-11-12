@@ -1,5 +1,5 @@
 rootProject.name = 'network-tracker'
-include 'datafeeder'
+
 include 'flights'
 include 'flight-processor'
 include 'flights-web-viewer'
