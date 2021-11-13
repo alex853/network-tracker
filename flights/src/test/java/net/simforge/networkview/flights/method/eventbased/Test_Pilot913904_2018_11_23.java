@@ -1,6 +1,5 @@
 package net.simforge.networkview.flights.method.eventbased;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
