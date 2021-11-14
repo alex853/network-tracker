@@ -16,13 +16,15 @@ dependencies {
     compile 'net.simforge:simforge-commons:latest.release'
     compile 'net.simforge:simforge-commons-ext:latest.release'
     compile 'net.simforge:network-view-core:latest.release'
-    compile project(':refdata-aircrafts')
+    compile 'net.simforge:refdata-airports:latest.release'
 
     compile group: 'com.google.guava', name: 'guava', version: '21.0'
+    compile 'com.google.code.gson:gson:2.8.6'
 
     compile group: 'postgresql', name: 'postgresql', version: '9.1-901-1.jdbc4'
 
-    compile 'com.google.code.gson:gson:2.8.6'
+    compile group: 'org.hibernate', name: 'hibernate-core', version: '5.0.1.Final'
+    compile group: 'org.hibernate', name: 'hibernate-java8', version: '5.0.1.Final'
 
     // todo remove?
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.1.7'
